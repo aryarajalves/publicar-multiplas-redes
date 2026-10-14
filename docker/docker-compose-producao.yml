@@ -16,16 +16,60 @@ services:
     env_file:
       - ../backend/.env
     environment:
+      # PORTAS
+      - POSTGRES_PORT=${POSTGRES_PORT:-5438}
+      - BACKEND_PORT=${BACKEND_PORT:-8005}
+      - FRONTEND_PORT=${FRONTEND_PORT:-3005}
+      # BANCO DE DADOS POSTGRESQL (SERVIÇO EXTERNO / HOST)
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-social_publisher_db}
       - DATABASE_URL=${DATABASE_URL:-postgresql+psycopg2://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@host.docker.internal:5432/${POSTGRES_DB:-social_publisher_db}}
-      - UPLOAD_DIR=/app/uploads
+      - POSTGRES_CONTAINER_NAME=${POSTGRES_CONTAINER_NAME:-social-vault-postgres}
+      # MODO DE SIMULAÇÃO E ARMAZENAMENTO LOCAL
       - SIMULATE_PUBLICATIONS=${SIMULATE_PUBLICATIONS:-false}
+      - UPLOAD_DIR=${UPLOAD_DIR:-/app/uploads}
+      # META / INSTAGRAM GRAPH API
+      - INSTAGRAM_ACCESS_TOKEN=${INSTAGRAM_ACCESS_TOKEN}
+      - INSTAGRAM_ACCOUNT_ID=${INSTAGRAM_ACCOUNT_ID}
+      # YOUTUBE DATA API v3
+      - YOUTUBE_API_KEY=${YOUTUBE_API_KEY}
+      - YOUTUBE_CLIENT_ID=${YOUTUBE_CLIENT_ID}
+      - YOUTUBE_CLIENT_SECRET=${YOUTUBE_CLIENT_SECRET}
+      - YOUTUBE_REFRESH_TOKEN=${YOUTUBE_REFRESH_TOKEN}
+      # TIKTOK CONTENT POSTING API
+      - TIKTOK_CLIENT_KEY=${TIKTOK_CLIENT_KEY}
+      - TIKTOK_CLIENT_SECRET=${TIKTOK_CLIENT_SECRET}
+      - TIKTOK_ACCESS_TOKEN=${TIKTOK_ACCESS_TOKEN}
+      - TIKTOK_REDIRECT_URI=${TIKTOK_REDIRECT_URI:-http://localhost:8005/api/auth/tiktok/callback}
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:3005}
+      # OPENAI (WHISPER & GPT)
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4o-mini}
+      # SUPER ADMIN INICIAL
+      - SUPER_ADMIN_NAME=${SUPER_ADMIN_NAME:-Super Admin}
+      - SUPER_ADMIN_EMAIL=${SUPER_ADMIN_EMAIL:-admin@multipost.com}
+      - SUPER_ADMIN_PASSWORD=${SUPER_ADMIN_PASSWORD:-admin123}
+      # BREVO (SENDINBLUE)
+      - BREVO_API_KEY=${BREVO_API_KEY}
+      - BREVO_SENDER_EMAIL=${BREVO_SENDER_EMAIL:-phasprodutosnaturais@gmail.com}
+      - BREVO_SENDER_NAME=${BREVO_SENDER_NAME:-MultiPost}
+      # BACKBLAZE B2 / S3 STORAGE
+      - B2_APPLICATION_KEY_ID=${B2_APPLICATION_KEY_ID}
+      - B2_APPLICATION_KEY=${B2_APPLICATION_KEY}
+      - B2_BUCKET_NAME=${B2_BUCKET_NAME:-zap-voice}
+      - B2_ENDPOINT_URL=${B2_ENDPOINT_URL:-https://s3.us-west-004.backblazeb2.com}
+      - B2_REGION_NAME=${B2_REGION_NAME:-us-west-004}
     volumes:
       - ../backend/uploads:/app/uploads
       - /var/run/docker.sock:/var/run/docker.sock:ro
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
-      - social-stream-network
+      social-stream-network:
+        aliases:
+          - social-publisher-api
+          - social-stream-backend
 
   # -------------------------------------------------------------
   # WORKER AGENDADOR (Tema: Social Stream Scheduler Worker)
@@ -41,9 +85,50 @@ services:
     env_file:
       - ../backend/.env
     environment:
+      # PORTAS
+      - POSTGRES_PORT=${POSTGRES_PORT:-5438}
+      - BACKEND_PORT=${BACKEND_PORT:-8005}
+      - FRONTEND_PORT=${FRONTEND_PORT:-3005}
+      # BANCO DE DADOS POSTGRESQL (SERVIÇO EXTERNO / HOST)
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-social_publisher_db}
       - DATABASE_URL=${DATABASE_URL:-postgresql+psycopg2://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@host.docker.internal:5432/${POSTGRES_DB:-social_publisher_db}}
-      - UPLOAD_DIR=/app/uploads
+      - POSTGRES_CONTAINER_NAME=${POSTGRES_CONTAINER_NAME:-social-vault-postgres}
+      # MODO DE SIMULAÇÃO E ARMAZENAMENTO LOCAL
       - SIMULATE_PUBLICATIONS=${SIMULATE_PUBLICATIONS:-false}
+      - UPLOAD_DIR=${UPLOAD_DIR:-/app/uploads}
+      # META / INSTAGRAM GRAPH API
+      - INSTAGRAM_ACCESS_TOKEN=${INSTAGRAM_ACCESS_TOKEN}
+      - INSTAGRAM_ACCOUNT_ID=${INSTAGRAM_ACCOUNT_ID}
+      # YOUTUBE DATA API v3
+      - YOUTUBE_API_KEY=${YOUTUBE_API_KEY}
+      - YOUTUBE_CLIENT_ID=${YOUTUBE_CLIENT_ID}
+      - YOUTUBE_CLIENT_SECRET=${YOUTUBE_CLIENT_SECRET}
+      - YOUTUBE_REFRESH_TOKEN=${YOUTUBE_REFRESH_TOKEN}
+      # TIKTOK CONTENT POSTING API
+      - TIKTOK_CLIENT_KEY=${TIKTOK_CLIENT_KEY}
+      - TIKTOK_CLIENT_SECRET=${TIKTOK_CLIENT_SECRET}
+      - TIKTOK_ACCESS_TOKEN=${TIKTOK_ACCESS_TOKEN}
+      - TIKTOK_REDIRECT_URI=${TIKTOK_REDIRECT_URI:-http://localhost:8005/api/auth/tiktok/callback}
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:3005}
+      # OPENAI (WHISPER & GPT)
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4o-mini}
+      # SUPER ADMIN INICIAL
+      - SUPER_ADMIN_NAME=${SUPER_ADMIN_NAME:-Super Admin}
+      - SUPER_ADMIN_EMAIL=${SUPER_ADMIN_EMAIL:-admin@multipost.com}
+      - SUPER_ADMIN_PASSWORD=${SUPER_ADMIN_PASSWORD:-admin123}
+      # BREVO (SENDINBLUE)
+      - BREVO_API_KEY=${BREVO_API_KEY}
+      - BREVO_SENDER_EMAIL=${BREVO_SENDER_EMAIL:-phasprodutosnaturais@gmail.com}
+      - BREVO_SENDER_NAME=${BREVO_SENDER_NAME:-MultiPost}
+      # BACKBLAZE B2 / S3 STORAGE
+      - B2_APPLICATION_KEY_ID=${B2_APPLICATION_KEY_ID}
+      - B2_APPLICATION_KEY=${B2_APPLICATION_KEY}
+      - B2_BUCKET_NAME=${B2_BUCKET_NAME:-zap-voice}
+      - B2_ENDPOINT_URL=${B2_ENDPOINT_URL:-https://s3.us-west-004.backblazeb2.com}
+      - B2_REGION_NAME=${B2_REGION_NAME:-us-west-004}
     volumes:
       - ../backend/uploads:/app/uploads
     extra_hosts:
@@ -51,7 +136,10 @@ services:
     depends_on:
       - social-stream-backend
     networks:
-      - social-stream-network
+      social-stream-network:
+        aliases:
+          - social-scheduler-worker
+          - social-stream-worker
 
   # -------------------------------------------------------------
   # FRONTEND WEB (Tema: Social Stream Frontend Nginx)
@@ -65,12 +153,62 @@ services:
     restart: unless-stopped
     ports:
       - "${FRONTEND_PORT:-3005}:80"
+    env_file:
+      - ../backend/.env
+    environment:
+      # PORTAS
+      - POSTGRES_PORT=${POSTGRES_PORT:-5438}
+      - BACKEND_PORT=${BACKEND_PORT:-8005}
+      - FRONTEND_PORT=${FRONTEND_PORT:-3005}
+      # BANCO DE DADOS POSTGRESQL (SERVIÇO EXTERNO / HOST)
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-social_publisher_db}
+      - DATABASE_URL=${DATABASE_URL:-postgresql+psycopg2://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@host.docker.internal:5432/${POSTGRES_DB:-social_publisher_db}}
+      - POSTGRES_CONTAINER_NAME=${POSTGRES_CONTAINER_NAME:-social-vault-postgres}
+      # MODO DE SIMULAÇÃO E ARMAZENAMENTO LOCAL
+      - SIMULATE_PUBLICATIONS=${SIMULATE_PUBLICATIONS:-false}
+      - UPLOAD_DIR=${UPLOAD_DIR:-/app/uploads}
+      # META / INSTAGRAM GRAPH API
+      - INSTAGRAM_ACCESS_TOKEN=${INSTAGRAM_ACCESS_TOKEN}
+      - INSTAGRAM_ACCOUNT_ID=${INSTAGRAM_ACCOUNT_ID}
+      # YOUTUBE DATA API v3
+      - YOUTUBE_API_KEY=${YOUTUBE_API_KEY}
+      - YOUTUBE_CLIENT_ID=${YOUTUBE_CLIENT_ID}
+      - YOUTUBE_CLIENT_SECRET=${YOUTUBE_CLIENT_SECRET}
+      - YOUTUBE_REFRESH_TOKEN=${YOUTUBE_REFRESH_TOKEN}
+      # TIKTOK CONTENT POSTING API
+      - TIKTOK_CLIENT_KEY=${TIKTOK_CLIENT_KEY}
+      - TIKTOK_CLIENT_SECRET=${TIKTOK_CLIENT_SECRET}
+      - TIKTOK_ACCESS_TOKEN=${TIKTOK_ACCESS_TOKEN}
+      - TIKTOK_REDIRECT_URI=${TIKTOK_REDIRECT_URI:-http://localhost:8005/api/auth/tiktok/callback}
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:3005}
+      # OPENAI (WHISPER & GPT)
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4o-mini}
+      # SUPER ADMIN INICIAL
+      - SUPER_ADMIN_NAME=${SUPER_ADMIN_NAME:-Super Admin}
+      - SUPER_ADMIN_EMAIL=${SUPER_ADMIN_EMAIL:-admin@multipost.com}
+      - SUPER_ADMIN_PASSWORD=${SUPER_ADMIN_PASSWORD:-admin123}
+      # BREVO (SENDINBLUE)
+      - BREVO_API_KEY=${BREVO_API_KEY}
+      - BREVO_SENDER_EMAIL=${BREVO_SENDER_EMAIL:-phasprodutosnaturais@gmail.com}
+      - BREVO_SENDER_NAME=${BREVO_SENDER_NAME:-MultiPost}
+      # BACKBLAZE B2 / S3 STORAGE
+      - B2_APPLICATION_KEY_ID=${B2_APPLICATION_KEY_ID}
+      - B2_APPLICATION_KEY=${B2_APPLICATION_KEY}
+      - B2_BUCKET_NAME=${B2_BUCKET_NAME:-zap-voice}
+      - B2_ENDPOINT_URL=${B2_ENDPOINT_URL:-https://s3.us-west-004.backblazeb2.com}
+      - B2_REGION_NAME=${B2_REGION_NAME:-us-west-004}
     volumes:
       - ../frontend/dist:/usr/share/nginx/html:ro
     depends_on:
       - social-stream-backend
     networks:
-      - social-stream-network
+      social-stream-network:
+        aliases:
+          - social-stream-web
+          - social-stream-frontend
 
 networks:
   social-stream-network:
