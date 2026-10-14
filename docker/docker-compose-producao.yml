@@ -13,8 +13,6 @@ services:
     restart: unless-stopped
     ports:
       - "8005:8000"
-    env_file:
-      - ../backend/.env
     environment:
       # BANCO DE DADOS POSTGRESQL (STRING DE CONEXÃO DIRETA)
       - DATABASE_URL=${DATABASE_URL}
@@ -71,8 +69,6 @@ services:
     container_name: social-stream-worker
     restart: unless-stopped
     command: python -m app.worker.scheduler
-    env_file:
-      - ../backend/.env
     environment:
       # BANCO DE DADOS POSTGRESQL (STRING DE CONEXÃO DIRETA)
       - DATABASE_URL=${DATABASE_URL}
@@ -131,8 +127,6 @@ services:
     restart: unless-stopped
     ports:
       - "3005:80"
-    env_file:
-      - ../backend/.env
     environment:
       # BANCO DE DADOS POSTGRESQL (STRING DE CONEXÃO DIRETA)
       - DATABASE_URL=${DATABASE_URL}
