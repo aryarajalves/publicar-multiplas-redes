@@ -17,8 +17,8 @@ class Settings(BaseSettings):
     MAX_FILE_SIZE_MB: int = 500
     ALLOWED_EXTENSIONS: List[str] = [".mp4", ".mov", ".avi", ".mkv", ".webm"]
     
-    # Social Simulation Mode (enabled if credentials are missing or explicitly true)
-    SIMULATE_PUBLICATIONS: bool = os.getenv("SIMULATE_PUBLICATIONS", "true").lower() in ("true", "1", "t")
+    # Social Simulation Mode (padrão desativado / false)
+    SIMULATE_PUBLICATIONS: bool = os.getenv("SIMULATE_PUBLICATIONS", "false").lower() in ("true", "1", "t")
     
     # Instagram Credentials (Meta Graph API)
     INSTAGRAM_ACCESS_TOKEN: str = os.getenv("INSTAGRAM_ACCESS_TOKEN", "")
