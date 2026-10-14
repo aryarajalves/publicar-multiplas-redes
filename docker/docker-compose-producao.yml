@@ -12,14 +12,10 @@ services:
     container_name: social-stream-backend
     restart: unless-stopped
     ports:
-      - "${BACKEND_PORT:-8005}:8000"
+      - "8005:8000"
     env_file:
       - ../backend/.env
     environment:
-      # PORTAS
-      - BACKEND_PORT=${BACKEND_PORT:-8005}
-      - FRONTEND_PORT=${FRONTEND_PORT:-3005}
-
       # BANCO DE DADOS POSTGRESQL (STRING DE CONEXÃO DIRETA)
       - DATABASE_URL=${DATABASE_URL}
 
@@ -81,10 +77,6 @@ services:
     env_file:
       - ../backend/.env
     environment:
-      # PORTAS
-      - BACKEND_PORT=${BACKEND_PORT:-8005}
-      - FRONTEND_PORT=${FRONTEND_PORT:-3005}
-
       # BANCO DE DADOS POSTGRESQL (STRING DE CONEXÃO DIRETA)
       - DATABASE_URL=${DATABASE_URL}
 
@@ -144,14 +136,10 @@ services:
     container_name: social-stream-frontend
     restart: unless-stopped
     ports:
-      - "${FRONTEND_PORT:-3005}:80"
+      - "3005:80"
     env_file:
       - ../backend/.env
     environment:
-      # PORTAS
-      - BACKEND_PORT=${BACKEND_PORT:-8005}
-      - FRONTEND_PORT=${FRONTEND_PORT:-3005}
-
       # BANCO DE DADOS POSTGRESQL (STRING DE CONEXÃO DIRETA)
       - DATABASE_URL=${DATABASE_URL}
 
