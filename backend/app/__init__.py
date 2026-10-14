@@ -1,0 +1,3 @@
+"""
+Social Publisher Application Package
+"""

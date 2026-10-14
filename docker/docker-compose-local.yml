@@ -1,0 +1,140 @@
+name: social-stream-hub
+
+services:
+  # -------------------------------------------------------------
+  # BANCO DE DADOS POSTGRESQL (Tema: Social Vault)
+  # -------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: social-vault-postgres
+    restart: unless-stopped
+    env_file:
+      - ../backend/.env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-social_publisher_db}
+    ports:
+      - "${POSTGRES_PORT:-5438}:5432"
+    volumes:
+      - social_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-social_publisher_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - social-network
+
+  # -------------------------------------------------------------
+  # FILA & BROKER REDIS (Tema: Social Broker)
+  # -------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: social-broker-redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6385}:6379"
+    volumes:
+      - social_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - social-network
+
+  # -------------------------------------------------------------
+  # BACKEND FASTAPI (Tema: Social Publisher API)
+  # -------------------------------------------------------------
+  backend:
+    build:
+      context: ..
+      dockerfile: docker/backend.Dockerfile
+    image: social-publisher-api:latest
+    container_name: social-publisher-api
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_PORT:-8005}:8000"
+    env_file:
+      - ../backend/.env
+    environment:
+      - DATABASE_URL=postgresql+psycopg2://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@social-vault-postgres:5432/${POSTGRES_DB:-social_publisher_db}
+      - REDIS_URL=redis://social-broker-redis:6379/0
+      - UPLOAD_DIR=/app/uploads
+      - SIMULATE_PUBLICATIONS=${SIMULATE_PUBLICATIONS:-false}
+    volumes:
+      - ../backend/uploads:/app/uploads
+      - ../backend/app:/app/app
+      - ../backend/tests:/app/tests
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - social-network
+
+  # -------------------------------------------------------------
+  # WORKER DE AGENDAMENTO E CROSS-POSTING (Tema: Social Scheduler Worker)
+  # -------------------------------------------------------------
+  worker:
+    build:
+      context: ..
+      dockerfile: docker/backend.Dockerfile
+    image: social-scheduler-worker:latest
+    container_name: social-scheduler-worker
+    restart: unless-stopped
+    command: python -m app.worker.scheduler
+    env_file:
+      - ../backend/.env
+    environment:
+      - DATABASE_URL=postgresql+psycopg2://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@social-vault-postgres:5432/${POSTGRES_DB:-social_publisher_db}
+      - REDIS_URL=redis://social-broker-redis:6379/0
+      - UPLOAD_DIR=/app/uploads
+      - SIMULATE_PUBLICATIONS=${SIMULATE_PUBLICATIONS:-false}
+    volumes:
+      - ../backend/uploads:/app/uploads
+      - ../backend/app:/app/app
+      - ../backend/tests:/app/tests
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      backend:
+        condition: service_started
+    networks:
+      - social-network
+
+  # -------------------------------------------------------------
+  # FRONTEND REACT (Tema: Social Stream Web)
+  # -------------------------------------------------------------
+  frontend:
+    build:
+      context: ..
+      dockerfile: docker/frontend.Dockerfile
+    image: social-stream-web:latest
+    container_name: social-stream-web
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-3005}:80"
+    volumes:
+      - ../frontend/dist:/usr/share/nginx/html:ro
+    depends_on:
+      - backend
+    networks:
+      - social-network
+
+volumes:
+  social_postgres_data:
+    name: social_postgres_data
+  social_redis_data:
+    name: social_redis_data
+
+networks:
+  social-network:
+    name: social-network
+    driver: bridge

@@ -1,0 +1,71 @@
+# Python & Compilados
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+backend/.venv/
+.venv/
+env/
+venv/
+.pytest_cache/
+backend/.pytest_cache/
+
+# Bancos de dados locais e temporários
+*.db
+*.sqlite
+*.sqlite3
+test_*.db
+zapvoice.db
+
+# Node & Frontend
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+*.local
+
+# Uploads & Mídias
+uploads/*
+!uploads/.gitkeep
+backend/uploads/*
+!backend/uploads/.gitkeep
+test_uploads/
+
+# Variáveis de Ambiente & Credenciais (PROIBIDO COMMITAÇÃO)
+.env
+.env.*
+*.env
+backend/.env
+**/.env
+# Manter .env.example rastreável
+!backend/.env.example
+!**/.env.example
+!.env.example
+
+# IDE & Sistema Operacional
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Docker
+.docker/
+
+# Backups de Refatoração (Regra Clean Code - nunca vão ao repositório)
+*.bak*
+backups/
+**/backups/
+backups_refactor/
+frontend/backups/
+backend/backups/
+
+# Logs e Prints de Evidência
+*.log
+screenshot*.png
+fixed_layout_*.png
+modal_saved_*.png
+chrome_*.log
+chrome_err.log

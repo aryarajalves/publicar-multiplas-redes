@@ -1,0 +1,9 @@
+.venv
+__pycache__
+*.pyc
+*.pyo
+.pytest_cache
+test_uploads
+test_social.db
+uploads/*
+!uploads/.gitkeep
