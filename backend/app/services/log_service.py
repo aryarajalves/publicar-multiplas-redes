@@ -34,7 +34,7 @@ _IN_MEMORY_LOG_BUFFER: List[Dict[str, Any]] = [
     {"timestamp": "2026-10-14T12:00:00Z", "level": "INFO", "stream": "stdout", "message": "Inicialização do sistema MultiPost concluída com sucesso."},
     {"timestamp": "2026-10-14T12:00:01Z", "level": "INFO", "stream": "stdout", "message": "Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)"},
     {"timestamp": "2026-10-14T12:00:02Z", "level": "INFO", "stream": "stdout", "message": "Conexão com PostgreSQL (social-vault-postgres) estabelecida."},
-    {"timestamp": "2026-10-14T12:00:03Z", "level": "INFO", "stream": "stdout", "message": "Conexão com Redis (social-broker-redis) estabelecida."}
+    {"timestamp": "2026-10-14T12:00:03Z", "level": "INFO", "stream": "stdout", "message": "Worker de agendamento contínuo em execução (loop de publicação ativo)."}
 ]
 
 

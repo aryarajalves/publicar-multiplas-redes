@@ -6,11 +6,10 @@ Plataforma completa para upload, agendamento e publicação automática de víde
 
 ## 🚀 Arquitetura & Tecnologias
 
-- **Backend:** Python 3.12 (FastAPI, SQLAlchemy 2.0, Pydantic V2, Uvicorn, Celery/Redis)
+- **Backend:** Python 3.12 (FastAPI, SQLAlchemy 2.0, Pydantic V2, Uvicorn)
 - **Frontend:** React 18 (Vite, TypeScript, Tailwind CSS, Lucide Icons, Design System Vturb / SmartVSL em Light Mode)
 - **Banco de Dados:** PostgreSQL 16 (`social-vault-postgres`)
-- **Fila & Mensageria:** Redis 7 (`social-broker-redis`)
-- **Worker de Agendamento:** Python Scheduler Daemon (`social-scheduler-worker`)
+- **Worker de Agendamento:** Python Scheduler Daemon assíncrono (`social-scheduler-worker`)
 - **Armazenamento em Nuvem:** Backblaze B2 / S3 Storage (Backups e entrega de mídia pública para Meta/Instagram)
 - **Servidor Web / Proxy:** Nginx servindo o bundle compilado em produção
 - **Containerização:** Docker & Docker Compose (`docker-compose-local.yml`)
@@ -22,7 +21,6 @@ Plataforma completa para upload, agendamento e publicação automática de víde
 | Serviço | Nome do Contêiner | Função | Porta no Host |
 | :--- | :--- | :--- | :--- |
 | **Banco de Dados** | `social-vault-postgres` | Armazena posts, usuários, agendamentos e histórico | `5438` |
-| **Fila & Broker** | `social-broker-redis` | Mensageria e sincronização de eventos de disparo | `6385` |
 | **Backend API** | `social-publisher-api` | API REST para upload, autenticação, logs e publicação | `8005` |
 | **Worker Agendador** | `social-scheduler-worker` | Daemon que monitora o agendamento e executa os envios | - |
 | **Frontend Web** | `social-stream-web` | Interface do usuário em React / Nginx | `3005` |

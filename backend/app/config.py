@@ -12,9 +12,6 @@ class Settings(BaseSettings):
         "postgresql+psycopg2://postgres:postgres@social-vault-postgres:5432/social_publisher_db"
     )
     
-    # Redis / Task Queue
-    REDIS_URL: str = os.getenv("REDIS_URL", "redis://social-broker-redis:6379/0")
-    
     # Media Storage
     UPLOAD_DIR: str = os.getenv("UPLOAD_DIR", "uploads")
     MAX_FILE_SIZE_MB: int = 500

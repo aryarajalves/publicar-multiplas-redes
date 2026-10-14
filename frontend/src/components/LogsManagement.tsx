@@ -35,7 +35,7 @@ export const LogsManagement: React.FC = () => {
       key: 'worker',
       name: 'social-scheduler-worker',
       label: 'Scheduler Worker',
-      description: 'Worker Celery/Redis de agendamento',
+      description: 'Worker assíncrono de agendamento',
       status: 'running',
     },
   ]);
