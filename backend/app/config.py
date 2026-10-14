@@ -12,8 +12,8 @@ class Settings(BaseSettings):
         "postgresql+psycopg2://postgres:postgres@social-vault-postgres:5432/social_publisher_db"
     )
     
-    # Media Storage
-    UPLOAD_DIR: str = os.getenv("UPLOAD_DIR", "uploads")
+    # Media Storage (diretório fixo mapeado automaticamente pelo volume)
+    UPLOAD_DIR: str = os.getenv("UPLOAD_DIR", "/app/uploads" if os.path.exists("/app/uploads") else "uploads")
     MAX_FILE_SIZE_MB: int = 500
     ALLOWED_EXTENSIONS: List[str] = [".mp4", ".mov", ".avi", ".mkv", ".webm"]
     
