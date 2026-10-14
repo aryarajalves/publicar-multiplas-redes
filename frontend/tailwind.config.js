@@ -7,6 +7,15 @@ export default {
   theme: {
     extend: {
       colors: {
+        vturb: {
+          50: '#fef2f2',
+          100: '#fee2e2',
+          200: '#fecaca',
+          500: '#ef4444',
+          600: '#ea384c',
+          700: '#d82a3e',
+          800: '#991b1b',
+        },
         instagram: {
           pink: '#E1306C',
           purple: '#C13584',

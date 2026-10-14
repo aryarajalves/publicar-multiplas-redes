@@ -121,7 +121,6 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onGoToLogin }) => {
     passwordsMatch
   );
 
-  // Avança para a etapa de verificação (dispara código via Brevo)
   const handleProceedToVerification = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError(null);
@@ -163,7 +162,6 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onGoToLogin }) => {
     }
   };
 
-  // Reenviar código a partir do Painel 2
   const handleResendCode = async () => {
     setFormError(null);
     setCodeSuccessMsg(null);
@@ -180,7 +178,6 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onGoToLogin }) => {
     }
   };
 
-  // Submissão final do cadastro com o código OTP
   const handleFinalSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError(null);
@@ -211,46 +208,44 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onGoToLogin }) => {
   return (
     <div
       data-testid="register-page-view"
-      className="min-h-screen w-full bg-slate-950 flex flex-col justify-center items-center p-4 relative overflow-hidden selection:bg-pink-500 selection:text-white"
+      className="min-h-screen w-full bg-slate-50 flex flex-col justify-center items-center p-4 relative overflow-hidden selection:bg-[#ea384c] selection:text-white"
     >
-      <div className="absolute top-1/4 -left-32 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/4 -left-32 w-96 h-96 bg-rose-500/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-sky-500/5 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="relative w-full max-w-md rounded-3xl bg-slate-900/90 border border-slate-800/80 backdrop-blur-xl p-6 sm:p-8 shadow-2xl shadow-black/60 z-10">
+      <div className="relative w-full max-w-md rounded-3xl bg-white border border-slate-200 p-6 sm:p-8 shadow-xl z-10">
         <div className="flex flex-col items-center text-center mb-6">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-pink-500 via-purple-600 to-indigo-600 p-[1px] shadow-lg shadow-pink-500/20 mb-3 flex items-center justify-center">
-            <div className="w-full h-full bg-slate-950 rounded-2xl flex items-center justify-center">
-              <Sparkles className="w-7 h-7 text-pink-400" />
-            </div>
+          <div className="w-14 h-14 rounded-2xl bg-white border border-slate-200 shadow-2xs mb-3 flex items-center justify-center">
+            <Sparkles className="w-7 h-7 text-[#ea384c]" />
           </div>
-          <h1 className="text-xl font-extrabold text-white tracking-tight">
-            Multi<span className="text-pink-500">Post</span>
+          <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">
+            Multi<span className="text-[#ea384c]">Post</span>
           </h1>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-500 mt-1">
             Plataforma Unificada de Publicação e Agendamento
           </p>
         </div>
 
         {isValidatingToken && (
           <div data-testid="validating-token-state" className="py-12 text-center space-y-3">
-            <Loader2 className="w-8 h-8 text-pink-500 animate-spin mx-auto" />
-            <p className="text-xs text-slate-300 font-medium">Validando seu link de convite...</p>
+            <Loader2 className="w-8 h-8 text-[#ea384c] animate-spin mx-auto" />
+            <p className="text-xs text-slate-600 font-medium">Validando seu link de convite...</p>
           </div>
         )}
 
         {!isValidatingToken && tokenError && (
           <div data-testid="token-error-state" className="py-4 text-center space-y-4">
-            <div className="w-12 h-12 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-400 flex items-center justify-center mx-auto">
+            <div className="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 flex items-center justify-center mx-auto">
               <AlertCircle className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-white mb-1">Convite Não Disponível</h2>
-              <p className="text-xs text-slate-400 leading-relaxed">{tokenError}</p>
+              <h2 className="text-base font-bold text-slate-900 mb-1">Convite Não Disponível</h2>
+              <p className="text-xs text-slate-500 leading-relaxed">{tokenError}</p>
             </div>
             <button
               onClick={onGoToLogin}
               data-testid="btn-error-go-to-login"
-              className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs transition-colors cursor-pointer"
+              className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs border border-slate-200 transition-colors cursor-pointer"
             >
               <span>Ir para Tela de Login</span>
               <ArrowRight className="w-4 h-4" />
@@ -260,19 +255,19 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onGoToLogin }) => {
 
         {!isValidatingToken && !tokenError && isSuccess && (
           <div data-testid="register-success-state" className="py-4 text-center space-y-4 animate-in fade-in duration-300">
-            <div className="w-14 h-14 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/10">
+            <div className="w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mx-auto shadow-2xs">
               <ShieldCheck className="w-7 h-7" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white mb-1">Conta Criada com Sucesso!</h2>
-              <p className="text-xs text-slate-300 leading-relaxed">
+              <h2 className="text-lg font-bold text-slate-900 mb-1">Conta Criada com Sucesso!</h2>
+              <p className="text-xs text-slate-600 leading-relaxed">
                 Seu e-mail foi validado e sua conta ativada com criptografia Argon2id. Acesse a plataforma com suas credenciais.
               </p>
             </div>
             <button
               onClick={onGoToLogin}
               data-testid="btn-success-go-to-login"
-              className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-pink-600 via-purple-600 to-pink-600 hover:from-pink-500 hover:to-purple-500 text-white font-semibold text-xs shadow-lg shadow-pink-600/25 transition-all cursor-pointer"
+              className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#ea384c] hover:bg-[#d82a3e] text-white font-semibold text-xs shadow-xs transition-all cursor-pointer"
             >
               <span>Acessar Painel Agora</span>
               <ArrowRight className="w-4 h-4" />
@@ -301,13 +296,12 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onGoToLogin }) => {
 
         {!isValidatingToken && !tokenError && !isSuccess && step === 'form' && (
           <form onSubmit={handleProceedToVerification} autoComplete="off" className="space-y-4">
-            {/* Campos falsos ocultos para neutralizar autofill agressivo do Chrome */}
             <input type="text" name="fake_un_multipost" tabIndex={-1} aria-hidden="true" style={{ position: 'absolute', opacity: 0, height: 0, width: 0, pointerEvents: 'none' }} autoComplete="off" />
             <input type="password" name="fake_pw_multipost" tabIndex={-1} aria-hidden="true" style={{ position: 'absolute', opacity: 0, height: 0, width: 0, pointerEvents: 'none' }} autoComplete="off" />
 
-            <div className="p-3 rounded-xl bg-pink-500/10 border border-pink-500/20 flex items-center justify-between text-xs">
-              <span className="text-slate-300">Tipo de acesso:</span>
-              <span className="font-semibold text-pink-400 capitalize">
+            <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 flex items-center justify-between text-xs">
+              <span className="text-slate-600">Tipo de acesso:</span>
+              <span className="font-bold text-[#ea384c] capitalize">
                 {tokenValidation?.role === 'admin' ? 'Administrador' : 'Usuário (Editor)'}
               </span>
             </div>
@@ -315,9 +309,9 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onGoToLogin }) => {
             {tokenValidation?.email_service_configured === false && (
               <div
                 data-testid="brevo-not-configured-warning"
-                className="p-3 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-200 text-xs flex items-center gap-2"
+                className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center gap-2"
               >
-                <AlertCircle className="w-4 h-4 shrink-0 text-amber-400" />
+                <AlertCircle className="w-4 h-4 shrink-0 text-amber-600" />
                 <span>
                   O serviço Brevo não está conectado (chave BREVO_API_KEY não configurada no .env). O código OTP não poderá ser disparado.
                 </span>
@@ -327,18 +321,18 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onGoToLogin }) => {
             {formError && (
               <div
                 data-testid="register-form-error"
-                className="p-3 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-200 text-xs flex items-center gap-2"
+                className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2"
               >
-                <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+                <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
                 <span>{formError}</span>
               </div>
             )}
 
             {/* Nome Completo */}
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Nome Completo</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Nome Completo</label>
               <div className="relative">
-                <UserIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                <UserIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
                   type="text"
                   required
@@ -347,16 +341,16 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onGoToLogin }) => {
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Seu nome completo"
                   data-testid="input-register-name"
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-950/80 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-pink-500 transition-colors [&:-webkit-autofill]:[box-shadow:0_0_0_1000px_#020617_inset] [&:-webkit-autofill]:[-webkit-text-fill-color:#fff]"
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#ea384c] focus:bg-white transition-colors"
                 />
               </div>
             </div>
 
-            {/* E-mail Profissional (sem botão lateral de validar e-mail) */}
+            {/* E-mail Profissional */}
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">E-mail Profissional</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">E-mail Profissional</label>
               <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
                   type="email"
                   required
@@ -366,14 +360,14 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onGoToLogin }) => {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="seu@email.com"
                   data-testid="input-register-email"
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-950/80 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-pink-500 transition-colors [&:-webkit-autofill]:[box-shadow:0_0_0_1000px_#020617_inset] [&:-webkit-autofill]:[-webkit-text-fill-color:#fff]"
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#ea384c] focus:bg-white transition-colors"
                 />
               </div>
             </div>
 
             {/* WhatsApp com DDI */}
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">WhatsApp</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">WhatsApp</label>
               <PhoneDdiInput
                 value={whatsapp}
                 onChange={(val) => setWhatsapp(val)}
@@ -384,9 +378,9 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onGoToLogin }) => {
 
             {/* Senha */}
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Senha de Acesso</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Senha de Acesso</label>
               <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   required
@@ -395,12 +389,12 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onGoToLogin }) => {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Digite sua senha forte"
                   data-testid="input-register-password"
-                  className="w-full pl-10 pr-10 py-2.5 bg-slate-950/80 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-pink-500 transition-colors [&:-webkit-autofill]:[box-shadow:0_0_0_1000px_#020617_inset] [&:-webkit-autofill]:[-webkit-text-fill-color:#fff]"
+                  className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#ea384c] focus:bg-white transition-colors"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors cursor-pointer"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -409,9 +403,9 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onGoToLogin }) => {
 
             {/* Confirmar Senha */}
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Confirmar Senha</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Confirmar Senha</label>
               <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
                   type={showConfirmPassword ? 'text' : 'password'}
                   required
@@ -420,56 +414,56 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onGoToLogin }) => {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Repita sua senha"
                   data-testid="input-register-confirm-password"
-                  className="w-full pl-10 pr-10 py-2.5 bg-slate-950/80 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-pink-500 transition-colors [&:-webkit-autofill]:[box-shadow:0_0_0_1000px_#020617_inset] [&:-webkit-autofill]:[-webkit-text-fill-color:#fff]"
+                  className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#ea384c] focus:bg-white transition-colors"
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors cursor-pointer"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
                 >
                   {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
               {confirmPassword && !passwordsMatch && (
-                <p className="text-[11px] text-rose-400 mt-1">As senhas não coincidem.</p>
+                <p className="text-[11px] text-rose-600 font-medium mt-1">As senhas não coincidem.</p>
               )}
             </div>
 
             {/* Checklist de Requisitos de Senha */}
-            <div className="p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800/80 space-y-2">
-              <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
+            <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+              <span className="text-[11px] font-bold text-slate-600 uppercase tracking-wider block">
                 Requisitos Obrigatórios de Senha:
               </span>
               <ul className="space-y-1.5 text-xs">
-                <li className={`flex items-center gap-2 ${passwordCriteria.minLength ? 'text-emerald-400 font-medium' : 'text-slate-400'}`}>
-                  <CheckCircle2 className={`w-3.5 h-3.5 shrink-0 ${passwordCriteria.minLength ? 'text-emerald-400' : 'text-slate-600'}`} />
+                <li className={`flex items-center gap-2 ${passwordCriteria.minLength ? 'text-emerald-700 font-medium' : 'text-slate-400'}`}>
+                  <CheckCircle2 className={`w-3.5 h-3.5 shrink-0 ${passwordCriteria.minLength ? 'text-emerald-600' : 'text-slate-300'}`} />
                   <span>Mínimo de 12 caracteres</span>
                 </li>
-                <li className={`flex items-center gap-2 ${passwordCriteria.hasUpper ? 'text-emerald-400 font-medium' : 'text-slate-400'}`}>
-                  <CheckCircle2 className={`w-3.5 h-3.5 shrink-0 ${passwordCriteria.hasUpper ? 'text-emerald-400' : 'text-slate-600'}`} />
+                <li className={`flex items-center gap-2 ${passwordCriteria.hasUpper ? 'text-emerald-700 font-medium' : 'text-slate-400'}`}>
+                  <CheckCircle2 className={`w-3.5 h-3.5 shrink-0 ${passwordCriteria.hasUpper ? 'text-emerald-600' : 'text-slate-300'}`} />
                   <span>Pelo menos 1 letra maiúscula (A-Z)</span>
                 </li>
-                <li className={`flex items-center gap-2 ${passwordCriteria.hasLower ? 'text-emerald-400 font-medium' : 'text-slate-400'}`}>
-                  <CheckCircle2 className={`w-3.5 h-3.5 shrink-0 ${passwordCriteria.hasLower ? 'text-emerald-400' : 'text-slate-600'}`} />
+                <li className={`flex items-center gap-2 ${passwordCriteria.hasLower ? 'text-emerald-700 font-medium' : 'text-slate-400'}`}>
+                  <CheckCircle2 className={`w-3.5 h-3.5 shrink-0 ${passwordCriteria.hasLower ? 'text-emerald-600' : 'text-slate-300'}`} />
                   <span>Pelo menos 1 letra minúscula (a-z)</span>
                 </li>
-                <li className={`flex items-center gap-2 ${passwordCriteria.hasNumber ? 'text-emerald-400 font-medium' : 'text-slate-400'}`}>
-                  <CheckCircle2 className={`w-3.5 h-3.5 shrink-0 ${passwordCriteria.hasNumber ? 'text-emerald-400' : 'text-slate-600'}`} />
+                <li className={`flex items-center gap-2 ${passwordCriteria.hasNumber ? 'text-emerald-700 font-medium' : 'text-slate-400'}`}>
+                  <CheckCircle2 className={`w-3.5 h-3.5 shrink-0 ${passwordCriteria.hasNumber ? 'text-emerald-600' : 'text-slate-300'}`} />
                   <span>Pelo menos 1 número (0-9)</span>
                 </li>
-                <li className={`flex items-center gap-2 ${passwordCriteria.hasSpecial ? 'text-emerald-400 font-medium' : 'text-slate-400'}`}>
-                  <CheckCircle2 className={`w-3.5 h-3.5 shrink-0 ${passwordCriteria.hasSpecial ? 'text-emerald-400' : 'text-slate-600'}`} />
+                <li className={`flex items-center gap-2 ${passwordCriteria.hasSpecial ? 'text-emerald-700 font-medium' : 'text-slate-400'}`}>
+                  <CheckCircle2 className={`w-3.5 h-3.5 shrink-0 ${passwordCriteria.hasSpecial ? 'text-emerald-600' : 'text-slate-300'}`} />
                   <span>Pelo menos 1 caractere especial (!@#$...)</span>
                 </li>
               </ul>
             </div>
 
-            {/* Botão de Envio: Criar Conta (avança para validação do e-mail) */}
+            {/* Botão de Envio */}
             <button
               type="submit"
               disabled={isSendingCode || !isStep1Valid}
               data-testid="btn-submit-register"
-              className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-pink-600 via-purple-600 to-pink-600 hover:from-pink-500 hover:to-purple-500 text-white font-semibold text-xs shadow-lg shadow-pink-600/25 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+              className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#ea384c] hover:bg-[#d82a3e] text-white font-semibold text-xs shadow-xs transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed mt-2"
             >
               {isSendingCode ? (
                 <>

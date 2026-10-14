@@ -11,36 +11,36 @@ export const StatusBadge: React.FC<Props> = ({ status, size = 'sm' }) => {
   const normalized = status.toLowerCase();
 
   let label = 'Desconhecido';
-  let classes = 'bg-slate-800 text-slate-300 border-slate-700';
+  let classes = 'bg-slate-100 text-slate-600 border-slate-200';
   let Icon = Clock;
 
   switch (normalized) {
     case 'scheduled':
     case 'pending':
       label = normalized === 'scheduled' ? 'Agendado' : 'Pendente';
-      classes = 'bg-blue-950/70 text-blue-300 border-blue-500/40';
+      classes = 'bg-blue-50 text-blue-700 border-blue-200';
       Icon = Clock;
       break;
     case 'publishing':
     case 'in_progress':
       label = 'Publicando...';
-      classes = 'bg-purple-950/70 text-purple-300 border-purple-500/40 animate-pulse';
+      classes = 'bg-sky-50 text-sky-700 border-sky-200 animate-pulse';
       Icon = Loader2;
       break;
     case 'published':
       label = 'Publicado';
-      classes = 'bg-emerald-950/70 text-emerald-300 border-emerald-500/40';
+      classes = 'bg-emerald-50 text-emerald-700 border-emerald-200';
       Icon = CheckCircle2;
       break;
     case 'failed':
       label = 'Falhou';
-      classes = 'bg-rose-950/70 text-rose-300 border-rose-500/40';
+      classes = 'bg-rose-50 text-rose-700 border-rose-200';
       Icon = AlertTriangle;
       break;
     case 'cancelled':
     case 'skipped':
       label = normalized === 'cancelled' ? 'Cancelado' : 'Ignorado';
-      classes = 'bg-slate-800/80 text-slate-400 border-slate-700';
+      classes = 'bg-slate-100 text-slate-600 border-slate-200';
       Icon = XCircle;
       break;
   }

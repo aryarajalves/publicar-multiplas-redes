@@ -131,7 +131,7 @@ describe('Tab and Subtab Persistence on Page Refresh', () => {
 
     await waitFor(() => {
       const frontendBtn = screen.getByTestId('tab-container-frontend');
-      expect(frontendBtn.className).toContain('border-pink-500/50');
+      expect(frontendBtn.className).toContain('border-[#ea384c]');
     });
 
     // Clica no contêiner worker

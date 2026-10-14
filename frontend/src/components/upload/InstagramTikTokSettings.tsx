@@ -27,7 +27,7 @@ export const InstagramSettings: React.FC<InstagramSettingsProps> = ({
     <div className="space-y-4 animate-fade-in" data-testid="content-tab-instagram">
       <div>
         <div className="flex items-center justify-between mb-1.5">
-          <label className="text-xs font-bold text-pink-300 uppercase tracking-wider">
+          <label className="text-xs font-bold text-pink-700 uppercase tracking-wider">
             Legenda do Instagram Reels
           </label>
           <div className="flex items-center gap-2">
@@ -43,7 +43,7 @@ export const InstagramSettings: React.FC<InstagramSettingsProps> = ({
                 })
               }
               data-testid="btn-maximize-instagram-caption"
-              className="p-1 rounded text-pink-400 hover:text-white hover:bg-pink-900/40 transition-colors"
+              className="p-1 rounded text-pink-600 hover:text-pink-700 hover:bg-pink-50 transition-colors"
               title="Maximizar legenda"
             >
               <Maximize2 className="w-3.5 h-3.5" />
@@ -56,7 +56,7 @@ export const InstagramSettings: React.FC<InstagramSettingsProps> = ({
           rows={7}
           placeholder="Digite a legenda e as hashtags do seu Reel (ou deixe em branco para usar a Legenda Geral)..."
           data-testid="instagram-caption-input"
-          className="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-pink-500 transition-colors resize-none leading-relaxed min-h-[160px]"
+          className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-pink-500 focus:bg-white transition-colors resize-none leading-relaxed min-h-[160px]"
         />
       </div>
     </div>
@@ -89,7 +89,7 @@ export const TikTokSettings: React.FC<TikTokSettingsProps> = ({
     <div className="space-y-4 animate-fade-in" data-testid="content-tab-tiktok">
       <div>
         <div className="flex items-center justify-between mb-1.5">
-          <label className="text-xs font-bold text-cyan-300 uppercase tracking-wider">
+          <label className="text-xs font-bold text-cyan-800 uppercase tracking-wider">
             Legenda do TikTok
           </label>
           <div className="flex items-center gap-2">
@@ -105,7 +105,7 @@ export const TikTokSettings: React.FC<TikTokSettingsProps> = ({
                 })
               }
               data-testid="btn-maximize-tiktok-caption"
-              className="p-1 rounded text-cyan-400 hover:text-white hover:bg-cyan-900/40 transition-colors"
+              className="p-1 rounded text-cyan-600 hover:text-cyan-700 hover:bg-cyan-50 transition-colors"
               title="Maximizar legenda"
             >
               <Maximize2 className="w-3.5 h-3.5" />
@@ -118,7 +118,7 @@ export const TikTokSettings: React.FC<TikTokSettingsProps> = ({
           rows={7}
           placeholder="Digite a legenda e as hashtags do seu vídeo no TikTok (ou deixe em branco para usar a Legenda Geral)..."
           data-testid="tiktok-caption-input"
-          className="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition-colors resize-none leading-relaxed min-h-[160px]"
+          className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:bg-white transition-colors resize-none leading-relaxed min-h-[160px]"
         />
       </div>
     </div>

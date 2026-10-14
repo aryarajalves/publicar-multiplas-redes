@@ -237,32 +237,32 @@ export const VideoUploadModal: React.FC<Props> = ({
   return (
     <div
       data-testid="video-upload-modal"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in"
     >
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-3xl max-h-[92vh] overflow-hidden shadow-2xl flex flex-col">
+      <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-3xl max-h-[92vh] overflow-hidden shadow-2xl flex flex-col">
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between bg-slate-900/95 backdrop-blur shrink-0">
+        <div className="p-4 sm:p-5 border-b border-slate-200 flex items-center justify-between bg-white shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-lg bg-pink-500/10 text-pink-400 border border-pink-500/20">
+            <div className="p-2 rounded-lg bg-red-50 text-red-600 border border-red-200 shadow-2xs">
               <Film className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-white">Publicar Conteúdo Multi-Redes</h2>
-              <p className="text-xs text-slate-400">Poste simultaneamente no Instagram Reels, YouTube e TikTok</p>
+              <h2 className="text-base font-bold text-slate-900">Publicar Conteúdo Multi-Redes</h2>
+              <p className="text-xs text-slate-500">Poste simultaneamente no Instagram Reels, YouTube e TikTok</p>
             </div>
           </div>
           <button
             onClick={onClose}
             data-testid="btn-close-upload-modal"
             disabled={isSubmitting}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Barra Superior de Abas Principais (3 Abas Agrupadas) */}
-        <div className="bg-slate-950/80 border-b border-slate-800 px-4 pt-2.5 shrink-0 flex items-center gap-2 overflow-x-auto">
+        <div className="bg-slate-50 border-b border-slate-200 px-4 pt-2.5 shrink-0 flex items-center gap-2 overflow-x-auto">
           {/* Aba 1: Mídia */}
           <button
             type="button"
@@ -270,13 +270,13 @@ export const VideoUploadModal: React.FC<Props> = ({
             data-testid="main-tab-media"
             className={`flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-t-xl border-t border-x transition-all shrink-0 ${
               activeMainTab === 'media'
-                ? 'bg-slate-900 border-slate-700 text-pink-400 shadow-md'
-                : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40'
+                ? 'bg-white border-slate-200 text-[#ea384c] shadow-xs'
+                : 'border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-100/60'
             }`}
           >
             <Video className="w-4 h-4" />
             <span>1. Mídia (Vídeo e Capas)</span>
-            {file && <span className="w-2 h-2 rounded-full bg-emerald-400"></span>}
+            {file && <span className="w-2 h-2 rounded-full bg-emerald-500"></span>}
           </button>
 
           {/* Aba 2: Redes */}
@@ -286,13 +286,13 @@ export const VideoUploadModal: React.FC<Props> = ({
             data-testid="main-tab-social"
             className={`flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-t-xl border-t border-x transition-all shrink-0 ${
               activeMainTab === 'social'
-                ? 'bg-slate-900 border-slate-700 text-purple-400 shadow-md'
-                : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40'
+                ? 'bg-white border-slate-200 text-[#ea384c] shadow-xs'
+                : 'border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-100/60'
             }`}
           >
             <Share2 className="w-4 h-4" />
             <span>2. Personalização das Redes</span>
-            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-300">
+            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-200 text-slate-700">
               {platforms.length}
             </span>
           </button>
@@ -304,8 +304,8 @@ export const VideoUploadModal: React.FC<Props> = ({
             data-testid="main-tab-schedule"
             className={`flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-t-xl border-t border-x transition-all shrink-0 ${
               activeMainTab === 'schedule'
-                ? 'bg-slate-900 border-slate-700 text-cyan-400 shadow-md'
-                : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40'
+                ? 'bg-white border-slate-200 text-[#ea384c] shadow-xs'
+                : 'border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-100/60'
             }`}
           >
             <Calendar className="w-4 h-4" />
@@ -395,15 +395,15 @@ export const VideoUploadModal: React.FC<Props> = ({
           </div>
 
           {/* Footer com Navegação e Submissão */}
-          <div className="pt-6 border-t border-slate-800/80 mt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="pt-4 border-t border-slate-200 mt-4 flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-50/80 p-4 rounded-b-2xl">
             {/* Mensagem de Erro do Rodapé */}
             <div className="w-full sm:w-auto">
               {errorMessage && (
                 <div
                   data-testid="footer-error-message"
-                  className="p-2.5 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2"
+                  className="p-2.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2"
                 >
-                  <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                  <AlertCircle className="w-3.5 h-3.5 shrink-0 text-rose-600" />
                   <span>{errorMessage}</span>
                 </div>
               )}
@@ -420,7 +420,7 @@ export const VideoUploadModal: React.FC<Props> = ({
                     else if (activeMainTab === 'social') setActiveMainTab('media');
                   }}
                   disabled={isSubmitting}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold border border-slate-200 shadow-2xs transition-colors"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
                   <span>Voltar</span>
@@ -436,7 +436,7 @@ export const VideoUploadModal: React.FC<Props> = ({
                     else if (activeMainTab === 'social') setActiveMainTab('schedule');
                   }}
                   disabled={isSubmitting}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold border border-slate-700 transition-colors"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white hover:bg-slate-50 text-slate-800 text-xs font-semibold border border-slate-200 shadow-2xs transition-colors"
                 >
                   <span>Avançar</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -448,7 +448,7 @@ export const VideoUploadModal: React.FC<Props> = ({
                 type="button"
                 onClick={onClose}
                 disabled={isSubmitting}
-                className="px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 text-xs font-medium transition-colors"
+                className="px-3.5 py-2 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 text-xs font-medium transition-colors"
               >
                 Cancelar
               </button>
@@ -458,7 +458,7 @@ export const VideoUploadModal: React.FC<Props> = ({
                 type="submit"
                 disabled={isSubmitting}
                 data-testid="submit-schedule-btn"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white text-xs font-semibold shadow-lg shadow-pink-600/20 transition-all active:scale-95 disabled:opacity-50"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#ea384c] hover:bg-[#d82a3e] text-white text-xs font-semibold shadow-sm transition-all active:scale-95 disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <>

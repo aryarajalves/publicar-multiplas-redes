@@ -7,7 +7,7 @@ Plataforma completa para upload, agendamento e publicação automática de víde
 ## 🚀 Arquitetura & Tecnologias
 
 - **Backend:** Python 3.12 (FastAPI, SQLAlchemy 2.0, Pydantic V2, Uvicorn, Celery/Redis)
-- **Frontend:** React 18 (Vite, TypeScript, Tailwind CSS, Lucide Icons)
+- **Frontend:** React 18 (Vite, TypeScript, Tailwind CSS, Lucide Icons, Design System Vturb / SmartVSL em Light Mode)
 - **Banco de Dados:** PostgreSQL 16 (`social-vault-postgres`)
 - **Fila & Mensageria:** Redis 7 (`social-broker-redis`)
 - **Worker de Agendamento:** Python Scheduler Daemon (`social-scheduler-worker`)
@@ -34,12 +34,14 @@ Plataforma completa para upload, agendamento e publicação automática de víde
 1. **Publicação Multi-Redes Automática:**
    - **Instagram Reels:** Criação de container e publicação automática com geração de link público via Backblaze B2.
    - **YouTube:** Suporte nativo tanto para **Vídeos Longos (16:9 tradicional)** quanto para **Shorts (9:16 vertical)**, incluindo seleção de tela final de vídeos longos publicados.
-   - **TikTok:** Integração com Content Posting API.
-2. **Gestão de Usuários & Convites:**
+   - **TikTok:** Integração com Content Posting API oficial e autenticação OAuth 2.0 com **PKCE (`code_challenge` S256)** e exibição da **Redirect URI** diretamente na interface para cópia rápida.
+2. **Design System Vturb / SmartVSL:**
+   - Interface limpa em Light Mode (`bg-slate-50`), painéis em branco puro (`bg-white`), tipografia de alto contraste e botão de ação primária em vermelho Coral Vturb (`#ea384c`).
+3. **Gestão de Usuários & Convites:**
    - Controle de permissões (Administrador / Operador), convites com prazo de expiração e reset de senha via e-mail transacional (Brevo).
-3. **Gestão de Logs Docker em Tempo Real:**
+4. **Gestão de Logs Docker em Tempo Real:**
    - Monitoramento visual centralizado dos logs dos contêineres Docker (Worker, API, Banco, etc.) diretamente pelo painel.
-4. **Backup Automático & Armazenamento em Nuvem:**
+5. **Backup Automático & Armazenamento em Nuvem:**
    - Rotina automatizada de dumps PostgreSQL com sincronização direta no bucket do **Backblaze B2** e política de retenção configurável.
 
 ---
@@ -61,7 +63,7 @@ docker compose -f docker/docker-compose-local.yml up -d
 ## 🧪 Testes Unitários
 
 - **Backend (Pytest):** 84 testes cobrindo autenticação, usuários, agendamento, publishers, B2 backup e worker (`docker exec social-publisher-api pytest tests`).
-- **Frontend (Vitest + React Testing Library):** 166 testes cobrindo navegação, abas, modais, validação de formulários e estados de loading (`npm test -- --run` na pasta `frontend`).
+- **Frontend (Vitest + React Testing Library):** 167 testes em 25 suítes cobrindo navegação, abas, modais, validação de formulários e estados de loading (`npm test -- --run` na pasta `frontend`).
 
 ---
 

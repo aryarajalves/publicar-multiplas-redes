@@ -51,18 +51,18 @@ export const Pagination: React.FC<Props> = ({
   return (
     <div
       data-testid={testId}
-      className="mt-8 bg-slate-900/80 border border-slate-800 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl backdrop-blur-sm animate-fade-in"
+      className="mt-8 bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm animate-fade-in"
     >
       {/* Informações de Exibição */}
-      <div className="flex items-center gap-2.5 text-xs text-slate-400">
+      <div className="flex items-center gap-2.5 text-xs text-slate-500">
         <span
           data-testid="pagination-info"
-          className="font-medium text-slate-300"
+          className="font-medium text-slate-600"
         >
-          Exibindo <strong className="text-white">{startItem}</strong> a <strong className="text-white">{endItem}</strong> de <strong className="text-white">{totalItems}</strong> {itemLabel}
+          Exibindo <strong className="text-slate-900 font-semibold">{startItem}</strong> a <strong className="text-slate-900 font-semibold">{endItem}</strong> de <strong className="text-slate-900 font-semibold">{totalItems}</strong> {itemLabel}
         </span>
-        <span className="hidden sm:inline-block text-slate-600">•</span>
-        <span className="text-[11px] px-2 py-0.5 rounded-md bg-slate-800 text-slate-400 font-mono">
+        <span className="hidden sm:inline-block text-slate-300">•</span>
+        <span className="text-[11px] px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 font-mono">
           {itemsPerPage} por página
         </span>
       </div>
@@ -76,7 +76,7 @@ export const Pagination: React.FC<Props> = ({
           disabled={currentPage === 1 || isLoading}
           data-testid="pagination-first"
           title="Primeira página"
-          className="p-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className="p-2 rounded-lg bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-2xs"
         >
           <ChevronsLeft className="w-4 h-4" />
         </button>
@@ -88,7 +88,7 @@ export const Pagination: React.FC<Props> = ({
           disabled={currentPage === 1 || isLoading}
           data-testid="pagination-prev"
           title="Página anterior"
-          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-2xs"
         >
           <ChevronLeft className="w-4 h-4" />
           <span className="hidden sm:inline">Anterior</span>
@@ -101,7 +101,7 @@ export const Pagination: React.FC<Props> = ({
               return (
                 <span
                   key={`ellipsis-${index}`}
-                  className="px-2 py-1 text-slate-600 text-xs select-none"
+                  className="px-2 py-1 text-slate-400 text-xs select-none"
                 >
                   •••
                 </span>
@@ -118,10 +118,10 @@ export const Pagination: React.FC<Props> = ({
                 onClick={() => onPageChange(pageNum)}
                 disabled={isLoading}
                 data-testid={`pagination-page-${pageNum}`}
-                className={`min-w-[32px] h-8 px-2.5 rounded-lg text-xs font-semibold transition-all ${
+                className={`min-w-[32px] h-8 px-2.5 rounded-lg text-xs font-bold transition-all ${
                   isActive
-                    ? 'bg-gradient-to-r from-pink-600 to-purple-600 text-white shadow-md shadow-pink-600/30 ring-1 ring-pink-500/50 scale-105'
-                    : 'bg-slate-950 border border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800'
+                    ? 'bg-[#ea384c] text-white shadow-sm ring-1 ring-red-400 scale-105'
+                    : 'bg-white border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-50 shadow-2xs'
                 }`}
               >
                 {pageNum}
@@ -137,7 +137,7 @@ export const Pagination: React.FC<Props> = ({
           disabled={currentPage === totalPages || isLoading}
           data-testid="pagination-next"
           title="Próxima página"
-          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-2xs"
         >
           <span className="hidden sm:inline">Próxima</span>
           <ChevronRight className="w-4 h-4" />
@@ -150,7 +150,7 @@ export const Pagination: React.FC<Props> = ({
           disabled={currentPage === totalPages || isLoading}
           data-testid="pagination-last"
           title="Última página"
-          className="p-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className="p-2 rounded-lg bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-2xs"
         >
           <ChevronsRight className="w-4 h-4" />
         </button>

@@ -80,7 +80,7 @@ export const SocialNetworksTab: React.FC<SocialNetworksTabProps> = ({
     <div className="space-y-5 animate-fade-in" data-testid="social-networks-tab-content">
       {/* 1. Seleção das Redes de Destino */}
       <div>
-        <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+        <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
           Redes de Destino Selecionadas
         </label>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -91,18 +91,18 @@ export const SocialNetworksTab: React.FC<SocialNetworksTabProps> = ({
             data-testid="toggle-platform-instagram"
             className={`flex items-center justify-between p-3 rounded-xl border text-left transition-all ${
               platforms.includes('instagram')
-                ? 'bg-pink-950/30 border-pink-500/50 text-pink-200'
-                : 'bg-slate-950/40 border-slate-800 text-slate-500'
+                ? 'bg-pink-50 border-pink-400 text-pink-700 font-semibold shadow-xs'
+                : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'
             }`}
           >
             <div className="flex items-center gap-2.5">
-              <Instagram className="w-5 h-5 text-pink-400" />
+              <Instagram className="w-5 h-5 text-pink-600" />
               <div>
                 <p className="text-xs font-semibold">Instagram</p>
-                <p className="text-[10px] opacity-70">Reels (Primário)</p>
+                <p className="text-[10px] opacity-75">Reels (Primário)</p>
               </div>
             </div>
-            {platforms.includes('instagram') && <Check className="w-4 h-4 text-pink-400" />}
+            {platforms.includes('instagram') && <Check className="w-4 h-4 text-pink-600" />}
           </button>
 
           {/* YouTube */}
@@ -112,18 +112,18 @@ export const SocialNetworksTab: React.FC<SocialNetworksTabProps> = ({
             data-testid="toggle-platform-youtube"
             className={`flex items-center justify-between p-3 rounded-xl border text-left transition-all ${
               platforms.includes('youtube')
-                ? 'bg-red-950/30 border-red-500/50 text-red-200'
-                : 'bg-slate-950/40 border-slate-800 text-slate-500'
+                ? 'bg-red-50 border-red-400 text-red-700 font-semibold shadow-xs'
+                : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'
             }`}
           >
             <div className="flex items-center gap-2.5">
-              <Youtube className="w-5 h-5 text-red-400" />
+              <Youtube className="w-5 h-5 text-red-600" />
               <div>
                 <p className="text-xs font-semibold">YouTube</p>
-                <p className="text-[10px] opacity-70">Shorts / Vídeo</p>
+                <p className="text-[10px] opacity-75">Shorts / Vídeo</p>
               </div>
             </div>
-            {platforms.includes('youtube') && <Check className="w-4 h-4 text-red-400" />}
+            {platforms.includes('youtube') && <Check className="w-4 h-4 text-red-600" />}
           </button>
 
           {/* TikTok */}
@@ -133,27 +133,27 @@ export const SocialNetworksTab: React.FC<SocialNetworksTabProps> = ({
             data-testid="toggle-platform-tiktok"
             className={`flex items-center justify-between p-3 rounded-xl border text-left transition-all ${
               platforms.includes('tiktok')
-                ? 'bg-cyan-950/30 border-cyan-500/50 text-cyan-200'
-                : 'bg-slate-950/40 border-slate-800 text-slate-500'
+                ? 'bg-cyan-50 border-cyan-400 text-cyan-800 font-semibold shadow-xs'
+                : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'
             }`}
           >
             <div className="flex items-center gap-2.5">
-              <Video className="w-5 h-5 text-cyan-400" />
+              <Video className="w-5 h-5 text-cyan-600" />
               <div>
                 <p className="text-xs font-semibold">TikTok</p>
-                <p className="text-[10px] opacity-70">Feed (Auto)</p>
+                <p className="text-[10px] opacity-75">Feed (Auto)</p>
               </div>
             </div>
-            {platforms.includes('tiktok') && <Check className="w-4 h-4 text-cyan-400" />}
+            {platforms.includes('tiktok') && <Check className="w-4 h-4 text-cyan-600" />}
           </button>
         </div>
       </div>
 
       {/* 2. Personalização por Rede Social */}
-      <div className="bg-slate-950/90 border border-slate-800 rounded-xl p-4">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+      <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs">
+        <div className="flex items-center justify-between border-b border-slate-200 pb-3 mb-4">
           <div>
-            <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider">
+            <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
               Personalização de Conteúdo por Rede
             </h4>
             <p className="text-[11px] text-slate-500 mt-0.5">
@@ -162,7 +162,7 @@ export const SocialNetworksTab: React.FC<SocialNetworksTabProps> = ({
           </div>
 
           {/* Sub-abas de seleção da rede */}
-          <div className="flex items-center bg-slate-900 border border-slate-800 rounded-lg p-1 text-xs">
+          <div className="flex items-center bg-slate-100 border border-slate-200 rounded-lg p-1 text-xs">
             {platforms.includes('youtube') && (
               <button
                 type="button"
@@ -170,8 +170,8 @@ export const SocialNetworksTab: React.FC<SocialNetworksTabProps> = ({
                 data-testid="tab-youtube"
                 className={`flex items-center gap-1.5 px-3 py-1 rounded-md transition-colors ${
                   activePlatformTab === 'youtube'
-                    ? 'bg-red-600 text-white font-medium shadow-sm'
-                    : 'text-slate-400 hover:text-red-300'
+                    ? 'bg-red-600 text-white font-medium shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 <Youtube className="w-3.5 h-3.5" />
@@ -185,8 +185,8 @@ export const SocialNetworksTab: React.FC<SocialNetworksTabProps> = ({
                 data-testid="tab-instagram"
                 className={`flex items-center gap-1.5 px-3 py-1 rounded-md transition-colors ${
                   activePlatformTab === 'instagram'
-                    ? 'bg-pink-600 text-white font-medium shadow-sm'
-                    : 'text-slate-400 hover:text-pink-300'
+                    ? 'bg-pink-600 text-white font-medium shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 <Instagram className="w-3.5 h-3.5" />
@@ -200,8 +200,8 @@ export const SocialNetworksTab: React.FC<SocialNetworksTabProps> = ({
                 data-testid="tab-tiktok"
                 className={`flex items-center gap-1.5 px-3 py-1 rounded-md transition-colors ${
                   activePlatformTab === 'tiktok'
-                    ? 'bg-cyan-600 text-white font-medium shadow-sm'
-                    : 'text-slate-400 hover:text-cyan-300'
+                    ? 'bg-cyan-600 text-white font-medium shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 <Video className="w-3.5 h-3.5" />

@@ -1,5 +1,5 @@
 import React from 'react';
-import { PlusCircle, RefreshCw, Radio } from 'lucide-react';
+import { PlusCircle, RefreshCw, Radio, Play } from 'lucide-react';
 
 interface Props {
   onOpenUpload: () => void;
@@ -10,24 +10,17 @@ interface Props {
 
 export const Navbar: React.FC<Props> = ({ onOpenUpload, onRefresh, onOpenAccounts, isLoading }) => {
   return (
-    <header className="sticky top-0 z-30 bg-slate-900/80 backdrop-blur-md border-b border-slate-800">
+    <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-pink-500/20 border border-slate-700/80 bg-slate-950 flex items-center justify-center shrink-0">
-            <img
-              src="/logo.jpg"
-              alt="MultiPost Logo"
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                (e.target as HTMLElement).style.display = 'none';
-              }}
-            />
+          <div className="w-9 h-9 rounded-xl bg-red-600 flex items-center justify-center text-white shadow-sm shadow-red-500/20 shrink-0">
+            <Play className="w-4 h-4 fill-white text-white translate-x-0.5" />
           </div>
           <div>
-            <h1 className="text-lg font-bold bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent">
+            <h1 className="text-lg font-bold text-slate-900">
               MultiPost
             </h1>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-500">
               Agendamento & Cross-Posting (Instagram • YouTube • TikTok)
             </p>
           </div>
@@ -38,7 +31,7 @@ export const Navbar: React.FC<Props> = ({ onOpenUpload, onRefresh, onOpenAccount
             onClick={onRefresh}
             title="Atualizar listagem"
             disabled={isLoading}
-            className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors border border-slate-700 disabled:opacity-50"
+            className="p-2 rounded-lg bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition-colors border border-slate-200 shadow-xs disabled:opacity-50"
           >
             <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
           </button>
@@ -48,9 +41,9 @@ export const Navbar: React.FC<Props> = ({ onOpenUpload, onRefresh, onOpenAccount
               onClick={onOpenAccounts}
               data-testid="btn-open-accounts"
               title="Gerenciar Contas Conectadas"
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold border border-slate-200 shadow-xs transition-colors"
             >
-              <Radio className="w-3.5 h-3.5 text-pink-400" />
+              <Radio className="w-3.5 h-3.5 text-red-500" />
               <span>Contas</span>
             </button>
           )}
@@ -58,7 +51,7 @@ export const Navbar: React.FC<Props> = ({ onOpenUpload, onRefresh, onOpenAccount
           <button
             onClick={onOpenUpload}
             data-testid="btn-open-upload"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-medium text-sm shadow-md shadow-pink-600/25 transition-all active:scale-95"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#ea384c] hover:bg-[#d82a3e] text-white font-medium text-xs sm:text-sm shadow-sm transition-all active:scale-95"
           >
             <PlusCircle className="w-4 h-4" />
             <span>Agendar Novo Vídeo</span>

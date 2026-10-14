@@ -18,17 +18,17 @@ export const PlatformBadge: React.FC<Props> = ({
   const plat = platform.toLowerCase();
 
   let name = 'Instagram';
-  let badgeClasses = 'bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-orange-500/10 text-pink-300 border-pink-500/30';
+  let badgeClasses = 'bg-pink-50 text-pink-700 border-pink-200';
   let Icon = Instagram;
 
   if (plat === 'youtube') {
     const isShorts = !videoType || videoType.toLowerCase().includes('short');
     name = isShorts ? 'YouTube Shorts' : 'YouTube Vídeo Longo';
-    badgeClasses = 'bg-red-500/10 text-red-300 border-red-500/30';
+    badgeClasses = 'bg-red-50 text-red-700 border-red-200';
     Icon = Youtube;
   } else if (plat === 'tiktok') {
     name = 'TikTok';
-    badgeClasses = 'bg-cyan-500/10 text-cyan-300 border-cyan-500/30';
+    badgeClasses = 'bg-slate-100 text-slate-800 border-slate-200';
     Icon = Video;
   }
 

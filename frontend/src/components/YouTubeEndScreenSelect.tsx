@@ -104,14 +104,14 @@ export const YouTubeEndScreenSelect: React.FC<YouTubeEndScreenSelectProps> = ({
 
   return (
     <div
-      className="bg-slate-900/60 border border-slate-800/80 rounded-xl p-4 space-y-3"
+      className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3"
       data-testid="youtube-end-screen-container"
     >
       <div className="flex items-center justify-between">
-        <label className="text-xs font-bold text-red-300 uppercase tracking-wider flex items-center gap-2">
-          <Youtube className="w-4 h-4 text-red-500" />
+        <label className="text-xs font-bold text-red-700 uppercase tracking-wider flex items-center gap-2">
+          <Youtube className="w-4 h-4 text-red-600" />
           <span>Vídeo que vai aparecer no final (Tela Final)</span>
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 font-medium lowercase">
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-200 text-slate-600 font-medium lowercase">
             opcional
           </span>
         </label>
@@ -120,18 +120,18 @@ export const YouTubeEndScreenSelect: React.FC<YouTubeEndScreenSelectProps> = ({
 
       {/* 1. Barra de Pesquisa / Filtro em Tempo Real */}
       <div className="space-y-1.5">
-        <div className="flex items-center justify-between text-[11px] text-slate-400">
-          <span className="font-medium text-slate-300 flex items-center gap-1.5">
-            <Search className="w-3.5 h-3.5 text-red-400" />
+        <div className="flex items-center justify-between text-[11px] text-slate-500">
+          <span className="font-medium text-slate-700 flex items-center gap-1.5">
+            <Search className="w-3.5 h-3.5 text-red-600" />
             Filtrar vídeos longos do canal:
           </span>
-          <span className="text-slate-500">
+          <span className="text-slate-400">
             {filteredOptions.length} de {longOptions.length} vídeo(s) longo(s)
           </span>
         </div>
 
         <div className="relative flex items-center">
-          <Search className="w-4 h-4 text-slate-500 absolute left-3 pointer-events-none" />
+          <Search className="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none" />
           <input
             type="text"
             data-testid="youtube-related-video-search"
@@ -139,13 +139,13 @@ export const YouTubeEndScreenSelect: React.FC<YouTubeEndScreenSelectProps> = ({
             disabled={disabled || loading}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Digite palavras-chave para filtrar (ex: IA, VTurb, ZapJords)..."
-            className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-9 py-2 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-red-500 transition-colors"
+            className="w-full bg-white border border-slate-200 rounded-lg pl-9 pr-9 py-2 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-red-500 transition-colors"
           />
           {searchTerm && (
             <button
               type="button"
               onClick={() => setSearchTerm('')}
-              className="absolute right-2.5 text-slate-400 hover:text-rose-400 p-1 rounded transition-colors"
+              className="absolute right-2.5 text-slate-400 hover:text-rose-600 p-1 rounded transition-colors"
               title="Limpar filtro de busca"
             >
               <X className="w-3.5 h-3.5" />
@@ -163,7 +163,7 @@ export const YouTubeEndScreenSelect: React.FC<YouTubeEndScreenSelectProps> = ({
             disabled={disabled || loading}
             value={selectedOption ? selectedOption.url : ''}
             onChange={handleSelectChange}
-            className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2.5 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-red-500 transition-colors cursor-pointer"
+            className="w-full bg-white border border-slate-200 rounded-lg px-3.5 py-2.5 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-red-500 transition-colors cursor-pointer"
           >
             <option value="">
               {searchTerm
@@ -202,12 +202,12 @@ export const YouTubeEndScreenSelect: React.FC<YouTubeEndScreenSelectProps> = ({
                 onClick={() => handleChooseVideo(opt.url)}
                 className={`flex items-center gap-3 p-2 rounded-lg border text-xs cursor-pointer transition-all ${
                   isSelected
-                    ? 'bg-emerald-950/30 border-emerald-500/60 shadow-sm shadow-emerald-950/50'
-                    : 'bg-slate-950/80 border-slate-800/80 hover:border-slate-700 hover:bg-slate-900/80'
+                    ? 'bg-emerald-50 border-emerald-400 shadow-2xs'
+                    : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50'
                 }`}
               >
                 {/* Thumbnail ou Ícone */}
-                <div className="relative w-14 h-9 shrink-0 bg-slate-900 rounded overflow-hidden flex items-center justify-center border border-slate-800">
+                <div className="relative w-14 h-9 shrink-0 bg-slate-100 rounded overflow-hidden flex items-center justify-center border border-slate-200">
                   {opt.thumbnail ? (
                     <img
                       src={opt.thumbnail}
@@ -216,7 +216,7 @@ export const YouTubeEndScreenSelect: React.FC<YouTubeEndScreenSelectProps> = ({
                       loading="lazy"
                     />
                   ) : (
-                    <Film className="w-5 h-5 text-slate-600" />
+                    <Film className="w-5 h-5 text-slate-400" />
                   )}
                   {opt.duration_formatted && (
                     <span className="absolute bottom-0.5 right-0.5 bg-black/80 text-[9px] font-mono px-1 rounded text-white leading-tight">
@@ -228,25 +228,25 @@ export const YouTubeEndScreenSelect: React.FC<YouTubeEndScreenSelectProps> = ({
                 {/* Info do Vídeo */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5">
-                    <p className={`font-medium truncate ${isSelected ? 'text-emerald-300' : 'text-slate-200'}`}>
+                    <p className={`font-medium truncate ${isSelected ? 'text-emerald-800' : 'text-slate-800'}`}>
                       {opt.title}
                     </p>
                     {idx === 0 && !searchTerm && (
-                      <span className="text-[9px] px-1.5 py-0.2 rounded bg-red-950/80 border border-red-800/60 text-red-300 font-bold shrink-0">
+                      <span className="text-[9px] px-1.5 py-0.2 rounded bg-red-50 border border-red-200 text-red-700 font-bold shrink-0">
                         🔥 Mais recente
                       </span>
                     )}
                   </div>
-                  <div className="flex items-center gap-3 text-[10px] text-slate-400 mt-0.5">
+                  <div className="flex items-center gap-3 text-[10px] text-slate-500 mt-0.5">
                     {formattedDate && (
                       <span className="flex items-center gap-1">
-                        <Calendar className="w-2.5 h-2.5 text-slate-500" />
+                        <Calendar className="w-2.5 h-2.5 text-slate-400" />
                         {formattedDate}
                       </span>
                     )}
                     {opt.duration_formatted && (
                       <span className="flex items-center gap-1">
-                        <Clock className="w-2.5 h-2.5 text-slate-500" />
+                        <Clock className="w-2.5 h-2.5 text-slate-400" />
                         {opt.duration_formatted}
                       </span>
                     )}
@@ -256,14 +256,14 @@ export const YouTubeEndScreenSelect: React.FC<YouTubeEndScreenSelectProps> = ({
                 {/* Indicador de Seleção */}
                 <div className="shrink-0 pr-1">
                   {isSelected ? (
-                    <span className="flex items-center gap-1 text-[11px] font-bold text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-600/40">
+                    <span className="flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">
                       <CheckCircle2 className="w-3.5 h-3.5" />
                       Selecionado
                     </span>
                   ) : (
                     <button
                       type="button"
-                      className="text-[10px] font-medium text-slate-400 hover:text-slate-200 px-2 py-0.5 rounded bg-slate-900 border border-slate-800 hover:border-slate-700 transition-colors"
+                      className="text-[10px] font-medium text-slate-600 hover:text-slate-900 px-2 py-0.5 rounded bg-slate-100 border border-slate-200 hover:bg-slate-200 transition-colors"
                     >
                       Escolher
                     </button>
@@ -274,7 +274,7 @@ export const YouTubeEndScreenSelect: React.FC<YouTubeEndScreenSelectProps> = ({
           })}
         </div>
       ) : (
-        <div className="p-3 text-center rounded-lg bg-slate-950/40 border border-slate-800/60 text-xs text-slate-500">
+        <div className="p-3 text-center rounded-lg bg-slate-100/60 border border-slate-200 text-xs text-slate-500">
           Nenhum vídeo longo encontrado para o filtro &ldquo;{searchTerm}&rdquo;.
         </div>
       )}
@@ -283,15 +283,15 @@ export const YouTubeEndScreenSelect: React.FC<YouTubeEndScreenSelectProps> = ({
       {selectedOption && (
         <div
           data-testid="selected-video-preview"
-          className="flex items-center justify-between gap-3 bg-red-950/20 border border-red-900/40 rounded-lg px-3.5 py-2 text-xs text-slate-200"
+          className="flex items-center justify-between gap-3 bg-red-50 border border-red-200 rounded-lg px-3.5 py-2 text-xs text-slate-800"
         >
           <div className="flex items-center gap-2 overflow-hidden">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-            <span className="truncate font-medium text-slate-100">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span className="truncate font-medium text-slate-900">
               {selectedOption.title}
             </span>
             {selectedOption.duration_formatted && (
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-red-950/80 text-red-300 shrink-0">
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-red-100 text-red-700 font-semibold shrink-0">
                 {selectedOption.duration_formatted}
               </span>
             )}
@@ -300,7 +300,7 @@ export const YouTubeEndScreenSelect: React.FC<YouTubeEndScreenSelectProps> = ({
             type="button"
             onClick={handleClear}
             title="Remover vídeo selecionado"
-            className="text-slate-400 hover:text-rose-400 p-1 rounded transition-colors"
+            className="text-slate-400 hover:text-rose-600 p-1 rounded transition-colors"
           >
             <X className="w-3.5 h-3.5" />
           </button>
@@ -309,12 +309,12 @@ export const YouTubeEndScreenSelect: React.FC<YouTubeEndScreenSelectProps> = ({
 
       {/* 4. Campo de link / ID manual */}
       <div className="space-y-1.5 pt-1">
-        <div className="flex items-center justify-between text-[11px] text-slate-400">
-          <span className="flex items-center gap-1 text-slate-300 font-medium">
+        <div className="flex items-center justify-between text-[11px] text-slate-500">
+          <span className="flex items-center gap-1 text-slate-700 font-medium">
             <Link2 className="w-3 h-3 text-slate-400" />
             Link ou ID do vídeo (selecionado ou digitado):
           </span>
-          <span className="font-mono text-slate-500">
+          <span className="font-mono text-slate-400">
             {value.length}/500
           </span>
         </div>
@@ -327,13 +327,13 @@ export const YouTubeEndScreenSelect: React.FC<YouTubeEndScreenSelectProps> = ({
             placeholder="Cole o link ou ID do vídeo do YouTube (ex: https://www.youtube.com/watch?v=XYZ123)"
             data-testid="youtube-related-video-input"
             disabled={disabled}
-            className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2.5 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-red-500 transition-colors font-mono pr-9"
+            className="w-full bg-white border border-slate-200 rounded-lg px-3.5 py-2.5 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-red-500 transition-colors font-mono pr-9"
           />
           {value && (
             <button
               type="button"
               onClick={handleClear}
-              className="absolute right-2.5 text-slate-400 hover:text-rose-400 p-1 rounded transition-colors"
+              className="absolute right-2.5 text-slate-400 hover:text-rose-600 p-1 rounded transition-colors"
               title="Limpar link"
             >
               <X className="w-3.5 h-3.5" />
@@ -342,7 +342,7 @@ export const YouTubeEndScreenSelect: React.FC<YouTubeEndScreenSelectProps> = ({
         </div>
       </div>
 
-      <p className="text-[11px] text-slate-400 leading-relaxed">
+      <p className="text-[11px] text-slate-500 leading-relaxed">
         Indique o vídeo longo que o espectador deve assistir em seguida. Este link será promovido como recomendação da tela final na descrição do vídeo publicado no YouTube.
       </p>
     </div>

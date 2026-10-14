@@ -150,7 +150,6 @@ export const InvitationsList: React.FC<InvitationsListProps> = ({
       if (status === 'expired') {
         return `Expirou em ${expDate.toLocaleDateString('pt-BR')} às ${expDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
       }
-      // Pendente: calcula tempo restante
       const diffMs = expDate.getTime() - Date.now();
       const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
       const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
@@ -172,16 +171,16 @@ export const InvitationsList: React.FC<InvitationsListProps> = ({
       {/* Cards de Métricas de Convites */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: 'Total de Convites', icon: Ticket, val: stats.total, color: 'text-purple-400', valColor: 'text-white', tid: 'metric-invites-total' },
-          { label: 'Faltam Expirar (Ativos)', icon: Clock, val: stats.pending, color: 'text-emerald-400', valColor: 'text-emerald-400', tid: 'metric-invites-pending' },
-          { label: 'Utilizados (Usados)', icon: UserCheck, val: stats.used, color: 'text-cyan-400', valColor: 'text-cyan-400', tid: 'metric-invites-used' },
-          { label: 'Já Expirados', icon: AlertCircle, val: stats.expired, color: 'text-rose-400', valColor: 'text-rose-400', tid: 'metric-invites-expired' },
+          { label: 'Total de Convites', icon: Ticket, val: stats.total, color: 'text-indigo-600', valColor: 'text-slate-900', tid: 'metric-invites-total' },
+          { label: 'Faltam Expirar (Ativos)', icon: Clock, val: stats.pending, color: 'text-emerald-600', valColor: 'text-emerald-600', tid: 'metric-invites-pending' },
+          { label: 'Utilizados (Usados)', icon: UserCheck, val: stats.used, color: 'text-cyan-600', valColor: 'text-cyan-700', tid: 'metric-invites-used' },
+          { label: 'Já Expirados', icon: AlertCircle, val: stats.expired, color: 'text-rose-600', valColor: 'text-rose-600', tid: 'metric-invites-expired' },
         ].map((card, idx) => {
           const Icon = card.icon;
           return (
-            <div key={idx} className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 backdrop-blur-sm">
-              <div className="flex items-center justify-between text-slate-400 mb-2">
-                <span className="text-xs font-medium">{card.label}</span>
+            <div key={idx} className="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs">
+              <div className="flex items-center justify-between text-slate-500 mb-2">
+                <span className="text-xs font-semibold">{card.label}</span>
                 <Icon className={`w-4 h-4 ${card.color}`} />
               </div>
               <div data-testid={card.tid} className={`text-2xl font-bold ${card.valColor}`}>{card.val}</div>
@@ -194,15 +193,15 @@ export const InvitationsList: React.FC<InvitationsListProps> = ({
       {error && (
         <div
           data-testid="invitations-error-alert"
-          className="p-3.5 rounded-xl text-xs flex items-center justify-between border bg-rose-500/10 border-rose-500/30 text-rose-300"
+          className="p-3.5 rounded-xl text-xs flex items-center justify-between border bg-rose-50 border-rose-200 text-rose-700"
         >
           <div className="flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+            <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
             <span>{error}</span>
           </div>
           <button
             onClick={loadInvitations}
-            className="px-2.5 py-1 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 text-[11px] font-semibold"
+            className="px-2.5 py-1 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-800 text-[11px] font-semibold"
           >
             Tentar Novamente
           </button>
@@ -214,14 +213,14 @@ export const InvitationsList: React.FC<InvitationsListProps> = ({
           data-testid="invitations-feedback-alert"
           className={`p-3.5 rounded-xl text-xs flex items-center gap-2 border animate-in fade-in duration-200 ${
             feedback.type === 'success'
-              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
-              : 'bg-rose-500/10 border-rose-500/30 text-rose-300'
+              ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+              : 'bg-rose-50 border-rose-200 text-rose-700'
           }`}
         >
           {feedback.type === 'success' ? (
-            <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
+            <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
           ) : (
-            <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+            <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
           )}
           <span>{feedback.message}</span>
         </div>
@@ -230,24 +229,24 @@ export const InvitationsList: React.FC<InvitationsListProps> = ({
       {/* Barra de Filtros e Busca */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Buscar por e-mail ou código do convite..."
             data-testid="input-search-invites"
-            className="w-full pl-10 pr-4 py-2.5 bg-slate-900/60 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-pink-500 transition-colors"
+            className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#ea384c] shadow-2xs"
           />
         </div>
 
         <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
-          <div className="flex items-center bg-slate-900/60 border border-slate-800 p-1 rounded-xl text-xs">
+          <div className="flex items-center bg-slate-100 border border-slate-200 p-1 rounded-xl text-xs">
             <button
               onClick={() => setStatusFilter('all')}
               data-testid="filter-invites-all"
-              className={`px-3 py-1.5 rounded-lg font-medium transition-all cursor-pointer ${
-                statusFilter === 'all' ? 'bg-pink-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'
+              className={`px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
+                statusFilter === 'all' ? 'bg-[#ea384c] text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Todos ({stats.total})
@@ -255,8 +254,8 @@ export const InvitationsList: React.FC<InvitationsListProps> = ({
             <button
               onClick={() => setStatusFilter('pending')}
               data-testid="filter-invites-pending"
-              className={`px-3 py-1.5 rounded-lg font-medium transition-all cursor-pointer ${
-                statusFilter === 'pending' ? 'bg-pink-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'
+              className={`px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
+                statusFilter === 'pending' ? 'bg-[#ea384c] text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Faltam Expirar ({stats.pending})
@@ -264,8 +263,8 @@ export const InvitationsList: React.FC<InvitationsListProps> = ({
             <button
               onClick={() => setStatusFilter('used')}
               data-testid="filter-invites-used"
-              className={`px-3 py-1.5 rounded-lg font-medium transition-all cursor-pointer ${
-                statusFilter === 'used' ? 'bg-pink-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'
+              className={`px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
+                statusFilter === 'used' ? 'bg-[#ea384c] text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Utilizados ({stats.used})
@@ -273,8 +272,8 @@ export const InvitationsList: React.FC<InvitationsListProps> = ({
             <button
               onClick={() => setStatusFilter('expired')}
               data-testid="filter-invites-expired"
-              className={`px-3 py-1.5 rounded-lg font-medium transition-all cursor-pointer ${
-                statusFilter === 'expired' ? 'bg-pink-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'
+              className={`px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
+                statusFilter === 'expired' ? 'bg-[#ea384c] text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Expirados ({stats.expired})
@@ -285,24 +284,24 @@ export const InvitationsList: React.FC<InvitationsListProps> = ({
             onClick={loadInvitations}
             title="Atualizar lista"
             data-testid="btn-refresh-invites"
-            className="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 hover:bg-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer shrink-0"
+            className="p-2.5 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition-colors cursor-pointer shrink-0"
           >
-            <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin text-pink-400' : ''}`} />
+            <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin text-[#ea384c]' : ''}`} />
           </button>
         </div>
       </div>
 
       {/* Tabela de Convites */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/40 backdrop-blur-sm overflow-hidden">
+      <div className="rounded-2xl border border-slate-200 bg-white shadow-2xs overflow-hidden">
         {isLoading && invitations.length === 0 ? (
           <div data-testid="invites-loading" className="py-16 text-center space-y-3">
-            <Loader2 className="w-7 h-7 text-pink-500 animate-spin mx-auto" />
-            <p className="text-xs text-slate-400 font-medium">Carregando convites...</p>
+            <Loader2 className="w-7 h-7 text-[#ea384c] animate-spin mx-auto" />
+            <p className="text-xs text-slate-500 font-medium">Carregando convites...</p>
           </div>
         ) : filteredInvitations.length === 0 ? (
           <div data-testid="invites-empty" className="py-16 text-center space-y-3">
-            <Ticket className="w-10 h-10 text-slate-600 mx-auto" />
-            <h3 className="text-sm font-semibold text-white">Nenhum convite encontrado</h3>
+            <Ticket className="w-10 h-10 text-slate-300 mx-auto" />
+            <h3 className="text-sm font-semibold text-slate-800">Nenhum convite encontrado</h3>
             <p className="text-xs text-slate-400 max-w-sm mx-auto">
               {search || statusFilter !== 'all'
                 ? 'Nenhum convite corresponde aos filtros aplicados.'
@@ -311,7 +310,7 @@ export const InvitationsList: React.FC<InvitationsListProps> = ({
             <button
               onClick={onOpenCreateInvite}
               data-testid="btn-empty-create-invite"
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-pink-600 hover:bg-pink-500 text-white text-xs font-medium cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#ea384c] hover:bg-[#d82a3e] text-white text-xs font-semibold cursor-pointer shadow-xs"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Gerar Novo Convite</span>
@@ -321,7 +320,7 @@ export const InvitationsList: React.FC<InvitationsListProps> = ({
           <div className="overflow-x-auto">
             <table data-testid="invitations-table" className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="border-b border-slate-800 bg-slate-950/40 text-slate-400 uppercase tracking-wider text-[11px] font-semibold">
+                <tr className="border-b border-slate-200 bg-slate-50 text-slate-500 uppercase tracking-wider text-[11px] font-semibold">
                   <th className="py-3 px-4">Link / Token</th>
                   <th className="py-3 px-4">Função</th>
                   <th className="py-3 px-4">Status</th>
@@ -329,7 +328,7 @@ export const InvitationsList: React.FC<InvitationsListProps> = ({
                   <th className="py-3 px-4 text-right">Ações</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60">
+              <tbody className="divide-y divide-slate-100">
                 {paginatedInvitations.map((inv) => {
                   const status = getStatus(inv);
                   const isCopied = copiedId === inv.id;
@@ -338,12 +337,12 @@ export const InvitationsList: React.FC<InvitationsListProps> = ({
                     <tr
                       key={inv.id}
                       data-testid={`invite-row-${inv.id}`}
-                      className="hover:bg-slate-800/30 transition-colors group"
+                      className="hover:bg-slate-50 transition-colors group"
                     >
                       {/* Link / Token */}
                       <td className="py-3.5 px-4">
                         <div className="flex items-center gap-2">
-                          <span className="font-mono text-[11px] text-slate-300 bg-slate-950/80 px-2.5 py-1 rounded-lg border border-slate-800">
+                          <span className="font-mono text-[11px] text-slate-700 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-200">
                             {inv.token.substring(0, 12)}...
                           </span>
                           <button
@@ -352,8 +351,8 @@ export const InvitationsList: React.FC<InvitationsListProps> = ({
                             data-testid={`btn-copy-invite-${inv.id}`}
                             className={`p-1.5 rounded-lg border transition-all cursor-pointer ${
                               isCopied
-                                ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400'
-                                : 'bg-slate-800/60 border-slate-700/60 text-slate-400 hover:text-white hover:bg-slate-700'
+                                ? 'bg-emerald-50 border-emerald-300 text-emerald-700'
+                                : 'bg-slate-100 border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-200'
                             }`}
                           >
                             {isCopied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
@@ -366,8 +365,8 @@ export const InvitationsList: React.FC<InvitationsListProps> = ({
                         <span
                           className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold border capitalize ${
                             inv.role === 'admin'
-                              ? 'bg-purple-500/10 text-purple-300 border-purple-500/30'
-                              : 'bg-indigo-500/10 text-indigo-300 border-indigo-500/30'
+                              ? 'bg-indigo-50 text-indigo-700 border-indigo-200'
+                              : 'bg-rose-50 text-rose-700 border-rose-200'
                           }`}
                         >
                           <Shield className="w-3 h-3" />
@@ -380,9 +379,9 @@ export const InvitationsList: React.FC<InvitationsListProps> = ({
                         {status === 'pending' && (
                           <span
                             data-testid={`badge-status-pending-${inv.id}`}
-                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200"
                           >
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                             <span>Falta Expirar (Ativo)</span>
                           </span>
                         )}
@@ -390,13 +389,13 @@ export const InvitationsList: React.FC<InvitationsListProps> = ({
                           <div className="space-y-0.5">
                             <span
                               data-testid={`badge-status-used-${inv.id}`}
-                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-cyan-500/10 text-cyan-300 border border-cyan-500/30"
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-cyan-50 text-cyan-800 border border-cyan-200"
                             >
                               <UserCheck className="w-3 h-3" />
                               <span>Utilizado</span>
                             </span>
                             {inv.used_by_email && (
-                              <p className="text-[10px] text-slate-400 truncate max-w-[180px]">
+                              <p className="text-[10px] text-slate-500 truncate max-w-[180px]">
                                 {inv.used_by_email}
                               </p>
                             )}
@@ -405,7 +404,7 @@ export const InvitationsList: React.FC<InvitationsListProps> = ({
                         {status === 'expired' && (
                           <span
                             data-testid={`badge-status-expired-${inv.id}`}
-                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/30"
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-rose-50 text-rose-700 border border-rose-200"
                           >
                             <AlertCircle className="w-3 h-3" />
                             <span>Expirado</span>
@@ -414,9 +413,9 @@ export const InvitationsList: React.FC<InvitationsListProps> = ({
                       </td>
 
                       {/* Prazo / Expiração */}
-                      <td className="py-3.5 px-4 text-slate-300 text-xs">
+                      <td className="py-3.5 px-4 text-slate-600 text-xs">
                         <div className="flex items-center gap-1.5">
-                          <Clock className="w-3.5 h-3.5 text-slate-500" />
+                          <Clock className="w-3.5 h-3.5 text-slate-400" />
                           <span>{formatExpiry(inv)}</span>
                         </div>
                       </td>
@@ -427,7 +426,7 @@ export const InvitationsList: React.FC<InvitationsListProps> = ({
                           <button
                             onClick={() => handleCopy(inv)}
                             data-testid={`btn-action-copy-${inv.id}`}
-                            className="p-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer"
+                            className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors cursor-pointer"
                             title="Copiar Link"
                           >
                             <Copy className="w-3.5 h-3.5" />
@@ -435,7 +434,7 @@ export const InvitationsList: React.FC<InvitationsListProps> = ({
                           <button
                             onClick={() => setInviteToDelete(inv)}
                             data-testid={`btn-action-delete-${inv.id}`}
-                            className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 hover:text-rose-300 transition-colors cursor-pointer"
+                            className="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 hover:text-rose-700 border border-rose-200 transition-colors cursor-pointer"
                             title="Revogar / Excluir Convite"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -452,7 +451,7 @@ export const InvitationsList: React.FC<InvitationsListProps> = ({
 
         {/* Paginação */}
         {filteredInvitations.length > 0 && (
-          <div className="p-4 border-t border-slate-800/80">
+          <div className="p-4 border-t border-slate-200 bg-white">
             <Pagination
               currentPage={currentPage}
               totalItems={filteredInvitations.length}

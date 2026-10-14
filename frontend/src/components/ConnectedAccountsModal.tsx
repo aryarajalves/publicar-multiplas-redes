@@ -13,6 +13,9 @@ import {
   Youtube,
   Instagram,
   ShieldCheck,
+  Copy,
+  Check,
+  Link2,
 } from 'lucide-react';
 
 interface Props {
@@ -21,7 +24,14 @@ interface Props {
 }
 
 interface AccountsState {
-  tiktok: { connected: boolean; account_name?: string | null; avatar_url?: string | null; expires_at?: string | null };
+  tiktok: {
+    connected: boolean;
+    account_name?: string | null;
+    avatar_url?: string | null;
+    expires_at?: string | null;
+    redirect_uri?: string;
+    client_key?: string;
+  };
   youtube: { connected: boolean; account_name?: string | null };
   instagram: { connected: boolean; account_name?: string | null };
 }
@@ -32,6 +42,7 @@ export const ConnectedAccountsModal: React.FC<Props> = ({ isOpen, onClose }) => 
   const [isConnecting, setIsConnecting] = useState(false);
   const [isDisconnecting, setIsDisconnecting] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+  const [copiedRedirect, setCopiedRedirect] = useState(false);
   const popupTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Trava scroll da tela quando o popup estiver aberto
@@ -168,21 +179,36 @@ export const ConnectedAccountsModal: React.FC<Props> = ({ isOpen, onClose }) => 
     }
   };
 
+  const redirectUri = accounts?.tiktok?.redirect_uri || 'http://localhost:8005/api/auth/tiktok/callback';
+
+  const handleCopyRedirectUri = async () => {
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(redirectUri);
+      }
+      setCopiedRedirect(true);
+      setTimeout(() => setCopiedRedirect(false), 2500);
+    } catch (e) {
+      setCopiedRedirect(true);
+      setTimeout(() => setCopiedRedirect(false), 2500);
+    }
+  };
+
   return (
     <div
       data-testid="connected-accounts-modal"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in"
     >
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl flex flex-col">
+      <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl flex flex-col">
         {/* Cabeçalho */}
-        <div className="p-5 border-b border-slate-800 flex items-center justify-between bg-slate-900/90">
+        <div className="p-5 border-b border-slate-200 flex items-center justify-between bg-white">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-pink-500/10 text-pink-400 border border-pink-500/20">
+            <div className="p-2.5 rounded-xl bg-red-50 text-red-600 border border-red-200 shadow-2xs">
               <Radio className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-white">Contas & Integrações</h2>
-              <p className="text-xs text-slate-400">Gerencie a conexão das suas redes sociais</p>
+              <h2 className="text-base font-bold text-slate-900">Contas & Integrações</h2>
+              <p className="text-xs text-slate-500">Gerencie a conexão das suas redes sociais</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -191,14 +217,14 @@ export const ConnectedAccountsModal: React.FC<Props> = ({ isOpen, onClose }) => 
               disabled={isLoading}
               title="Atualizar contas"
               data-testid="btn-refresh-accounts"
-              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors disabled:opacity-50"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors disabled:opacity-50"
             >
               <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
             </button>
             <button
               onClick={onClose}
               data-testid="btn-close-accounts-modal"
-              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -210,14 +236,14 @@ export const ConnectedAccountsModal: React.FC<Props> = ({ isOpen, onClose }) => 
           <div
             className={`p-3 mx-5 mt-4 rounded-lg text-xs font-medium flex items-center gap-2 border ${
               feedbackMessage.type === 'success'
-                ? 'bg-emerald-950/40 border-emerald-800/50 text-emerald-300'
-                : 'bg-red-950/40 border-red-800/50 text-red-300'
+                ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                : 'bg-rose-50 border-rose-200 text-rose-800'
             }`}
           >
             {feedbackMessage.type === 'success' ? (
-              <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
+              <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
             ) : (
-              <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />
+              <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
             )}
             <span>{feedbackMessage.text}</span>
           </div>
@@ -226,26 +252,26 @@ export const ConnectedAccountsModal: React.FC<Props> = ({ isOpen, onClose }) => 
         {/* Lista de Contas */}
         <div className="p-5 space-y-3.5">
           {/* Card TikTok */}
-          <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 flex items-center justify-between">
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-black border border-slate-800 flex items-center justify-center text-cyan-400 font-bold">
+              <div className="w-10 h-10 rounded-lg bg-slate-900 flex items-center justify-center text-cyan-400 font-bold shadow-2xs">
                 <Video className="w-5 h-5" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-semibold text-white">TikTok</h3>
+                  <h3 className="text-sm font-semibold text-slate-900">TikTok</h3>
                   {accounts?.tiktok.connected ? (
-                    <span className="text-[10px] font-semibold text-emerald-400 bg-emerald-950/60 border border-emerald-800/50 px-2 py-0.5 rounded-full flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                       Conectado
                     </span>
                   ) : (
-                    <span className="text-[10px] font-semibold text-slate-400 bg-slate-800/60 px-2 py-0.5 rounded-full">
+                    <span className="text-[10px] font-semibold text-slate-600 bg-slate-200/70 px-2 py-0.5 rounded-full">
                       Desconectado
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-slate-400 mt-0.5">
+                <p className="text-xs text-slate-500 mt-0.5">
                   {accounts?.tiktok.connected
                     ? accounts.tiktok.account_name || 'Conta autorizada'
                     : 'Permissão Content Posting API'}
@@ -259,7 +285,7 @@ export const ConnectedAccountsModal: React.FC<Props> = ({ isOpen, onClose }) => 
                   onClick={handleDisconnectTikTok}
                   disabled={isDisconnecting}
                   data-testid="btn-disconnect-tiktok"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-950/40 hover:bg-red-900/50 text-red-300 text-xs font-medium border border-red-800/40 transition-colors disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-rose-50 text-rose-600 text-xs font-semibold border border-rose-200 transition-colors shadow-2xs disabled:opacity-50"
                 >
                   {isDisconnecting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
                   <span>Desconectar</span>
@@ -269,7 +295,7 @@ export const ConnectedAccountsModal: React.FC<Props> = ({ isOpen, onClose }) => 
                   onClick={handleConnectTikTok}
                   disabled={isConnecting}
                   data-testid="btn-connect-tiktok"
-                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-pink-600 to-cyan-600 hover:from-pink-500 hover:to-cyan-500 text-white text-xs font-semibold shadow-md shadow-pink-600/20 transition-all active:scale-95 disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#ea384c] hover:bg-[#d82a3e] text-white text-xs font-semibold shadow-sm transition-all active:scale-95 disabled:opacity-50"
                 >
                   {isConnecting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ExternalLink className="w-3.5 h-3.5" />}
                   <span>Conectar TikTok</span>
@@ -278,27 +304,63 @@ export const ConnectedAccountsModal: React.FC<Props> = ({ isOpen, onClose }) => 
             </div>
           </div>
 
+          {/* Seção Informativa de Redirect URI do TikTok */}
+          <div className="p-3.5 bg-rose-50/40 border border-rose-100 rounded-xl space-y-2 text-xs">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5 text-slate-800 font-semibold">
+                <Link2 className="w-3.5 h-3.5 text-[#ea384c]" />
+                <span>Redirect URI (TikTok Developers)</span>
+              </div>
+              <button
+                type="button"
+                onClick={handleCopyRedirectUri}
+                data-testid="btn-copy-redirect-uri"
+                className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#ea384c] hover:text-[#d62e41] cursor-pointer"
+              >
+                {copiedRedirect ? (
+                  <>
+                    <Check className="w-3.5 h-3.5 text-emerald-600" />
+                    <span className="text-emerald-600">Copiada!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3.5 h-3.5" />
+                    <span>Copiar URL</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            <div className="p-2 rounded-lg bg-white border border-slate-200 font-mono text-[11px] text-slate-700 break-all select-all flex items-center justify-between gap-2 shadow-2xs">
+              <span data-testid="text-redirect-uri">{redirectUri}</span>
+            </div>
+
+            <p className="text-[11px] text-slate-500 leading-relaxed">
+              Cole esta URL no portal <strong>TikTok for Developers</strong> em: <em>Seu App &gt; Login Kit / Content Posting &gt; Redirect URI</em>. Ao subir para produção, atualize <code>TIKTOK_REDIRECT_URI</code> no <code>.env</code> do servidor para a URL pública do seu domínio.
+            </p>
+          </div>
+
           {/* Card YouTube */}
-          <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 flex items-center justify-between">
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500">
+              <div className="w-10 h-10 rounded-lg bg-red-50 border border-red-100 flex items-center justify-center text-red-600 shadow-2xs">
                 <Youtube className="w-5 h-5" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-semibold text-white">YouTube</h3>
+                  <h3 className="text-sm font-semibold text-slate-900">YouTube</h3>
                   {accounts?.youtube.connected ? (
-                    <span className="text-[10px] font-semibold text-emerald-400 bg-emerald-950/60 border border-emerald-800/50 px-2 py-0.5 rounded-full flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                    <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                       Ativo
                     </span>
                   ) : (
-                    <span className="text-[10px] font-semibold text-slate-400 bg-slate-800/60 px-2 py-0.5 rounded-full">
+                    <span className="text-[10px] font-semibold text-slate-600 bg-slate-200/70 px-2 py-0.5 rounded-full">
                       Pendente
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-slate-400 mt-0.5">
+                <p className="text-xs text-slate-500 mt-0.5">
                   {accounts?.youtube.connected ? 'YouTube Data API v3 Configurada' : 'Credenciais Google OAuth no .env'}
                 </p>
               </div>
@@ -306,26 +368,26 @@ export const ConnectedAccountsModal: React.FC<Props> = ({ isOpen, onClose }) => 
           </div>
 
           {/* Card Instagram */}
-          <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 flex items-center justify-between">
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-tr from-amber-500/10 via-pink-500/10 to-purple-500/10 border border-pink-500/20 flex items-center justify-center text-pink-400">
+              <div className="w-10 h-10 rounded-lg bg-pink-50 border border-pink-100 flex items-center justify-center text-pink-600 shadow-2xs">
                 <Instagram className="w-5 h-5" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-semibold text-white">Instagram Reels</h3>
+                  <h3 className="text-sm font-semibold text-slate-900">Instagram Reels</h3>
                   {accounts?.instagram.connected ? (
-                    <span className="text-[10px] font-semibold text-emerald-400 bg-emerald-950/60 border border-emerald-800/50 px-2 py-0.5 rounded-full flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                    <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                       Ativo
                     </span>
                   ) : (
-                    <span className="text-[10px] font-semibold text-slate-400 bg-slate-800/60 px-2 py-0.5 rounded-full">
+                    <span className="text-[10px] font-semibold text-slate-600 bg-slate-200/70 px-2 py-0.5 rounded-full">
                       Pendente
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-slate-400 mt-0.5">
+                <p className="text-xs text-slate-500 mt-0.5">
                   {accounts?.instagram.connected ? 'Meta Graph API Configurada' : 'Instagram Token no .env'}
                 </p>
               </div>
@@ -334,15 +396,15 @@ export const ConnectedAccountsModal: React.FC<Props> = ({ isOpen, onClose }) => 
         </div>
 
         {/* Rodapé com 1 único botão de fechar */}
-        <div className="p-4 border-t border-slate-800 bg-slate-900/90 flex items-center justify-between">
+        <div className="p-4 border-t border-slate-200 bg-slate-50/70 flex items-center justify-between">
           <span className="text-[11px] text-slate-500 flex items-center gap-1">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
             Conexões protegidas via OAuth 2.0
           </span>
           <button
             onClick={onClose}
             data-testid="btn-close-modal-footer"
-            className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold border border-slate-700 transition-colors"
+            className="px-4 py-2 rounded-lg bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold border border-slate-200 shadow-2xs transition-colors"
           >
             Fechar
           </button>

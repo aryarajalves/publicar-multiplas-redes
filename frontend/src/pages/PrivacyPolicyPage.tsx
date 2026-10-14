@@ -9,13 +9,13 @@ export const PrivacyPolicyPage: React.FC<PrivacyPolicyPageProps> = () => {
   return (
     <div
       data-testid="privacy-policy-page"
-      className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-pink-500 selection:text-white"
+      className="min-h-screen bg-slate-50 text-slate-800 flex flex-col selection:bg-rose-100 selection:text-rose-900"
     >
       {/* Top Header */}
-      <header className="sticky top-0 z-30 bg-slate-900/80 backdrop-blur-md border-b border-slate-800">
+      <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-200">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl overflow-hidden shadow-md shadow-pink-500/25 border border-slate-700/80 bg-slate-950 flex items-center justify-center shrink-0">
+            <div className="w-9 h-9 rounded-xl overflow-hidden shadow-sm border border-slate-200 bg-white flex items-center justify-center shrink-0">
               <img
                 src="/logo.jpg"
                 alt="MultiPost Logo"
@@ -27,23 +27,23 @@ export const PrivacyPolicyPage: React.FC<PrivacyPolicyPageProps> = () => {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-bold text-base bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent">
+                <span className="font-bold text-base text-slate-900">
                   MultiPost
                 </span>
-                <span className="px-1.5 py-0.5 text-[10px] font-semibold bg-emerald-500/20 text-emerald-300 rounded border border-emerald-500/30">
+                <span className="px-1.5 py-0.5 text-[10px] font-semibold bg-emerald-50 text-emerald-700 rounded border border-emerald-200">
                   Legal & LGPD
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400">Política de Privacidade Oficial</p>
+              <p className="text-[11px] text-slate-500">Política de Privacidade Oficial</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
             <a
               href="/termosdeuso"
-              className="text-xs text-slate-400 hover:text-slate-200 transition-colors inline-flex items-center gap-1.5 py-1.5 px-3 rounded-lg hover:bg-slate-800/60"
+              className="text-xs text-slate-600 hover:text-slate-900 transition-colors inline-flex items-center gap-1.5 py-1.5 px-3 rounded-lg hover:bg-slate-100"
             >
-              <FileText className="w-3.5 h-3.5 text-pink-400" />
+              <FileText className="w-3.5 h-3.5 text-[#ea384c]" />
               <span>Termos de Uso</span>
             </a>
           </div>
@@ -53,29 +53,26 @@ export const PrivacyPolicyPage: React.FC<PrivacyPolicyPageProps> = () => {
       {/* Main Content */}
       <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
         {/* Banner de Apresentação */}
-        <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-slate-900 via-slate-900/90 to-slate-950 border border-slate-800 shadow-2xl relative overflow-hidden mb-8">
-          <div className="absolute right-0 top-0 translate-x-8 -translate-y-8 w-64 h-64 bg-pink-500/10 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute left-1/3 bottom-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
-
+        <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-sm relative overflow-hidden mb-8">
           <div className="relative z-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-semibold mb-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold mb-4">
               <ShieldCheck className="w-4 h-4" />
               <span>Conformidade com a API do TikTok, YouTube, Instagram e LGPD</span>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               Política de Privacidade
             </h1>
-            <p className="text-xs sm:text-sm text-slate-400 mt-2 max-w-2xl">
+            <p className="text-xs sm:text-sm text-slate-600 mt-2 max-w-2xl leading-relaxed">
               Esta política estabelece nosso compromisso inegociável com a proteção, privacidade e segurança dos seus dados pessoais e de acesso às redes sociais conectadas ao MultiPost.
             </p>
 
-            <div className="flex flex-wrap items-center gap-4 mt-4 pt-4 border-t border-slate-800/80 text-xs text-slate-400">
-              <span>Última atualização: <strong>Outubro de 2026</strong></span>
+            <div className="flex flex-wrap items-center gap-4 mt-4 pt-4 border-t border-slate-100 text-xs text-slate-500">
+              <span>Última atualização: <strong className="text-slate-700">Outubro de 2026</strong></span>
               <span>•</span>
-              <span>Versão do Documento: <strong>2.0</strong></span>
+              <span>Versão do Documento: <strong className="text-slate-700">2.0</strong></span>
               <span>•</span>
-              <span className="text-emerald-400 flex items-center gap-1">
+              <span className="text-emerald-600 flex items-center gap-1 font-medium">
                 <CheckCircle2 className="w-3.5 h-3.5" />
                 <span>Em vigor para todos os usuários</span>
               </span>
@@ -84,17 +81,17 @@ export const PrivacyPolicyPage: React.FC<PrivacyPolicyPageProps> = () => {
         </div>
 
         {/* Artigo da Política */}
-        <article className="space-y-8 text-slate-300 text-sm leading-relaxed">
+        <article className="space-y-6 text-slate-600 text-sm leading-relaxed">
           {/* Seção 1 */}
-          <section className="p-6 rounded-2xl bg-slate-900/50 border border-slate-800/80 space-y-3">
-            <h2 className="text-base font-bold text-white flex items-center gap-2">
-              <span className="flex items-center justify-center w-6 h-6 rounded-lg bg-pink-500/20 text-pink-400 text-xs font-bold">1</span>
+          <section className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3">
+            <h2 className="text-base font-bold text-slate-900 flex items-center gap-2.5">
+              <span className="flex items-center justify-center w-6 h-6 rounded-lg bg-rose-50 text-[#ea384c] text-xs font-bold border border-rose-100">1</span>
               <span>Informações e Dados que Coletamos</span>
             </h2>
             <p>
-              Ao conectar sua conta do TikTok, YouTube ou Instagram ao <strong>MultiPost</strong> através da autorização oficial (OAuth 2.0), nós coletamos <strong>estritamente</strong> os dados técnicos indispensáveis para realizar o agendamento e a publicação de seus conteúdos previamente autorizados por você:
+              Ao conectar sua conta do TikTok, YouTube ou Instagram ao <strong className="text-slate-800">MultiPost</strong> através da autorização oficial (OAuth 2.0), nós coletamos <strong>estritamente</strong> os dados técnicos indispensáveis para realizar o agendamento e a publicação de seus conteúdos previamente autorizados por você:
             </p>
-            <ul className="list-disc pl-6 space-y-2 text-slate-300">
+            <ul className="list-disc pl-6 space-y-2 text-slate-600">
               <li>
                 <strong>Identificador Único da Conta:</strong> Seu identificador público (<code>open_id</code>) e nome de exibição básico retornado pelo escopo autorizado <code>user.info.basic</code>.
               </li>
@@ -105,22 +102,22 @@ export const PrivacyPolicyPage: React.FC<PrivacyPolicyPageProps> = () => {
                 <strong>Arquivos de Mídia e Metadados:</strong> Títulos, descrições, hashtags e arquivos de vídeo enviados por você para agendamento.
               </li>
             </ul>
-            <div className="p-3.5 rounded-xl bg-pink-500/10 border border-pink-500/20 text-pink-200 text-xs flex items-center gap-2">
-              <Lock className="w-4 h-4 shrink-0 text-pink-400" />
+            <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-100 text-rose-900 text-xs flex items-center gap-2">
+              <Lock className="w-4 h-4 shrink-0 text-[#ea384c]" />
               <span>O MultiPost <strong>NÃO</strong> tem acesso à sua senha do TikTok, mensagens privadas (DMs), histórico de navegação, lista de contatos ou dados de pagamento.</span>
             </div>
           </section>
 
           {/* Seção 2 */}
-          <section className="p-6 rounded-2xl bg-slate-900/50 border border-slate-800/80 space-y-3">
-            <h2 className="text-base font-bold text-white flex items-center gap-2">
-              <span className="flex items-center justify-center w-6 h-6 rounded-lg bg-pink-500/20 text-pink-400 text-xs font-bold">2</span>
+          <section className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3">
+            <h2 className="text-base font-bold text-slate-900 flex items-center gap-2.5">
+              <span className="flex items-center justify-center w-6 h-6 rounded-lg bg-rose-50 text-[#ea384c] text-xs font-bold border border-rose-100">2</span>
               <span>Finalidade e Como Utilizamos as Informações</span>
             </h2>
             <p>
               Todas as informações recebidas das APIs oficiais são utilizadas exclusivamente para os seguintes fins operacionais:
             </p>
-            <ul className="list-disc pl-6 space-y-2 text-slate-300">
+            <ul className="list-disc pl-6 space-y-2 text-slate-600">
               <li>Autenticar sua conta vinculada e exibir o perfil conectado no painel de controle;</li>
               <li>Realizar o upload binário direto e acionar a publicação no TikTok no horário e com os parâmetros definidos por você;</li>
               <li>Renovar automaticamente as credenciais via <code>refresh_token</code> sem exigir novos logins frequentes;</li>
@@ -129,26 +126,26 @@ export const PrivacyPolicyPage: React.FC<PrivacyPolicyPageProps> = () => {
           </section>
 
           {/* Seção 3 */}
-          <section className="p-6 rounded-2xl bg-slate-900/50 border border-slate-800/80 space-y-3">
-            <h2 className="text-base font-bold text-white flex items-center gap-2">
-              <span className="flex items-center justify-center w-6 h-6 rounded-lg bg-pink-500/20 text-pink-400 text-xs font-bold">3</span>
+          <section className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3">
+            <h2 className="text-base font-bold text-slate-900 flex items-center gap-2.5">
+              <span className="flex items-center justify-center w-6 h-6 rounded-lg bg-rose-50 text-[#ea384c] text-xs font-bold border border-rose-100">3</span>
               <span>Não Comercialização e Não Compartilhamento</span>
             </h2>
             <p>
-              O <strong>MultiPost não comercializa, não aluga, não transfere e não compartilha</strong> dados de usuários com terceiros, parceiros de publicidade ou corretores de dados. Suas informações são utilizadas estritamente para a finalidade de automação contratada por você.
+              O <strong className="text-slate-800">MultiPost não comercializa, não aluga, não transfere e não compartilha</strong> dados de usuários com terceiros, parceiros de publicidade ou corretores de dados. Suas informações são utilizadas estritamente para a finalidade de automação contratada por você.
             </p>
           </section>
 
           {/* Seção 4 */}
-          <section className="p-6 rounded-2xl bg-slate-900/50 border border-slate-800/80 space-y-3">
-            <h2 className="text-base font-bold text-white flex items-center gap-2">
-              <span className="flex items-center justify-center w-6 h-6 rounded-lg bg-pink-500/20 text-pink-400 text-xs font-bold">4</span>
+          <section className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3">
+            <h2 className="text-base font-bold text-slate-900 flex items-center gap-2.5">
+              <span className="flex items-center justify-center w-6 h-6 rounded-lg bg-rose-50 text-[#ea384c] text-xs font-bold border border-rose-100">4</span>
               <span>Armazenamento, Criptografia e Segurança</span>
             </h2>
             <p>
               Adotamos padrões rígidos de segurança da informação:
             </p>
-            <ul className="list-disc pl-6 space-y-2 text-slate-300">
+            <ul className="list-disc pl-6 space-y-2 text-slate-600">
               <li>Tokens e dados de acesso são salvos em banco de dados isolado com criptografia em repouso e tráfego HTTPS/TLS;</li>
               <li>Arquivos de vídeo temporários enviados são processados e retidos apenas durante o ciclo de publicação agendado;</li>
               <li>Senhas de operadores do sistema utilizam criptografia de hash PBKDF2 com Salt criptográfico individual.</li>
@@ -156,30 +153,30 @@ export const PrivacyPolicyPage: React.FC<PrivacyPolicyPageProps> = () => {
           </section>
 
           {/* Seção 5 */}
-          <section className="p-6 rounded-2xl bg-slate-900/50 border border-slate-800/80 space-y-3">
-            <h2 className="text-base font-bold text-white flex items-center gap-2">
-              <span className="flex items-center justify-center w-6 h-6 rounded-lg bg-pink-500/20 text-pink-400 text-xs font-bold">5</span>
+          <section className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3">
+            <h2 className="text-base font-bold text-slate-900 flex items-center gap-2.5">
+              <span className="flex items-center justify-center w-6 h-6 rounded-lg bg-rose-50 text-[#ea384c] text-xs font-bold border border-rose-100">5</span>
               <span>Revogação de Acesso e Exclusão de Dados (Data Deletion)</span>
             </h2>
             <p>
               Em conformidade com a LGPD e as diretrizes do TikTok for Developers, você possui total soberania sobre os seus dados e pode revogar o acesso a qualquer instante:
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
-              <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800">
-                <p className="font-semibold text-xs text-pink-300 mb-1">Opção 1: No Painel</p>
-                <p className="text-xs text-slate-400">
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                <p className="font-semibold text-xs text-[#ea384c] mb-1">Opção 1: No Painel</p>
+                <p className="text-xs text-slate-600">
                   Acesse "Contas Sociais" e clique em <strong>"Desconectar"</strong> para apagar instantaneamente os tokens armazenados.
                 </p>
               </div>
-              <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800">
-                <p className="font-semibold text-xs text-indigo-300 mb-1">Opção 2: Pelo TikTok</p>
-                <p className="text-xs text-slate-400">
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                <p className="font-semibold text-xs text-slate-800 mb-1">Opção 2: Pelo TikTok</p>
+                <p className="text-xs text-slate-600">
                   No app do TikTok: <em>Configurações &gt; Segurança &gt; Gerenciar permissões de apps &gt; MultiPost &gt; Remover Acesso</em>.
                 </p>
               </div>
-              <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800">
-                <p className="font-semibold text-xs text-emerald-300 mb-1">Opção 3: Por E-mail</p>
-                <p className="text-xs text-slate-400">
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                <p className="font-semibold text-xs text-emerald-700 mb-1">Opção 3: Por E-mail</p>
+                <p className="text-xs text-slate-600">
                   Envie sua solicitação para <strong>suporte@multipost.com</strong>. Excluímos todos os registros em até 48 horas úteis.
                 </p>
               </div>
@@ -187,18 +184,18 @@ export const PrivacyPolicyPage: React.FC<PrivacyPolicyPageProps> = () => {
           </section>
 
           {/* Seção 6 */}
-          <section className="p-6 rounded-2xl bg-slate-900/50 border border-slate-800/80 space-y-3">
-            <h2 className="text-base font-bold text-white flex items-center gap-2">
-              <span className="flex items-center justify-center w-6 h-6 rounded-lg bg-pink-500/20 text-pink-400 text-xs font-bold">6</span>
+          <section className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3">
+            <h2 className="text-base font-bold text-slate-900 flex items-center gap-2.5">
+              <span className="flex items-center justify-center w-6 h-6 rounded-lg bg-rose-50 text-[#ea384c] text-xs font-bold border border-rose-100">6</span>
               <span>Contato e Encarregado de Dados</span>
             </h2>
             <p>
               Dúvidas, requisições de titulares de dados ou esclarecimentos sobre esta Política de Privacidade podem ser encaminhados para:
             </p>
-            <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 inline-flex items-center gap-2 text-xs text-slate-300">
-              <Mail className="w-4 h-4 text-pink-400" />
+            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 inline-flex items-center gap-2 text-xs text-slate-700">
+              <Mail className="w-4 h-4 text-[#ea384c]" />
               <span>E-mail do Encarregado (DPO / Suporte):</span>
-              <a href="mailto:suporte@multipost.com" className="font-mono text-pink-300 hover:underline">
+              <a href="mailto:suporte@multipost.com" className="font-mono text-[#ea384c] hover:underline font-medium">
                 suporte@multipost.com
               </a>
             </div>
@@ -206,19 +203,19 @@ export const PrivacyPolicyPage: React.FC<PrivacyPolicyPageProps> = () => {
         </article>
 
         {/* Link para Termos de Uso inferior */}
-        <div className="mt-12 pt-6 border-t border-slate-800 flex items-center justify-end">
+        <div className="mt-12 pt-6 border-t border-slate-200 flex items-center justify-end">
           <a
             href="/termosdeuso"
-            className="text-xs text-slate-400 hover:text-slate-200 inline-flex items-center gap-1.5 transition-colors"
+            className="text-xs text-slate-500 hover:text-slate-800 inline-flex items-center gap-1.5 transition-colors font-medium"
           >
             <span>Consultar Termos de Uso</span>
-            <ExternalLink className="w-3.5 h-3.5" />
+            <ExternalLink className="w-3.5 h-3.5 text-[#ea384c]" />
           </a>
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="py-6 border-t border-slate-800/80 text-center text-xs text-slate-400 bg-slate-950">
+      <footer className="py-6 border-t border-slate-200 text-center text-xs text-slate-500 bg-white">
         <p>&copy; {new Date().getFullYear()} MultiPost. Todos os direitos reservados.</p>
       </footer>
     </div>

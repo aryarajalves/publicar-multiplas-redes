@@ -19,7 +19,7 @@ export const PostFilters: React.FC<Props> = ({
   onPlatformChange,
 }) => {
   return (
-    <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 mb-6 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+    <div className="bg-white border border-slate-200 shadow-sm rounded-xl p-4 mb-6 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
       {/* Search Input */}
       <div className="relative flex-1">
         <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -29,19 +29,19 @@ export const PostFilters: React.FC<Props> = ({
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder="Buscar por título ou legenda..."
           data-testid="search-input"
-          className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-4 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-purple-500 transition-colors"
+          className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-4 py-2 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-colors"
         />
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
         {/* Status Dropdown */}
         <div className="flex items-center gap-2">
-          <Filter className="w-4 h-4 text-slate-400" />
+          <Filter className="w-4 h-4 text-slate-500" />
           <select
             value={status}
             onChange={(e) => onStatusChange(e.target.value)}
             data-testid="status-select"
-            className="bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-purple-500 transition-colors"
+            className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-700 focus:outline-none focus:border-red-500 transition-colors"
           >
             <option value="">Todos os Status</option>
             <option value="scheduled">Agendados</option>
@@ -53,11 +53,11 @@ export const PostFilters: React.FC<Props> = ({
         </div>
 
         {/* Platform Buttons */}
-        <div className="flex items-center bg-slate-950 border border-slate-800 rounded-lg p-1 text-xs">
+        <div className="flex items-center bg-slate-100 border border-slate-200 rounded-lg p-1 text-xs">
           <button
             onClick={() => onPlatformChange('')}
             className={`px-3 py-1 rounded-md transition-colors ${
-              platform === '' ? 'bg-purple-600 text-white font-medium' : 'text-slate-400 hover:text-white'
+              platform === '' ? 'bg-[#ea384c] text-white font-medium shadow-xs' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             Todas
@@ -66,7 +66,7 @@ export const PostFilters: React.FC<Props> = ({
             onClick={() => onPlatformChange('instagram')}
             data-testid="filter-platform-instagram"
             className={`flex items-center gap-1 px-3 py-1 rounded-md transition-colors ${
-              platform === 'instagram' ? 'bg-pink-600 text-white font-medium' : 'text-slate-400 hover:text-pink-400'
+              platform === 'instagram' ? 'bg-pink-600 text-white font-medium shadow-xs' : 'text-slate-600 hover:text-pink-600'
             }`}
           >
             <Instagram className="w-3.5 h-3.5" />
@@ -76,7 +76,7 @@ export const PostFilters: React.FC<Props> = ({
             onClick={() => onPlatformChange('youtube')}
             data-testid="filter-platform-youtube"
             className={`flex items-center gap-1 px-3 py-1 rounded-md transition-colors ${
-              platform === 'youtube' ? 'bg-red-600 text-white font-medium' : 'text-slate-400 hover:text-red-400'
+              platform === 'youtube' ? 'bg-red-600 text-white font-medium shadow-xs' : 'text-slate-600 hover:text-red-600'
             }`}
           >
             <Youtube className="w-3.5 h-3.5" />
@@ -86,7 +86,7 @@ export const PostFilters: React.FC<Props> = ({
             onClick={() => onPlatformChange('tiktok')}
             data-testid="filter-platform-tiktok"
             className={`flex items-center gap-1 px-3 py-1 rounded-md transition-colors ${
-              platform === 'tiktok' ? 'bg-cyan-600 text-white font-medium' : 'text-slate-400 hover:text-cyan-400'
+              platform === 'tiktok' ? 'bg-slate-800 text-white font-medium shadow-xs' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             <Video className="w-3.5 h-3.5" />

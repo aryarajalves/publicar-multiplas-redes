@@ -205,4 +205,39 @@ describe('ConnectedAccountsModal Component', () => {
       expect(screen.getByText('Permissão negada pelo usuário')).toBeInTheDocument();
     });
   });
+
+  it('renders TikTok redirect URI and allows copying it to clipboard', async () => {
+    (api.getConnectedAccounts as any).mockResolvedValueOnce({
+      tiktok: {
+        connected: false,
+        redirect_uri: 'http://localhost:8005/api/auth/tiktok/callback',
+      },
+      youtube: { connected: false },
+      instagram: { connected: false },
+    });
+
+    Object.assign(navigator, {
+      clipboard: {
+        writeText: vi.fn().mockImplementation(() => Promise.resolve()),
+      },
+    });
+
+    render(<ConnectedAccountsModal isOpen={true} onClose={vi.fn()} />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('text-redirect-uri')).toBeInTheDocument();
+      expect(screen.getByText('http://localhost:8005/api/auth/tiktok/callback')).toBeInTheDocument();
+    });
+
+    const copyBtn = screen.getByTestId('btn-copy-redirect-uri');
+    fireEvent.click(copyBtn);
+
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
+      'http://localhost:8005/api/auth/tiktok/callback'
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Copiada!')).toBeInTheDocument();
+    });
+  });
 });

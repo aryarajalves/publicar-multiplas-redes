@@ -57,12 +57,12 @@ export const YouTubeSettings: React.FC<YouTubeSettingsProps> = ({
       {/* 1. Seleção de Formato: Vídeo Longo vs Shorts */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <label className="text-xs font-bold text-red-300 uppercase tracking-wider flex items-center gap-1.5">
+          <label className="text-xs font-bold text-red-700 uppercase tracking-wider flex items-center gap-1.5">
             <Youtube className="w-3.5 h-3.5" />
             <span>Formato do Vídeo no YouTube *</span>
           </label>
-          <span className="text-[11px] text-slate-400">
-            Atual: <strong className="text-red-300">{youtubeVideoType === 'Vídeo Padrão' ? 'Vídeo Longo (16:9)' : 'Shorts (9:16)'}</strong>
+          <span className="text-[11px] text-slate-500">
+            Atual: <strong className="text-red-700">{youtubeVideoType === 'Vídeo Padrão' ? 'Vídeo Longo (16:9)' : 'Shorts (9:16)'}</strong>
           </span>
         </div>
 
@@ -73,19 +73,19 @@ export const YouTubeSettings: React.FC<YouTubeSettingsProps> = ({
             data-testid="btn-youtube-type-long"
             className={`flex items-center gap-3 p-3.5 rounded-xl border text-left transition-all ${
               youtubeVideoType === 'Vídeo Padrão'
-                ? 'bg-red-950/40 border-red-500 text-white ring-1 ring-red-500/50 shadow-md shadow-red-950/50'
-                : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                ? 'bg-red-50/70 border-red-500 text-slate-900 ring-1 ring-red-500/40 shadow-xs'
+                : 'bg-white border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50'
             }`}
           >
-            <div className={`p-2 rounded-lg ${youtubeVideoType === 'Vídeo Padrão' ? 'bg-red-500/20 text-red-400' : 'bg-slate-800 text-slate-400'}`}>
+            <div className={`p-2 rounded-lg ${youtubeVideoType === 'Vídeo Padrão' ? 'bg-red-100 text-red-600' : 'bg-slate-100 text-slate-500'}`}>
               <Film className="w-5 h-5" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-xs font-bold flex items-center justify-between">
                 <span>🎬 Vídeo Longo (16:9)</span>
-                {youtubeVideoType === 'Vídeo Padrão' && <Check className="w-4 h-4 text-red-400" />}
+                {youtubeVideoType === 'Vídeo Padrão' && <Check className="w-4 h-4 text-red-600" />}
               </p>
-              <p className="text-[11px] opacity-75 mt-0.5">Widescreen tradicional no canal</p>
+              <p className="text-[11px] text-slate-500 mt-0.5">Widescreen tradicional no canal</p>
             </div>
           </button>
 
@@ -95,19 +95,19 @@ export const YouTubeSettings: React.FC<YouTubeSettingsProps> = ({
             data-testid="btn-youtube-type-shorts"
             className={`flex items-center gap-3 p-3.5 rounded-xl border text-left transition-all ${
               youtubeVideoType === 'Shorts'
-                ? 'bg-red-950/40 border-red-500 text-white ring-1 ring-red-500/50 shadow-md shadow-red-950/50'
-                : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                ? 'bg-red-50/70 border-red-500 text-slate-900 ring-1 ring-red-500/40 shadow-xs'
+                : 'bg-white border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50'
             }`}
           >
-            <div className={`p-2 rounded-lg ${youtubeVideoType === 'Shorts' ? 'bg-red-500/20 text-red-400' : 'bg-slate-800 text-slate-400'}`}>
+            <div className={`p-2 rounded-lg ${youtubeVideoType === 'Shorts' ? 'bg-red-100 text-red-600' : 'bg-slate-100 text-slate-500'}`}>
               <Video className="w-5 h-5" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-xs font-bold flex items-center justify-between">
                 <span>⚡ Shorts (Vertical 9:16)</span>
-                {youtubeVideoType === 'Shorts' && <Check className="w-4 h-4 text-red-400" />}
+                {youtubeVideoType === 'Shorts' && <Check className="w-4 h-4 text-red-600" />}
               </p>
-              <p className="text-[11px] opacity-75 mt-0.5">Feed de vídeos curtos do YouTube</p>
+              <p className="text-[11px] text-slate-500 mt-0.5">Feed de vídeos curtos do YouTube</p>
             </div>
           </button>
         </div>
@@ -128,7 +128,7 @@ export const YouTubeSettings: React.FC<YouTubeSettingsProps> = ({
       {/* 2. Título */}
       <div>
         <div className="flex items-center justify-between mb-1.5">
-          <label className="text-xs font-bold text-red-300 uppercase tracking-wider">
+          <label className="text-xs font-bold text-red-700 uppercase tracking-wider">
             Título do Vídeo no YouTube *
           </label>
           <span className="text-[11px] text-slate-400 font-mono">
@@ -146,14 +146,14 @@ export const YouTubeSettings: React.FC<YouTubeSettingsProps> = ({
           }}
           placeholder="Ex: Como Aumentar Suas Vendas com Essa Estratégia"
           data-testid="youtube-title-input"
-          className="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-3 text-sm sm:text-base text-slate-100 placeholder-slate-500 focus:outline-none focus:border-red-500 transition-colors font-medium"
+          className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-sm sm:text-base text-slate-900 placeholder-slate-400 focus:outline-none focus:border-red-500 focus:bg-white transition-colors font-medium"
         />
       </div>
 
       {/* 3. Descrição */}
       <div>
         <div className="flex items-center justify-between mb-1.5">
-          <label className="text-xs font-bold text-red-300 uppercase tracking-wider">
+          <label className="text-xs font-bold text-red-700 uppercase tracking-wider">
             Descrição do Vídeo no YouTube
           </label>
           <div className="flex items-center gap-2">
@@ -171,7 +171,7 @@ export const YouTubeSettings: React.FC<YouTubeSettingsProps> = ({
                 })
               }
               data-testid="btn-maximize-youtube-description"
-              className="p-1 rounded text-red-400 hover:text-white hover:bg-red-900/40 transition-colors"
+              className="p-1 rounded text-red-600 hover:text-red-700 hover:bg-red-50 transition-colors"
               title="Maximizar descrição"
             >
               <Maximize2 className="w-3.5 h-3.5" />
@@ -188,7 +188,7 @@ export const YouTubeSettings: React.FC<YouTubeSettingsProps> = ({
           rows={6}
           placeholder="Descrição completa com links, formatação, tópicos e detalhes adicionais..."
           data-testid="youtube-description-input"
-          className="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-red-500 transition-colors resize-none leading-relaxed min-h-[140px]"
+          className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-red-500 focus:bg-white transition-colors resize-none leading-relaxed min-h-[140px]"
         />
       </div>
 
@@ -202,7 +202,7 @@ export const YouTubeSettings: React.FC<YouTubeSettingsProps> = ({
       {/* 5. Tags */}
       <div>
         <div className="flex items-center justify-between mb-1.5">
-          <label className="text-xs font-bold text-red-300 uppercase tracking-wider">
+          <label className="text-xs font-bold text-red-700 uppercase tracking-wider">
             Tags de Busca (Separadas por vírgula)
           </label>
           <div className="flex items-center gap-2">
@@ -210,9 +210,9 @@ export const YouTubeSettings: React.FC<YouTubeSettingsProps> = ({
               data-testid="youtube-tags-counter"
               className={`text-[11px] font-mono transition-colors ${
                 youtubeTags.length >= 500
-                  ? 'text-rose-400 font-bold'
+                  ? 'text-rose-600 font-bold'
                   : youtubeTags.length >= 450
-                  ? 'text-amber-400 font-semibold'
+                  ? 'text-amber-600 font-semibold'
                   : 'text-slate-400'
               }`}
             >
@@ -234,7 +234,7 @@ export const YouTubeSettings: React.FC<YouTubeSettingsProps> = ({
                 })
               }
               data-testid="btn-maximize-youtube-tags"
-              className="p-1 rounded text-red-400 hover:text-white hover:bg-red-900/40 transition-colors"
+              className="p-1 rounded text-red-600 hover:text-red-700 hover:bg-red-50 transition-colors"
               title="Maximizar tags de busca"
             >
               <Maximize2 className="w-3.5 h-3.5" />
@@ -252,10 +252,10 @@ export const YouTubeSettings: React.FC<YouTubeSettingsProps> = ({
           }}
           placeholder="marketing, dicas de negocios, reels, shorts, vendas"
           data-testid="youtube-tags-input"
-          className={`w-full bg-slate-900 border rounded-lg px-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none transition-colors ${
+          className={`w-full bg-slate-50 border rounded-lg px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none transition-colors ${
             youtubeTags.length >= 500
-              ? 'border-rose-500 focus:border-rose-400'
-              : 'border-slate-800 focus:border-red-500'
+              ? 'border-rose-500 focus:border-rose-600 focus:bg-white'
+              : 'border-slate-200 focus:border-red-500 focus:bg-white'
           }`}
         />
         <div className="flex items-center justify-between text-[11px] text-slate-500 mt-1">

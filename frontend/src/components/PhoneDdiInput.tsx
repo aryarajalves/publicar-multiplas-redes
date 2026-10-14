@@ -70,7 +70,6 @@ export const PhoneDdiInput: React.FC<PhoneDdiInputProps> = ({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  // Fecha o dropdown ao clicar fora
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -86,7 +85,6 @@ export const PhoneDdiInput: React.FC<PhoneDdiInputProps> = ({
     };
   }, [isOpen]);
 
-  // Filtro de países por nome ou DDI
   const filteredCountries = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
     if (!term) return COUNTRIES;
@@ -98,7 +96,6 @@ export const PhoneDdiInput: React.FC<PhoneDdiInputProps> = ({
     );
   }, [searchTerm]);
 
-  // Formatação amigável para Brasil (+55)
   const formatBrazilianPhone = (digits: string) => {
     const clean = digits.replace(/\D/g, '').slice(0, 11);
     if (clean.length <= 2) return clean;
@@ -107,7 +104,6 @@ export const PhoneDdiInput: React.FC<PhoneDdiInputProps> = ({
     return `(${clean.slice(0, 2)}) ${clean.slice(2, 7)}-${clean.slice(7)}`;
   };
 
-  // Extrai o número local sem o DDI duplicado caso colado com código
   const extractLocalNumber = (raw: string, ddi: string) => {
     let clean = raw.trim();
     const ddiDigits = ddi.replace(/\D/g, '');
@@ -119,7 +115,6 @@ export const PhoneDdiInput: React.FC<PhoneDdiInputProps> = ({
     return clean;
   };
 
-  // Valor local exibido no campo
   const displayLocalValue = useMemo(() => {
     return extractLocalNumber(value, selectedCountry.ddi);
   }, [value, selectedCountry.ddi]);
@@ -133,7 +128,6 @@ export const PhoneDdiInput: React.FC<PhoneDdiInputProps> = ({
       formatted = formatBrazilianPhone(cleanLocal);
     }
 
-    // Se o usuário digitou algo, compõe o número completo com DDI
     const combined = formatted.trim() ? `${selectedCountry.ddi} ${formatted}` : '';
     onChange(combined);
   };
@@ -143,7 +137,6 @@ export const PhoneDdiInput: React.FC<PhoneDdiInputProps> = ({
     setIsOpen(false);
     setSearchTerm('');
 
-    // Recompõe o número com o novo DDI
     const currentLocal = extractLocalNumber(value, selectedCountry.ddi);
     const combined = currentLocal.trim() ? `${country.ddi} ${currentLocal}` : '';
     onChange(combined);
@@ -151,7 +144,7 @@ export const PhoneDdiInput: React.FC<PhoneDdiInputProps> = ({
 
   return (
     <div className="relative" ref={dropdownRef}>
-      <div className="flex items-center rounded-xl bg-slate-950/80 border border-slate-800 focus-within:border-pink-500 transition-colors overflow-hidden">
+      <div className="flex items-center rounded-xl bg-slate-50 border border-slate-200 focus-within:border-[#ea384c] focus-within:bg-white transition-colors overflow-hidden">
         {/* Botão Gatilho do Dropdown de DDI */}
         <button
           type="button"
@@ -160,14 +153,14 @@ export const PhoneDdiInput: React.FC<PhoneDdiInputProps> = ({
           data-testid={dropdownTestId}
           aria-haspopup="listbox"
           aria-expanded={isOpen}
-          className="flex items-center gap-1.5 px-3 py-2.5 bg-slate-900/90 hover:bg-slate-800 text-xs text-white border-r border-slate-800 transition-colors shrink-0 cursor-pointer select-none"
+          className="flex items-center gap-1.5 px-3 py-2.5 bg-slate-100 hover:bg-slate-200 text-xs text-slate-800 border-r border-slate-200 transition-colors shrink-0 cursor-pointer select-none"
           title={`País: ${selectedCountry.name} (${selectedCountry.ddi})`}
         >
           <span className="text-base leading-none" role="img" aria-label={selectedCountry.name}>
             {selectedCountry.flag}
           </span>
-          <span className="font-semibold text-slate-200">{selectedCountry.ddi}</span>
-          <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+          <span className="font-bold text-slate-700">{selectedCountry.ddi}</span>
+          <ChevronDown className={`w-3.5 h-3.5 text-slate-500 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
         </button>
 
         {/* Input Numérico do Telefone */}
@@ -180,7 +173,7 @@ export const PhoneDdiInput: React.FC<PhoneDdiInputProps> = ({
           onChange={handleInputChange}
           placeholder={selectedCountry.placeholder}
           data-testid={inputTestId}
-          className="w-full px-3 py-2.5 bg-transparent text-xs text-white placeholder-slate-500 focus:outline-none [&:-webkit-autofill]:[box-shadow:0_0_0_1000px_#020617_inset] [&:-webkit-autofill]:[-webkit-text-fill-color:#fff]"
+          className="w-full px-3 py-2.5 bg-transparent text-xs text-slate-900 placeholder-slate-400 focus:outline-none"
         />
       </div>
 
@@ -188,10 +181,10 @@ export const PhoneDdiInput: React.FC<PhoneDdiInputProps> = ({
       {isOpen && (
         <div
           data-testid="ddi-dropdown-menu"
-          className="absolute left-0 top-full mt-1.5 w-72 max-w-[90vw] max-h-64 bg-slate-900 border border-slate-700/80 rounded-xl shadow-2xl shadow-black/80 z-50 flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150"
+          className="absolute left-0 top-full mt-1.5 w-72 max-w-[90vw] max-h-64 bg-white border border-slate-200 rounded-xl shadow-2xl z-50 flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150"
         >
           {/* Campo de Busca Rápida */}
-          <div className="p-2 border-b border-slate-800 bg-slate-950/60 sticky top-0 z-10">
+          <div className="p-2 border-b border-slate-200 bg-slate-50 sticky top-0 z-10">
             <div className="relative">
               <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
@@ -201,13 +194,13 @@ export const PhoneDdiInput: React.FC<PhoneDdiInputProps> = ({
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Buscar país ou DDI..."
                 data-testid="ddi-search-input"
-                className="w-full pl-8 pr-3 py-1.5 bg-slate-900 border border-slate-800 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:border-pink-500"
+                className="w-full pl-8 pr-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#ea384c]"
               />
             </div>
           </div>
 
           {/* Lista de Países */}
-          <div className="overflow-y-auto flex-1 divide-y divide-slate-800/40">
+          <div className="overflow-y-auto flex-1 divide-y divide-slate-100">
             {filteredCountries.length > 0 ? (
               filteredCountries.map((country) => {
                 const isSelected = country.code === selectedCountry.code;
@@ -217,8 +210,8 @@ export const PhoneDdiInput: React.FC<PhoneDdiInputProps> = ({
                     type="button"
                     onClick={() => handleSelectCountry(country)}
                     data-testid={`ddi-option-${country.code.toLowerCase()}`}
-                    className={`w-full flex items-center justify-between px-3 py-2 text-xs text-left transition-colors cursor-pointer hover:bg-pink-500/10 hover:text-pink-300 ${
-                      isSelected ? 'bg-pink-500/15 text-pink-400 font-semibold' : 'text-slate-300'
+                    className={`w-full flex items-center justify-between px-3 py-2 text-xs text-left transition-colors cursor-pointer hover:bg-rose-50 hover:text-rose-700 ${
+                      isSelected ? 'bg-rose-50 text-rose-700 font-bold' : 'text-slate-700'
                     }`}
                   >
                     <div className="flex items-center gap-2.5 truncate">
@@ -229,7 +222,7 @@ export const PhoneDdiInput: React.FC<PhoneDdiInputProps> = ({
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0 ml-2">
                       <span className="text-slate-400 font-mono text-[11px]">{country.ddi}</span>
-                      {isSelected && <Check className="w-3.5 h-3.5 text-pink-400 shrink-0" />}
+                      {isSelected && <Check className="w-3.5 h-3.5 text-[#ea384c] shrink-0" />}
                     </div>
                   </button>
                 );

@@ -282,7 +282,7 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-row">
+    <div className="min-h-screen bg-slate-50 flex flex-row">
       <Sidebar
         activeTab={activeTab}
         onSelectTab={handleSelectTab}
@@ -308,14 +308,14 @@ export const App: React.FC = () => {
             <>
               {/* Banner de Erro de Conexão */}
               {error && (
-                <div className="mb-6 p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-sm flex items-center justify-between">
+                <div className="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-sm flex items-center justify-between shadow-xs">
                   <div className="flex items-center gap-2">
-                    <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                    <AlertCircle className="w-5 h-5 flex-shrink-0 text-rose-600" />
                     <span>{error}</span>
                   </div>
                   <button
                     onClick={loadData}
-                    className="px-3 py-1 bg-rose-500/20 hover:bg-rose-500/30 rounded-lg text-xs font-semibold text-rose-200 transition-colors"
+                    className="px-3 py-1 bg-white hover:bg-rose-50 border border-rose-200 rounded-lg text-xs font-semibold text-rose-700 transition-colors shadow-2xs"
                   >
                     Tentar Novamente
                   </button>
@@ -367,21 +367,21 @@ export const App: React.FC = () => {
                   />
                 </>
               ) : (
-                <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-12 text-center flex flex-col items-center justify-center">
-                  <div className="w-16 h-16 rounded-2xl bg-slate-800/80 flex items-center justify-center text-slate-500 mb-4">
+                <div className="bg-white border border-slate-200 rounded-2xl p-12 text-center flex flex-col items-center justify-center shadow-sm">
+                  <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-4">
                     <Film className="w-8 h-8" />
                   </div>
-                  <h3 className="text-base font-semibold text-slate-200">
+                  <h3 className="text-base font-bold text-slate-900">
                     Nenhuma publicação encontrada
                   </h3>
-                  <p className="text-xs text-slate-400 mt-1 max-w-md">
+                  <p className="text-xs text-slate-500 mt-1 max-w-md">
                     {search || status || platform
                       ? 'Nenhum vídeo corresponde aos filtros selecionados. Tente ajustar a busca.'
                       : 'Comece agendando seu primeiro vídeo para o Instagram com cross-posting para YouTube e TikTok!'}
                   </p>
                   <button
                     onClick={() => setIsUploadOpen(true)}
-                    className="mt-5 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-pink-600 hover:bg-pink-500 text-white font-medium text-xs shadow-lg shadow-pink-600/20 transition-all active:scale-95"
+                    className="mt-5 inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#ea384c] hover:bg-[#d82a3e] text-white font-medium text-xs shadow-sm transition-all active:scale-95"
                   >
                     <PlusCircle className="w-4 h-4" />
                     <span>Agendar Primeiro Vídeo</span>
@@ -400,7 +400,7 @@ export const App: React.FC = () => {
         </main>
 
         {/* Footer com Links Legais Públicos */}
-        <footer className="mt-12 py-6 border-t border-slate-800/80 text-center text-xs text-slate-500">
+        <footer className="mt-12 py-6 border-t border-slate-200 text-center text-xs text-slate-500">
           <div className="flex items-center justify-center gap-3">
             <span>&copy; {new Date().getFullYear()} MultiPost. Todos os direitos reservados.</span>
             <span>•</span>
@@ -409,7 +409,7 @@ export const App: React.FC = () => {
               target="_blank"
               rel="noopener noreferrer"
               data-testid="link-terms-footer"
-              className="hover:text-slate-300 underline underline-offset-2 transition-colors cursor-pointer"
+              className="hover:text-slate-800 underline underline-offset-2 transition-colors cursor-pointer"
             >
               Termos de Uso
             </a>
@@ -419,7 +419,7 @@ export const App: React.FC = () => {
               target="_blank"
               rel="noopener noreferrer"
               data-testid="link-privacy-footer"
-              className="hover:text-slate-300 underline underline-offset-2 transition-colors cursor-pointer"
+              className="hover:text-slate-800 underline underline-offset-2 transition-colors cursor-pointer"
             >
               Política de Privacidade
             </a>

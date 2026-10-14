@@ -143,7 +143,14 @@ export const api = {
   },
 
   async getConnectedAccounts(): Promise<{
-    tiktok: { connected: boolean; account_name?: string | null; avatar_url?: string | null; expires_at?: string | null };
+    tiktok: {
+      connected: boolean;
+      account_name?: string | null;
+      avatar_url?: string | null;
+      expires_at?: string | null;
+      redirect_uri?: string;
+      client_key?: string;
+    };
     youtube: { connected: boolean; account_name?: string | null };
     instagram: { connected: boolean; account_name?: string | null };
   }> {

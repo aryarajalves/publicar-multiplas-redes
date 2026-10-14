@@ -130,14 +130,13 @@ export const LogsManagement: React.FC = () => {
     return () => clearInterval(interval);
   }, [autoRefresh, loadLogs]);
 
-  // Auto-scroll exclusivamente dentro da caixa do terminal (sem rolar a janela do navegador)
+  // Auto-scroll exclusivamente dentro da caixa do terminal
   useEffect(() => {
     if (autoScroll && terminalViewportRef.current) {
       terminalViewportRef.current.scrollTop = terminalViewportRef.current.scrollHeight;
     }
   }, [logs, autoScroll]);
 
-  // Ao alternar contêiner, posiciona no início sem rolar a página
   const handleSelectContainer = (key: 'backend' | 'frontend' | 'worker') => {
     setActiveContainer(key);
     try {
@@ -147,7 +146,6 @@ export const LogsManagement: React.FC = () => {
       terminalViewportRef.current.scrollTop = 0;
     }
   };
-
 
   // Filtra logs por busca textual e nível
   const filteredLogs = logs.filter((log) => {
@@ -189,19 +187,19 @@ export const LogsManagement: React.FC = () => {
   return (
     <div data-testid="logs-management-page" className="space-y-6 animate-fade-in">
       {/* Header com Título e Ações */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b border-slate-200">
         <div className="flex items-center gap-3">
-          <div className="p-3 rounded-2xl bg-gradient-to-br from-pink-500/20 to-purple-600/20 text-pink-400 border border-pink-500/30 shadow-lg shadow-pink-500/10">
+          <div className="p-3 rounded-2xl bg-rose-50 text-[#ea384c] border border-rose-200 shadow-2xs">
             <Terminal className="w-6 h-6" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
+            <h1 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
               Gestão de Logs
-              <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-cyan-950/80 text-cyan-400 border border-cyan-800/50">
+              <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-rose-50 text-[#ea384c] border border-rose-200">
                 Docker Live
               </span>
             </h1>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-500">
               Monitore em tempo real os eventos e fluxos dos contêineres do backend e do frontend
             </p>
           </div>
@@ -214,14 +212,14 @@ export const LogsManagement: React.FC = () => {
             data-testid="btn-toggle-autorefresh"
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
               autoRefresh
-                ? 'bg-emerald-950/40 text-emerald-300 border-emerald-800/50 hover:bg-emerald-900/40'
-                : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-white'
+                ? 'bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100'
+                : 'bg-white text-slate-600 border-slate-200 hover:text-slate-900'
             }`}
             title="Alternar atualização automática"
           >
             <span
               className={`w-2 h-2 rounded-full ${
-                autoRefresh ? 'bg-emerald-400 animate-pulse' : 'bg-slate-500'
+                autoRefresh ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'
               }`}
             />
             <span>{autoRefresh ? 'Auto (4s)' : 'Pausado'}</span>
@@ -232,7 +230,7 @@ export const LogsManagement: React.FC = () => {
             value={tail}
             onChange={(e) => setTail(Number(e.target.value))}
             data-testid="select-logs-tail"
-            className="bg-slate-900 border border-slate-800 text-slate-300 text-xs rounded-xl px-2.5 py-1.5 outline-none focus:border-pink-500 transition-colors"
+            className="bg-white border border-slate-200 text-slate-700 text-xs rounded-xl px-2.5 py-1.5 outline-none focus:border-[#ea384c] transition-colors cursor-pointer shadow-2xs"
           >
             <option value={50}>50 linhas</option>
             <option value={150}>150 linhas</option>
@@ -245,10 +243,10 @@ export const LogsManagement: React.FC = () => {
             onClick={handleCopyLogs}
             disabled={filteredLogs.length === 0}
             data-testid="btn-copy-logs"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 text-xs font-medium transition-all disabled:opacity-40 cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 border border-slate-200 text-xs font-medium transition-all disabled:opacity-40 cursor-pointer shadow-2xs"
             title="Copiar logs visíveis"
           >
-            {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+            {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5 text-slate-400" />}
             <span>{copied ? 'Copiado!' : 'Copiar'}</span>
           </button>
 
@@ -257,7 +255,7 @@ export const LogsManagement: React.FC = () => {
             onClick={() => loadLogs(true)}
             disabled={isLoading}
             data-testid="btn-refresh-logs"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white text-xs font-semibold shadow-md shadow-pink-600/20 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#ea384c] hover:bg-[#d82a3e] text-white text-xs font-semibold shadow-xs transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
             <span>Atualizar</span>
@@ -274,18 +272,18 @@ export const LogsManagement: React.FC = () => {
               key={c.key}
               onClick={() => handleSelectContainer(c.key as any)}
               data-testid={`tab-container-${c.key}`}
-              className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex items-center justify-between ${
+              className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex items-center justify-between shadow-2xs ${
                 isSelected
-                  ? 'bg-slate-900/90 border-pink-500/50 shadow-lg shadow-pink-500/10'
-                  : 'bg-slate-900/40 border-slate-800/80 hover:bg-slate-900/60 hover:border-slate-700'
+                  ? 'bg-white border-[#ea384c] ring-1 ring-[#ea384c]/30'
+                  : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50'
               }`}
             >
               <div className="flex items-center gap-3 min-w-0">
                 <div
                   className={`p-2 rounded-xl ${
                     isSelected
-                      ? 'bg-pink-500/20 text-pink-400 border border-pink-500/30'
-                      : 'bg-slate-800/60 text-slate-400'
+                      ? 'bg-rose-50 text-[#ea384c] border border-rose-200'
+                      : 'bg-slate-100 text-slate-500'
                   }`}
                 >
                   {getContainerIcon(c.key)}
@@ -294,19 +292,19 @@ export const LogsManagement: React.FC = () => {
                   <div className="flex items-center gap-2">
                     <span
                       className={`text-xs font-bold truncate ${
-                        isSelected ? 'text-white' : 'text-slate-300'
+                        isSelected ? 'text-slate-900' : 'text-slate-700'
                       }`}
                     >
                       {c.label}
                     </span>
                   </div>
-                  <p className="text-[10px] text-slate-500 truncate font-mono">{c.name}</p>
+                  <p className="text-[10px] text-slate-400 truncate font-mono">{c.name}</p>
                 </div>
               </div>
 
               <div className="flex items-center gap-1.5 shrink-0 ml-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                <span className="text-[10px] font-semibold text-emerald-400">Ativo</span>
+                <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                <span className="text-[10px] font-semibold text-emerald-700">Ativo</span>
               </div>
             </button>
           );
@@ -314,7 +312,7 @@ export const LogsManagement: React.FC = () => {
       </div>
 
       {/* Barra de Filtros e Busca */}
-      <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-3 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div className="bg-white border border-slate-200 rounded-2xl p-3 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xs">
         <div className="relative w-full sm:w-80">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
@@ -323,12 +321,12 @@ export const LogsManagement: React.FC = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Buscar nos logs..."
             data-testid="input-filter-logs"
-            className="w-full bg-slate-950/70 border border-slate-800 rounded-xl pl-9 pr-3 py-1.5 text-xs text-white placeholder-slate-500 outline-none focus:border-pink-500 transition-colors"
+            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 outline-none focus:border-[#ea384c] focus:bg-white transition-colors"
           />
         </div>
 
         <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
-          <div className="flex items-center gap-1 bg-slate-950/80 p-1 rounded-xl border border-slate-800">
+          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
             {(['ALL', 'INFO', 'WARN', 'ERROR'] as const).map((lvl) => (
               <button
                 key={lvl}
@@ -337,11 +335,13 @@ export const LogsManagement: React.FC = () => {
                 className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
                   levelFilter === lvl
                     ? lvl === 'ERROR'
-                      ? 'bg-red-500/20 text-red-300 border border-red-500/40'
+                      ? 'bg-rose-50 text-rose-700 border border-rose-300 shadow-2xs'
                       : lvl === 'WARN'
-                      ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
-                      : 'bg-pink-500/20 text-pink-300 border border-pink-500/40'
-                    : 'text-slate-400 hover:text-white'
+                      ? 'bg-amber-50 text-amber-800 border border-amber-300 shadow-2xs'
+                      : lvl === 'INFO'
+                      ? 'bg-sky-50 text-sky-700 border border-sky-300 shadow-2xs'
+                      : 'bg-white text-slate-900 border border-slate-300 shadow-2xs'
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 {lvl === 'ALL' ? 'Todos' : lvl}
@@ -354,8 +354,8 @@ export const LogsManagement: React.FC = () => {
             data-testid="btn-toggle-autoscroll"
             className={`p-1.5 rounded-xl border transition-colors cursor-pointer ${
               autoScroll
-                ? 'bg-pink-500/20 border-pink-500/40 text-pink-300'
-                : 'bg-slate-950 border-slate-800 text-slate-500'
+                ? 'bg-rose-50 border-rose-300 text-[#ea384c]'
+                : 'bg-white border-slate-200 text-slate-400 hover:text-slate-700'
             }`}
             title="Auto-rolar para as linhas mais recentes"
           >
@@ -365,28 +365,28 @@ export const LogsManagement: React.FC = () => {
       </div>
 
       {/* Terminal / Visualizador de Logs */}
-      <div className="bg-slate-950/95 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl flex flex-col">
+      <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm flex flex-col">
         {/* Barra Superior do Terminal */}
-        <div className="px-4 py-2.5 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between text-xs text-slate-400">
+        <div className="px-4 py-2.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs text-slate-500">
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1.5 mr-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-red-500/80 inline-block" />
-              <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80 inline-block" />
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80 inline-block" />
+              <span className="w-2.5 h-2.5 rounded-full bg-rose-400 inline-block" />
+              <span className="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block" />
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block" />
             </div>
-            <span className="font-mono text-[11px] text-slate-300 font-semibold">
+            <span className="font-mono text-[11px] text-slate-700 font-semibold">
               docker logs {containers.find((c) => c.key === activeContainer)?.name} --tail={tail}
             </span>
           </div>
 
           <div className="flex items-center gap-3 text-[10px]">
             <span>
-              Exibindo: <strong className="text-white">{filteredLogs.length}</strong> linhas
+              Exibindo: <strong className="text-slate-800">{filteredLogs.length}</strong> linhas
             </span>
             <span>•</span>
             <span>
               Última sincronização:{' '}
-              <strong className="text-slate-300">
+              <strong className="text-slate-700">
                 {lastUpdated.toLocaleTimeString('pt-BR', { timeZone: 'America/Sao_Paulo' })}
               </strong>
             </span>
@@ -395,8 +395,8 @@ export const LogsManagement: React.FC = () => {
 
         {/* Mensagem de Erro Caso Ocorra */}
         {errorMessage && (
-          <div className="p-3 bg-red-950/40 border-b border-red-800/40 text-red-300 text-xs flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+          <div className="p-3 bg-rose-50 border-b border-rose-200 text-rose-800 text-xs flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
             <span>{errorMessage}</span>
           </div>
         )}
@@ -405,11 +405,11 @@ export const LogsManagement: React.FC = () => {
         <div
           ref={terminalViewportRef}
           data-testid="logs-terminal-viewport"
-          className="p-4 font-mono text-[11px] leading-relaxed max-h-[520px] min-h-[300px] overflow-y-auto space-y-1 select-text scrollbar-thin scrollbar-thumb-slate-800"
+          className="p-4 font-mono text-[11px] leading-relaxed max-h-[520px] min-h-[300px] overflow-y-auto space-y-1 select-text bg-slate-50/50 scrollbar-thin scrollbar-thumb-slate-200"
         >
           {isLoading && logs.length === 0 ? (
-            <div className="h-60 flex flex-col items-center justify-center gap-2 text-slate-500">
-              <RefreshCw className="w-6 h-6 animate-spin text-pink-500" />
+            <div className="h-60 flex flex-col items-center justify-center gap-2 text-slate-400">
+              <RefreshCw className="w-6 h-6 animate-spin text-[#ea384c]" />
               <span className="text-xs">Conectando aos logs do contêiner...</span>
             </div>
           ) : filteredLogs.length > 0 ? (
@@ -421,22 +421,22 @@ export const LogsManagement: React.FC = () => {
               return (
                 <div
                   key={index}
-                  className={`group flex items-start gap-2.5 py-0.5 px-2 rounded hover:bg-slate-900/60 transition-colors ${
+                  className={`group flex items-start gap-2.5 py-0.5 px-2 rounded hover:bg-slate-200/60 transition-colors ${
                     isError
-                      ? 'bg-red-950/20 text-red-300'
+                      ? 'bg-rose-50/90 text-rose-900 border-l-2 border-rose-500'
                       : isWarn
-                      ? 'bg-amber-950/15 text-amber-300'
-                      : 'text-slate-300'
+                      ? 'bg-amber-50/90 text-amber-900 border-l-2 border-amber-500'
+                      : 'text-slate-700'
                   }`}
                 >
-                  <span className="text-slate-600 select-none text-[10px] w-8 shrink-0 text-right">
+                  <span className="text-slate-400 select-none text-[10px] w-8 shrink-0 text-right">
                     {index + 1}
                   </span>
 
                   {log.timestamp && (
                     <span
                       title={`UTC: ${log.timestamp} | Brasília: ${formatLogTime(log.timestamp)}`}
-                      className="text-slate-500 text-[10px] shrink-0 font-mono"
+                      className="text-slate-400 text-[10px] shrink-0 font-mono"
                     >
                       {formatLogTime(log.timestamp)}
                     </span>
@@ -445,12 +445,12 @@ export const LogsManagement: React.FC = () => {
                   <span
                     className={`text-[9px] font-bold px-1.5 py-0.2 rounded shrink-0 uppercase ${
                       isError
-                        ? 'bg-red-500/20 text-red-400 border border-red-500/30'
+                        ? 'bg-rose-100 text-rose-700 border border-rose-200'
                         : isWarn
-                        ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                        ? 'bg-amber-100 text-amber-800 border border-amber-200'
                         : isInfo
-                        ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
-                        : 'bg-slate-800 text-slate-400'
+                        ? 'bg-sky-50 text-sky-700 border border-sky-200'
+                        : 'bg-slate-100 text-slate-600 border border-slate-200'
                     }`}
                   >
                     {log.level}
@@ -461,10 +461,10 @@ export const LogsManagement: React.FC = () => {
               );
             })
           ) : (
-            <div className="h-60 flex flex-col items-center justify-center text-slate-500">
-              <Filter className="w-6 h-6 mb-2 text-slate-600" />
-              <p className="text-xs font-semibold text-slate-400">Nenhum log corresponde aos filtros.</p>
-              <p className="text-[11px] text-slate-600">Tente limpar a busca ou selecionar outro nível.</p>
+            <div className="h-60 flex flex-col items-center justify-center text-slate-400">
+              <Filter className="w-6 h-6 mb-2 text-slate-300" />
+              <p className="text-xs font-semibold text-slate-600">Nenhum log corresponde aos filtros.</p>
+              <p className="text-[11px] text-slate-400">Tente limpar a busca ou selecionar outro nível.</p>
             </div>
           )}
         </div>

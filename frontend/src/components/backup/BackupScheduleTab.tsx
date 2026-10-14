@@ -56,23 +56,23 @@ export const BackupScheduleTab: React.FC<BackupScheduleTabProps> = ({
 
   return (
     <div className="w-full">
-      <form onSubmit={handleSubmit} className="w-full bg-slate-900/60 backdrop-blur-md border border-slate-800/80 rounded-2xl p-6 md:p-8 shadow-xl shadow-black/20 space-y-6">
+      <form onSubmit={handleSubmit} className="w-full bg-white border border-slate-200 rounded-2xl p-6 md:p-8 shadow-2xs space-y-6">
         <div>
-          <h3 className="text-base font-semibold text-white">Configuração de Backup Periódico</h3>
-          <p className="text-xs text-slate-400 mt-1">
+          <h3 className="text-base font-bold text-slate-900">Configuração de Backup Periódico</h3>
+          <p className="text-xs text-slate-500 mt-1">
             Configure a rotina automática para extrair dumps do PostgreSQL e enviar para o Backblaze B2.
           </p>
         </div>
 
-        {/* 1. Toggle de Ativação (Largura Total) */}
-        <div className="flex items-center justify-between p-4 bg-slate-950/40 border border-slate-800 rounded-xl">
+        {/* 1. Toggle de Ativação */}
+        <div className="flex items-center justify-between p-4 bg-slate-50 border border-slate-200 rounded-xl">
           <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-xl ${isActive ? 'bg-pink-500/10 text-pink-400 border border-pink-500/20' : 'bg-slate-800 text-slate-500'}`}>
+            <div className={`p-2 rounded-xl ${isActive ? 'bg-rose-50 text-[#ea384c] border border-rose-200' : 'bg-slate-200 text-slate-500'}`}>
               <Power className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-white">Ativar Backup Automático</p>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-xs font-bold text-slate-900">Ativar Backup Automático</p>
+              <p className="text-[11px] text-slate-500">
                 {isActive ? 'A rotina periódica está em execução contínua.' : 'Rotina pausada. Nenhum backup automático será disparado.'}
               </p>
             </div>
@@ -81,11 +81,11 @@ export const BackupScheduleTab: React.FC<BackupScheduleTabProps> = ({
             type="button"
             onClick={() => setIsActive(!isActive)}
             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer focus:outline-none ${
-              isActive ? 'bg-pink-500' : 'bg-slate-800'
+              isActive ? 'bg-[#ea384c]' : 'bg-slate-300'
             }`}
           >
             <span
-              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow-xs ${
                 isActive ? 'translate-x-6' : 'translate-x-1'
               }`}
             />
@@ -96,8 +96,8 @@ export const BackupScheduleTab: React.FC<BackupScheduleTabProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Coluna 1: Frequência de Execução */}
           <div className="space-y-3">
-            <label className="flex items-center gap-2 text-xs font-semibold text-slate-300">
-              <Clock className="w-4 h-4 text-cyan-400" />
+            <label className="flex items-center gap-2 text-xs font-bold text-slate-700">
+              <Clock className="w-4 h-4 text-cyan-600" />
               <span>Frequência de Execução</span>
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -108,8 +108,8 @@ export const BackupScheduleTab: React.FC<BackupScheduleTabProps> = ({
                   onClick={() => setFrequencyHours(opt.value)}
                   className={`p-3 rounded-xl text-left border text-xs transition-all cursor-pointer ${
                     frequencyHours === opt.value
-                      ? 'bg-cyan-500/10 border-cyan-500/40 text-cyan-200 font-semibold shadow-sm shadow-cyan-500/10'
-                      : 'bg-slate-950/30 border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700'
+                      ? 'bg-rose-50 border-rose-400 text-rose-800 font-bold shadow-2xs'
+                      : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                   }`}
                 >
                   {opt.label}
@@ -125,8 +125,8 @@ export const BackupScheduleTab: React.FC<BackupScheduleTabProps> = ({
           <div className="space-y-5">
             {/* 3. Pasta de Destino no S3 / Bucket B2 */}
             <div className="space-y-2">
-              <label className="flex items-center gap-2 text-xs font-semibold text-slate-300">
-                <Folder className="w-4 h-4 text-purple-400" />
+              <label className="flex items-center gap-2 text-xs font-bold text-slate-700">
+                <Folder className="w-4 h-4 text-indigo-600" />
                 <span>Pasta de Destino no S3 / Bucket B2</span>
               </label>
               <input
@@ -134,7 +134,7 @@ export const BackupScheduleTab: React.FC<BackupScheduleTabProps> = ({
                 value={s3Folder}
                 onChange={(e) => setS3Folder(e.target.value)}
                 placeholder="multipost/backups/"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/50 border border-slate-800 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-purple-500/50 transition-colors"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#ea384c] focus:bg-white transition-colors"
               />
               <p className="text-[11px] text-slate-500">
                 Prefixo onde os dumps compactados serão organizados no bucket.
@@ -143,8 +143,8 @@ export const BackupScheduleTab: React.FC<BackupScheduleTabProps> = ({
 
             {/* 4. Limite de Retenção */}
             <div className="space-y-2">
-              <label className="flex items-center gap-2 text-xs font-semibold text-slate-300">
-                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+              <label className="flex items-center gap-2 text-xs font-bold text-slate-700">
+                <ShieldCheck className="w-4 h-4 text-emerald-600" />
                 <span>Limite de Retenção (Máximo de Dumps)</span>
               </label>
               <div className="flex items-center gap-3">
@@ -154,9 +154,9 @@ export const BackupScheduleTab: React.FC<BackupScheduleTabProps> = ({
                   max={500}
                   value={retentionLimit}
                   onChange={(e) => setRetentionLimit(parseInt(e.target.value, 10) || 1)}
-                  className="w-32 px-3.5 py-2.5 rounded-xl bg-slate-950/50 border border-slate-800 text-xs text-white focus:outline-none focus:border-emerald-500/50 transition-colors"
+                  className="w-32 px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-semibold focus:outline-none focus:border-[#ea384c] focus:bg-white transition-colors"
                 />
-                <span className="text-xs text-slate-400">backups armazenados</span>
+                <span className="text-xs text-slate-500 font-medium">backups armazenados</span>
               </div>
               <p className="text-[11px] text-slate-500">
                 Dumps excedentes mais antigos são excluídos automaticamente da nuvem e do armazenamento local.
@@ -166,11 +166,11 @@ export const BackupScheduleTab: React.FC<BackupScheduleTabProps> = ({
         </div>
 
         {/* Botão Salvar */}
-        <div className="pt-2 flex items-center justify-between border-t border-slate-800/80">
+        <div className="pt-2 flex items-center justify-between border-t border-slate-200">
           <div>
             {successSaved && (
-              <span className="inline-flex items-center gap-1.5 text-xs text-emerald-400 font-medium animate-fadeIn">
-                <Check className="w-4 h-4" /> Configurações salvas com sucesso!
+              <span className="inline-flex items-center gap-1.5 text-xs text-emerald-700 font-semibold animate-fadeIn">
+                <Check className="w-4 h-4 text-emerald-600" /> Configurações salvas com sucesso!
               </span>
             )}
           </div>
@@ -179,7 +179,7 @@ export const BackupScheduleTab: React.FC<BackupScheduleTabProps> = ({
             type="submit"
             disabled={saving || loading}
             data-testid="btn-save-backup-schedule"
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white shadow-md shadow-pink-500/20 active:scale-[0.98] transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold bg-[#ea384c] hover:bg-[#d82a3e] text-white shadow-xs active:scale-[0.98] transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {saving ? (
               <>

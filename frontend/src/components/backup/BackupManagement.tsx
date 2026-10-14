@@ -190,14 +190,14 @@ export const BackupManagement: React.FC = () => {
           role="status"
           className={`fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-xl text-xs font-semibold backdrop-blur-md border animate-slideUp ${
             toastMessage.type === 'success'
-              ? 'bg-emerald-950/90 text-emerald-200 border-emerald-500/30 shadow-emerald-950/40'
-              : 'bg-rose-950/90 text-rose-200 border-rose-500/30 shadow-rose-950/40'
+              ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+              : 'bg-rose-50 text-rose-800 border-rose-200'
           }`}
         >
           {toastMessage.type === 'success' ? (
-            <div className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
           ) : (
-            <AlertCircle className="w-4 h-4 text-rose-400" />
+            <AlertCircle className="w-4 h-4 text-rose-600" />
           )}
           <span>{toastMessage.text}</span>
         </div>
@@ -207,14 +207,14 @@ export const BackupManagement: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-pink-500/10 text-pink-400 border border-pink-500/20">
+            <div className="p-2 rounded-xl bg-rose-50 text-[#ea384c] border border-rose-200">
               <Database className="w-5 h-5" />
             </div>
-            <h1 className="text-xl font-bold text-white tracking-tight">
+            <h1 className="text-xl font-bold text-slate-900 tracking-tight">
               Backup Automático & Armazenamento em Nuvem
             </h1>
           </div>
-          <p className="text-xs text-slate-400 mt-1 pl-10">
+          <p className="text-xs text-slate-500 mt-1 pl-10">
             Gerencie backups do banco de dados PostgreSQL com sincronização direta no Backblaze B2 (S3) e políticas de retenção.
           </p>
         </div>
@@ -222,10 +222,10 @@ export const BackupManagement: React.FC = () => {
         <button
           onClick={handleRefreshAll}
           disabled={loadingStatus || loadingBackups}
-          className="self-start sm:self-center flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-medium bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 transition-all cursor-pointer disabled:opacity-50"
+          className="self-start sm:self-center flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 border border-slate-200 shadow-2xs transition-all cursor-pointer disabled:opacity-50"
           title="Recarregar dados"
         >
-          <RefreshCw className={`w-3.5 h-3.5 ${loadingStatus || loadingBackups ? 'animate-spin text-pink-400' : ''}`} />
+          <RefreshCw className={`w-3.5 h-3.5 ${loadingStatus || loadingBackups ? 'animate-spin text-[#ea384c]' : ''}`} />
           <span>Atualizar</span>
         </button>
       </div>
@@ -234,14 +234,14 @@ export const BackupManagement: React.FC = () => {
       <BackupStatusCardsView status={statusCards} loading={loadingStatus} />
 
       {/* Navegação entre as 3 Subabas */}
-      <div className="flex items-center gap-2 border-b border-slate-800/80 pb-2">
+      <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
         <button
           onClick={() => handleSelectSubTab('s3_backups')}
           data-testid="subtab-s3-backups"
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-medium transition-all cursor-pointer ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
             activeSubTab === 's3_backups'
-              ? 'bg-pink-500/20 text-pink-300 border border-pink-500/40 shadow-sm shadow-pink-500/10'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 border border-transparent'
+              ? 'bg-rose-50 text-rose-700 border border-rose-200 shadow-2xs'
+              : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100 border border-transparent'
           }`}
         >
           <Database className="w-3.5 h-3.5" />
@@ -251,10 +251,10 @@ export const BackupManagement: React.FC = () => {
         <button
           onClick={() => handleSelectSubTab('schedule')}
           data-testid="subtab-schedule"
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-medium transition-all cursor-pointer ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
             activeSubTab === 'schedule'
-              ? 'bg-pink-500/20 text-pink-300 border border-pink-500/40 shadow-sm shadow-pink-500/10'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 border border-transparent'
+              ? 'bg-rose-50 text-rose-700 border border-rose-200 shadow-2xs'
+              : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100 border border-transparent'
           }`}
         >
           <Clock className="w-3.5 h-3.5" />
@@ -264,13 +264,12 @@ export const BackupManagement: React.FC = () => {
         <button
           onClick={() => handleSelectSubTab('import')}
           data-testid="subtab-import"
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-medium transition-all cursor-pointer ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
             activeSubTab === 'import'
-              ? 'bg-pink-500/20 text-pink-300 border border-pink-500/40 shadow-sm shadow-pink-500/10'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 border border-transparent'
+              ? 'bg-rose-50 text-rose-700 border border-rose-200 shadow-2xs'
+              : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100 border border-transparent'
           }`}
         >
-
           <UploadCloud className="w-3.5 h-3.5" />
           <span>Importar Backup Externo</span>
         </button>

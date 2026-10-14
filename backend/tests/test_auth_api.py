@@ -11,6 +11,8 @@ def test_tiktok_login_endpoint(client):
     assert "video.publish" in data["url"]
     assert "video.upload" in data["url"]
     assert "state" in data
+    assert "code_challenge=" in data["url"]
+    assert "code_challenge_method=S256" in data["url"]
 
 def test_get_connected_accounts_endpoint(client, db_session):
     response = client.get("/api/auth/accounts")

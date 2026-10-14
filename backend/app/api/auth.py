@@ -1,3 +1,4 @@
+import hashlib
 import logging
 import secrets
 from datetime import datetime, timezone, timedelta
@@ -17,6 +18,20 @@ from app.api.invitations import validate_strong_password
 logger = logging.getLogger("api.auth")
 router = APIRouter(prefix="/auth", tags=["Authentication & Social Accounts"])
 
+# Armazenamento temporário de PKCE do TikTok (state -> {code_verifier, created_at})
+_tiktok_pkce_store: dict[str, dict] = {}
+
+
+def _clean_expired_pkce_states():
+    """Remove estados de PKCE não utilizados com mais de 15 minutos."""
+    now = datetime.now(timezone.utc)
+    expired = [
+        s for s, item in _tiktok_pkce_store.items()
+        if (now - item.get("created_at", now)).total_seconds() > 900
+    ]
+    for s in expired:
+        _tiktok_pkce_store.pop(s, None)
+
 
 @router.get("/tiktok/login")
 def tiktok_login(
@@ -24,7 +39,7 @@ def tiktok_login(
 ):
     """
     Gera a URL de consentimento OAuth 2.0 do TikTok com os escopos necessários
-    (user.info.basic, video.publish, video.upload).
+    (user.info.basic, video.publish, video.upload) e validação PKCE (code_challenge S256).
     """
     if not settings.TIKTOK_CLIENT_KEY:
         raise HTTPException(
@@ -35,14 +50,27 @@ def tiktok_login(
     csrf_state = secrets.token_urlsafe(16)
     scope = "user.info.basic,video.publish,video.upload"
     
-    # URL oficial de autorização do TikTok v2
+    # Gera o par PKCE (code_verifier e code_challenge) exigido pelo TikTok v2
+    code_verifier = secrets.token_urlsafe(48)
+    sha256_hash = hashlib.sha256(code_verifier.encode("utf-8")).digest()
+    code_challenge = sha256_hash.hex()
+
+    _clean_expired_pkce_states()
+    _tiktok_pkce_store[csrf_state] = {
+        "code_verifier": code_verifier,
+        "created_at": datetime.now(timezone.utc)
+    }
+
+    # URL oficial de autorização do TikTok v2 com suporte a PKCE
     auth_url = (
         f"https://www.tiktok.com/v2/auth/authorize/?"
         f"client_key={settings.TIKTOK_CLIENT_KEY}&"
         f"scope={scope}&"
         f"response_type=code&"
         f"redirect_uri={settings.TIKTOK_REDIRECT_URI}&"
-        f"state={csrf_state}"
+        f"state={csrf_state}&"
+        f"code_challenge={code_challenge}&"
+        f"code_challenge_method=S256"
     )
 
     if redirect:
@@ -50,7 +78,9 @@ def tiktok_login(
 
     return {
         "url": auth_url,
-        "state": csrf_state
+        "state": csrf_state,
+        "redirect_uri": settings.TIKTOK_REDIRECT_URI,
+        "client_key": settings.TIKTOK_CLIENT_KEY
     }
 
 
@@ -63,8 +93,8 @@ async def tiktok_callback(
     db: Session = Depends(get_db)
 ):
     """
-    Recebe o código de autorização do TikTok, troca por Access Token e Refresh Token,
-    e armazena os dados da conta no banco de dados.
+    Recebe o código de autorização do TikTok, troca por Access Token e Refresh Token
+    utilizando o code_verifier do PKCE, e armazena os dados da conta no banco de dados.
     """
     if error:
         logger.error(f"[TikTok OAuth] Erro retornado pelo TikTok: {error} - {error_description}")
@@ -73,10 +103,12 @@ async def tiktok_callback(
             <!DOCTYPE html>
             <html>
               <head><title>Erro TikTok</title><meta charset="utf-8"></head>
-              <body style="font-family: sans-serif; text-align: center; padding: 40px; background: #0f172a; color: #f87171;">
-                <h2>Falha na Autorização do TikTok</h2>
-                <p>{error_description or error}</p>
-                <a href="{settings.FRONTEND_URL}" style="color: #38bdf8;">Voltar ao MultiPost</a>
+              <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; text-align: center; padding: 40px; background: #f8fafc; color: #1e293b;">
+                <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 32px; max-width: 420px; margin: 0 auto; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                  <h2 style="color: #ea384c; margin-top: 0;">Falha na Autorização do TikTok</h2>
+                  <p style="color: #64748b; font-size: 14px;">{error_description or error}</p>
+                  <a href="{settings.FRONTEND_URL}" style="display: inline-block; margin-top: 16px; padding: 10px 20px; background: #ea384c; color: white; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 13px;">Voltar ao MultiPost</a>
+                </div>
               </body>
             </html>
             """,
@@ -85,6 +117,10 @@ async def tiktok_callback(
 
     if not code:
         raise HTTPException(status_code=400, detail="Código de autorização não fornecido.")
+
+    # Recupera o code_verifier do PKCE correspondente ao state retornado
+    pkce_data = _tiktok_pkce_store.pop(state, {}) if state else {}
+    code_verifier = pkce_data.get("code_verifier")
 
     # Troca o code por Access Token e Refresh Token
     token_url = "https://open.tiktokapis.com/v2/oauth/token/"
@@ -95,6 +131,8 @@ async def tiktok_callback(
         "grant_type": "authorization_code",
         "redirect_uri": settings.TIKTOK_REDIRECT_URI
     }
+    if code_verifier:
+        token_payload["code_verifier"] = code_verifier
 
     try:
         async with httpx.AsyncClient(timeout=30.0) as client:
@@ -248,7 +286,9 @@ def get_connected_accounts(db: Session = Depends(get_db)):
             "connected": tiktok_connected,
             "account_name": tiktok_name,
             "avatar_url": tiktok_avatar,
-            "expires_at": tiktok_expires_at
+            "expires_at": tiktok_expires_at,
+            "redirect_uri": settings.TIKTOK_REDIRECT_URI,
+            "client_key": settings.TIKTOK_CLIENT_KEY
         },
         "youtube": {
             "connected": youtube_connected,

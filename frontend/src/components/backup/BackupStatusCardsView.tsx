@@ -12,17 +12,17 @@ export const BackupStatusCardsView: React.FC<BackupStatusCardsViewProps> = ({ st
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
       {/* Card 1: Último Backup */}
-      <div className="bg-slate-900/60 backdrop-blur-md border border-slate-800/80 rounded-2xl p-4 shadow-lg shadow-black/20 hover:border-slate-700/80 transition-all flex flex-col justify-between">
+      <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs hover:border-slate-300 transition-all flex flex-col justify-between">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-xs font-medium text-slate-400">Último Backup</span>
-          <div className="p-2 rounded-xl bg-pink-500/10 text-pink-400 border border-pink-500/20">
+          <span className="text-xs font-semibold text-slate-500">Último Backup</span>
+          <div className="p-2 rounded-xl bg-rose-50 text-[#ea384c] border border-rose-200">
             <Calendar className="w-4 h-4" />
           </div>
         </div>
         <div>
-          <div className="text-sm font-semibold text-white tracking-tight">
+          <div className="text-sm font-bold text-slate-900 tracking-tight">
             {loading ? (
-              <span className="animate-pulse text-slate-500">Carregando...</span>
+              <span className="animate-pulse text-slate-400">Carregando...</span>
             ) : status?.last_backup ? (
               formatDateTimeBRT(status.last_backup.created_at)
             ) : (
@@ -36,21 +36,21 @@ export const BackupStatusCardsView: React.FC<BackupStatusCardsViewProps> = ({ st
       </div>
 
       {/* Card 2: Próximo Backup */}
-      <div className="bg-slate-900/60 backdrop-blur-md border border-slate-800/80 rounded-2xl p-4 shadow-lg shadow-black/20 hover:border-slate-700/80 transition-all flex flex-col justify-between">
+      <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs hover:border-slate-300 transition-all flex flex-col justify-between">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-xs font-medium text-slate-400">Próximo Backup</span>
-          <div className="p-2 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+          <span className="text-xs font-semibold text-slate-500">Próximo Backup</span>
+          <div className="p-2 rounded-xl bg-cyan-50 text-cyan-600 border border-cyan-200">
             <Clock className="w-4 h-4" />
           </div>
         </div>
         <div>
-          <div className="text-sm font-semibold text-white tracking-tight">
+          <div className="text-sm font-bold text-slate-900 tracking-tight">
             {loading ? (
-              <span className="animate-pulse text-slate-500">Carregando...</span>
+              <span className="animate-pulse text-slate-400">Carregando...</span>
             ) : status?.is_active && status?.next_backup_at ? (
               formatDateTimeBRT(status.next_backup_at)
             ) : (
-              <span className="text-slate-400">Agendamento inativo</span>
+              <span className="text-slate-400 font-normal">Agendamento inativo</span>
             )}
           </div>
           <p className="text-[11px] text-slate-400 mt-1">
@@ -62,17 +62,17 @@ export const BackupStatusCardsView: React.FC<BackupStatusCardsViewProps> = ({ st
       </div>
 
       {/* Card 3: Retenção no S3 / B2 */}
-      <div className="bg-slate-900/60 backdrop-blur-md border border-slate-800/80 rounded-2xl p-4 shadow-lg shadow-black/20 hover:border-slate-700/80 transition-all flex flex-col justify-between">
+      <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs hover:border-slate-300 transition-all flex flex-col justify-between">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-xs font-medium text-slate-400">Retenção no S3 / B2</span>
-          <div className="p-2 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20">
+          <span className="text-xs font-semibold text-slate-500">Retenção no S3 / B2</span>
+          <div className="p-2 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-200">
             <Database className="w-4 h-4" />
           </div>
         </div>
         <div>
-          <div className="text-base font-semibold text-white tracking-tight">
+          <div className="text-base font-bold text-slate-900 tracking-tight">
             {loading ? (
-              <span className="animate-pulse text-slate-500">...</span>
+              <span className="animate-pulse text-slate-400">...</span>
             ) : (
               `${status?.total_backups || 0} / ${status?.retention_limit || 30} backups`
             )}
@@ -84,13 +84,13 @@ export const BackupStatusCardsView: React.FC<BackupStatusCardsViewProps> = ({ st
       </div>
 
       {/* Card 4: Status do Backblaze B2 */}
-      <div className="bg-slate-900/60 backdrop-blur-md border border-slate-800/80 rounded-2xl p-4 shadow-lg shadow-black/20 hover:border-slate-700/80 transition-all flex flex-col justify-between">
+      <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs hover:border-slate-300 transition-all flex flex-col justify-between">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-xs font-medium text-slate-400">Status do Backblaze B2</span>
+          <span className="text-xs font-semibold text-slate-500">Status do Backblaze B2</span>
           <div className={`p-2 rounded-xl border ${
             status?.s3_connected
-              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-              : 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+              ? 'bg-emerald-50 text-emerald-600 border-emerald-200'
+              : 'bg-amber-50 text-amber-600 border-amber-200'
           }`}>
             <Cloud className="w-4 h-4" />
           </div>
@@ -99,13 +99,13 @@ export const BackupStatusCardsView: React.FC<BackupStatusCardsViewProps> = ({ st
           <div className="flex items-center gap-1.5">
             {status?.s3_connected ? (
               <>
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                <span className="text-sm font-semibold text-emerald-300">Conectado</span>
+                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                <span className="text-sm font-bold text-emerald-700">Conectado</span>
               </>
             ) : (
               <>
-                <AlertCircle className="w-4 h-4 text-amber-400" />
-                <span className="text-sm font-semibold text-amber-300">Desconectado</span>
+                <AlertCircle className="w-4 h-4 text-amber-600" />
+                <span className="text-sm font-bold text-amber-700">Desconectado</span>
               </>
             )}
           </div>
