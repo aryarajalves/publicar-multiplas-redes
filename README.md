@@ -27,12 +27,12 @@ Plataforma completa para upload, agendamento e publicação automática de víde
 | **Frontend Web** | `social-stream-web` | Interface do usuário em React / Nginx | `3005` |
 
 ### Ambiente de Produção (`docker/docker-compose-producao.yml`)
-Em produção, os 3 serviços utilizam a nomenclatura padronizada `social-stream-*`, conectam-se à rede única do Swarm `network_swarm_public` e compartilham o volume nomeado `social_stream_uploads` para persistência de mídias:
-| Serviço | Nome do Contêiner | Função | Porta no Host |
-| :--- | :--- | :--- | :--- |
-| **Backend API** | `social-stream-backend` | API REST FastAPI de produção | `8005` |
-| **Worker Agendador** | `social-stream-worker` | Daemon de agendamento e publicação assíncrona | - |
-| **Frontend Web** | `social-stream-frontend` | Servidor Nginx servindo o bundle compilado em produção | `3005` |
+Em produção, os 3 serviços utilizam imagens versionadas no Docker Hub, conectam-se à rede única do Swarm `network_swarm_public` e compartilham o volume nomeado `social_stream_uploads` para persistência de mídias:
+| Serviço | Nome do Contêiner | Imagem Docker Hub | Função | Porta no Host |
+| :--- | :--- | :--- | :--- | :--- |
+| **Backend API** | `social-stream-backend` | `aryalvesfernandes/publica-multiplas-redes:backend-1.0.0` | API REST FastAPI de produção | `8005` |
+| **Worker Agendador** | `social-stream-worker` | `aryalvesfernandes/publica-multiplas-redes:backend-1.0.0` | Daemon de agendamento e publicação assíncrona | - |
+| **Frontend Web** | `social-stream-frontend` | `aryalvesfernandes/publica-multiplas-redes:frontend-1.0.0` | Servidor Nginx servindo o bundle compilado em produção | `3005` |
 
 - **Rede Única:** `network_swarm_public` (externa)
 - **Volume Nomeado:** `social_stream_uploads` (compartilhado entre backend e worker)

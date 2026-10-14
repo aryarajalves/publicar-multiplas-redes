@@ -8,7 +8,7 @@ services:
     build:
       context: ..
       dockerfile: docker/backend.Dockerfile
-    image: social-stream-backend:latest
+    image: aryalvesfernandes/publica-multiplas-redes:backend-1.0.0
     container_name: social-stream-backend
     restart: unless-stopped
     ports:
@@ -67,7 +67,7 @@ services:
     build:
       context: ..
       dockerfile: docker/backend.Dockerfile
-    image: social-stream-worker:latest
+    image: aryalvesfernandes/publica-multiplas-redes:backend-1.0.0
     container_name: social-stream-worker
     restart: unless-stopped
     command: python -m app.worker.scheduler
@@ -126,7 +126,7 @@ services:
     build:
       context: ..
       dockerfile: docker/frontend.Dockerfile
-    image: social-stream-frontend:latest
+    image: aryalvesfernandes/publica-multiplas-redes:frontend-1.0.0
     container_name: social-stream-frontend
     restart: unless-stopped
     ports:
