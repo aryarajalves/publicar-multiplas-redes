@@ -12,18 +12,27 @@ Plataforma completa para upload, agendamento e publicação automática de víde
 - **Worker de Agendamento:** Python Scheduler Daemon assíncrono (`social-scheduler-worker`)
 - **Armazenamento em Nuvem:** Backblaze B2 / S3 Storage (Backups e entrega de mídia pública para Meta/Instagram)
 - **Servidor Web / Proxy:** Nginx servindo o bundle compilado em produção
-- **Containerização:** Docker & Docker Compose (`docker-compose-local.yml`)
+- **Containerização:** Docker & Docker Compose (`docker-compose-local.yml` para desenvolvimento e `docker-compose-producao.yml` para produção)
 
 ---
 
 ## 🏷️ Estrutura de Contêineres Docker
 
+### Ambiente Local (`docker/docker-compose-local.yml`)
 | Serviço | Nome do Contêiner | Função | Porta no Host |
 | :--- | :--- | :--- | :--- |
 | **Banco de Dados** | `social-vault-postgres` | Armazena posts, usuários, agendamentos e histórico | `5438` |
 | **Backend API** | `social-publisher-api` | API REST para upload, autenticação, logs e publicação | `8005` |
 | **Worker Agendador** | `social-scheduler-worker` | Daemon que monitora o agendamento e executa os envios | - |
 | **Frontend Web** | `social-stream-web` | Interface do usuário em React / Nginx | `3005` |
+
+### Ambiente de Produção (`docker/docker-compose-producao.yml`)
+Em produção, os 3 serviços utilizam a nomenclatura padronizada `social-stream-*` e conectam-se ao PostgreSQL já existente no próprio servidor hospedeiro:
+| Serviço | Nome do Contêiner | Função | Porta no Host |
+| :--- | :--- | :--- | :--- |
+| **Backend API** | `social-stream-backend` | API REST FastAPI de produção | `8005` |
+| **Worker Agendador** | `social-stream-worker` | Daemon de agendamento e publicação assíncrona | - |
+| **Frontend Web** | `social-stream-frontend` | Servidor Nginx servindo o bundle compilado em produção | `3005` |
 
 ---
 
@@ -44,14 +53,19 @@ Plataforma completa para upload, agendamento e publicação automática de víde
 
 ---
 
-## 🐳 Como Executar Localmente
+## 🐳 Como Executar
 
-### 1. Iniciar os Contêineres
+### Ambiente Local (Desenvolvimento com PostgreSQL embutido)
 ```bash
 docker compose -f docker/docker-compose-local.yml up -d
 ```
 
-### 2. Acessar os Serviços
+### Ambiente de Produção (Serviços isolados com PostgreSQL do Servidor)
+```bash
+docker compose -f docker/docker-compose-producao.yml up -d
+```
+
+### Acessar os Serviços
 - **Frontend (Interface Web):** [http://localhost:3005](http://localhost:3005)
 - **Backend (Swagger / OpenAPI):** [http://localhost:8005/docs](http://localhost:8005/docs)
 - **Healthcheck:** [http://localhost:8005/api/health](http://localhost:8005/api/health)

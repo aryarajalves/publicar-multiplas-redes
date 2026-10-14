@@ -1,0 +1,78 @@
+name: social-stream-producao
+
+services:
+  # -------------------------------------------------------------
+  # BACKEND FASTAPI (Tema: Social Stream Backend API)
+  # -------------------------------------------------------------
+  social-stream-backend:
+    build:
+      context: ..
+      dockerfile: docker/backend.Dockerfile
+    image: social-stream-backend:latest
+    container_name: social-stream-backend
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_PORT:-8005}:8000"
+    env_file:
+      - ../backend/.env
+    environment:
+      - DATABASE_URL=${DATABASE_URL:-postgresql+psycopg2://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@host.docker.internal:5432/${POSTGRES_DB:-social_publisher_db}}
+      - UPLOAD_DIR=/app/uploads
+      - SIMULATE_PUBLICATIONS=${SIMULATE_PUBLICATIONS:-false}
+    volumes:
+      - ../backend/uploads:/app/uploads
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - social-stream-network
+
+  # -------------------------------------------------------------
+  # WORKER AGENDADOR (Tema: Social Stream Scheduler Worker)
+  # -------------------------------------------------------------
+  social-stream-worker:
+    build:
+      context: ..
+      dockerfile: docker/backend.Dockerfile
+    image: social-stream-worker:latest
+    container_name: social-stream-worker
+    restart: unless-stopped
+    command: python -m app.worker.scheduler
+    env_file:
+      - ../backend/.env
+    environment:
+      - DATABASE_URL=${DATABASE_URL:-postgresql+psycopg2://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@host.docker.internal:5432/${POSTGRES_DB:-social_publisher_db}}
+      - UPLOAD_DIR=/app/uploads
+      - SIMULATE_PUBLICATIONS=${SIMULATE_PUBLICATIONS:-false}
+    volumes:
+      - ../backend/uploads:/app/uploads
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - social-stream-backend
+    networks:
+      - social-stream-network
+
+  # -------------------------------------------------------------
+  # FRONTEND WEB (Tema: Social Stream Frontend Nginx)
+  # -------------------------------------------------------------
+  social-stream-frontend:
+    build:
+      context: ..
+      dockerfile: docker/frontend.Dockerfile
+    image: social-stream-frontend:latest
+    container_name: social-stream-frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-3005}:80"
+    volumes:
+      - ../frontend/dist:/usr/share/nginx/html:ro
+    depends_on:
+      - social-stream-backend
+    networks:
+      - social-stream-network
+
+networks:
+  social-stream-network:
+    name: social-stream-network
+    driver: bridge
