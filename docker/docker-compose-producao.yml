@@ -61,15 +61,12 @@ services:
       - B2_ENDPOINT_URL=${B2_ENDPOINT_URL:-https://s3.us-west-004.backblazeb2.com}
       - B2_REGION_NAME=${B2_REGION_NAME:-us-west-004}
     volumes:
-      - ../backend/uploads:/app/uploads
+      - social_stream_uploads:/app/uploads
       - /var/run/docker.sock:/var/run/docker.sock:ro
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
-      social-stream-network:
-        aliases:
-          - social-publisher-api
-          - social-stream-backend
+      - network_swarm_public
 
   # -------------------------------------------------------------
   # WORKER AGENDADOR (Tema: Social Stream Scheduler Worker)
@@ -130,16 +127,13 @@ services:
       - B2_ENDPOINT_URL=${B2_ENDPOINT_URL:-https://s3.us-west-004.backblazeb2.com}
       - B2_REGION_NAME=${B2_REGION_NAME:-us-west-004}
     volumes:
-      - ../backend/uploads:/app/uploads
+      - social_stream_uploads:/app/uploads
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
       - social-stream-backend
     networks:
-      social-stream-network:
-        aliases:
-          - social-scheduler-worker
-          - social-stream-worker
+      - network_swarm_public
 
   # -------------------------------------------------------------
   # FRONTEND WEB (Tema: Social Stream Frontend Nginx)
@@ -205,12 +199,13 @@ services:
     depends_on:
       - social-stream-backend
     networks:
-      social-stream-network:
-        aliases:
-          - social-stream-web
-          - social-stream-frontend
+      - network_swarm_public
+
+volumes:
+  social_stream_uploads:
+    name: social_stream_uploads
 
 networks:
-  social-stream-network:
-    name: social-stream-network
-    driver: bridge
+  network_swarm_public:
+    name: network_swarm_public
+    external: true
