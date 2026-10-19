@@ -29,6 +29,10 @@ describe('Sidebar Component', () => {
     expect(screen.getByText('Sistema')).toBeInTheDocument();
 
     expect(screen.getByTestId('sidebar-btn-posts')).toBeInTheDocument();
+    expect(screen.getByTestId('sidebar-btn-calendar')).toBeInTheDocument();
+    expect(screen.getByText('Calendário')).toBeInTheDocument();
+    expect(screen.getByTestId('sidebar-btn-analytics')).toBeInTheDocument();
+    expect(screen.getByText('Performance & Insights')).toBeInTheDocument();
     expect(screen.getByTestId('sidebar-btn-users')).toBeInTheDocument();
     expect(screen.getByTestId('sidebar-btn-logs')).toBeInTheDocument();
     expect(screen.getByText('Gestão de Logs')).toBeInTheDocument();
@@ -51,6 +55,12 @@ describe('Sidebar Component', () => {
         onOpenLogout={vi.fn()}
       />
     );
+
+    fireEvent.click(screen.getByTestId('sidebar-btn-calendar'));
+    expect(onSelectTab).toHaveBeenCalledWith('calendar');
+
+    fireEvent.click(screen.getByTestId('sidebar-btn-analytics'));
+    expect(onSelectTab).toHaveBeenCalledWith('analytics');
 
     fireEvent.click(screen.getByTestId('sidebar-btn-users'));
     expect(onSelectTab).toHaveBeenCalledWith('users');

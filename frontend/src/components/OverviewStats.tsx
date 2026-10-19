@@ -16,7 +16,7 @@ export const OverviewStats: React.FC<Props> = ({ overview }) => {
   const tkStats = overview?.platforms.find(p => p.platform === 'tiktok');
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div data-testid="overview-stats" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
       {/* Total de Vídeos */}
       <div className="bg-white border border-slate-200 shadow-sm rounded-xl p-4 flex items-center justify-between">
         <div>

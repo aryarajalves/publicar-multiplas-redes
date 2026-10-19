@@ -1,7 +1,7 @@
 import React from 'react';
-import { Film, Users, Radio, LogOut, Terminal, Database, Play } from 'lucide-react';
+import { Film, Calendar, Users, Radio, LogOut, Terminal, Database, Play, TrendingUp, Sliders } from 'lucide-react';
 
-export type MainTab = 'posts' | 'users' | 'logs' | 'backup';
+export type MainTab = 'posts' | 'calendar' | 'analytics' | 'settings' | 'users' | 'logs' | 'backup';
 
 
 interface SidebarProps {
@@ -24,7 +24,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   return (
     <aside
       data-testid="main-sidebar"
-      className="w-64 bg-white border-r border-slate-200 flex flex-col justify-between shrink-0 h-screen sticky top-0 overflow-hidden z-20 select-none shadow-xs"
+      onWheel={(e) => e.stopPropagation()}
+      style={{ overscrollBehavior: 'contain' }}
+      className="w-64 bg-white border-r border-slate-200 flex flex-col justify-between shrink-0 h-screen sticky top-0 overflow-hidden z-20 select-none shadow-xs overscroll-contain"
     >
       {/* Brand Header */}
       <div className="flex-1 flex flex-col min-h-0">
@@ -46,7 +48,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Navigation Section */}
-        <div className="px-3 py-4 space-y-5 overflow-y-auto">
+        <div 
+          className="px-3 py-4 space-y-5 overflow-y-auto overscroll-contain"
+          style={{ overscrollBehavior: 'contain' }}
+          onWheel={(e) => e.stopPropagation()}
+        >
           {/* Categoria 1: OPERAÇÃO / GERAL */}
           <div className="space-y-1">
             <p className="px-3 pb-1 text-[11px] font-bold tracking-wider text-slate-400 uppercase">
@@ -75,6 +81,50 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <span>Publicações</span>
             </button>
 
+            {/* Calendário Editorial */}
+            <button
+              onClick={() => onSelectTab('calendar')}
+              data-testid="sidebar-btn-calendar"
+              className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                activeTab === 'calendar'
+                  ? 'bg-amber-50 text-amber-800 border border-amber-200/80 shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 border border-transparent'
+              }`}
+            >
+              <div
+                className={`p-1 rounded-lg ${
+                  activeTab === 'calendar'
+                    ? 'bg-amber-100 text-amber-700'
+                    : 'bg-slate-100 text-slate-500'
+                }`}
+              >
+                <Calendar className="w-4 h-4" />
+              </div>
+              <span className="flex-1 text-left">Calendário</span>
+            </button>
+
+            {/* Performance & Insights */}
+            <button
+              onClick={() => onSelectTab('analytics')}
+              data-testid="sidebar-btn-analytics"
+              className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                activeTab === 'analytics'
+                  ? 'bg-rose-50 text-rose-700 border border-rose-200/80 shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 border border-transparent'
+              }`}
+            >
+              <div
+                className={`p-1 rounded-lg ${
+                  activeTab === 'analytics'
+                    ? 'bg-rose-100 text-[#ea384c]'
+                    : 'bg-slate-100 text-slate-500'
+                }`}
+              >
+                <TrendingUp className="w-4 h-4" />
+              </div>
+              <span className="flex-1 text-left">Performance & Insights</span>
+            </button>
+
             {/* Contas Sociais */}
             <button
               onClick={onOpenAccounts}
@@ -93,6 +143,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <p className="px-3 pb-1 text-[11px] font-bold tracking-wider text-slate-400 uppercase">
               Sistema
             </p>
+
+            {/* Configurações Globais */}
+            <button
+              onClick={() => onSelectTab('settings')}
+              data-testid="sidebar-btn-settings"
+              className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                activeTab === 'settings'
+                  ? 'bg-sky-50 text-sky-700 border border-sky-200/80 shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 border border-transparent'
+              }`}
+            >
+              <div
+                className={`p-1 rounded-lg ${
+                  activeTab === 'settings'
+                    ? 'bg-sky-100 text-sky-600'
+                    : 'bg-slate-100 text-slate-500'
+                }`}
+              >
+                <Sliders className="w-4 h-4" />
+              </div>
+              <span>Configurações</span>
+            </button>
 
             {/* Gestão de Usuários */}
             <button

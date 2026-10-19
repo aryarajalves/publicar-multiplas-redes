@@ -179,7 +179,7 @@ export const ConnectedAccountsModal: React.FC<Props> = ({ isOpen, onClose }) => 
     }
   };
 
-  const redirectUri = accounts?.tiktok?.redirect_uri || 'http://localhost:8005/api/auth/tiktok/callback';
+  const redirectUri = accounts?.tiktok?.redirect_uri || 'http://localhost:7800/api/auth/tiktok/callback';
 
   const handleCopyRedirectUri = async () => {
     try {

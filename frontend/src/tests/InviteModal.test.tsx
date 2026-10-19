@@ -42,7 +42,7 @@ describe('InviteModal Component', () => {
       expires_at: '2026-10-15T10:00:00Z',
       is_used: false,
       created_at: '2026-10-13T10:00:00Z',
-      invite_url: 'http://localhost:3005/cadastro?token=tok-abc-123',
+      invite_url: 'http://localhost:7300/cadastro?token=tok-abc-123',
     };
     (api.createInvitation as any).mockResolvedValueOnce(mockInvite);
 

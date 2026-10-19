@@ -19,7 +19,17 @@ import {
   BackupListResponse,
   BackupScheduleSettings,
   BackupStatusCards,
-  BackupActionResponse
+  BackupActionResponse,
+  WinningFormulaData,
+  ScriptVariation,
+  PublicationSetting,
+  LocationSearchResult,
+  InstagramProfile,
+  YouTubeProfile,
+  TikTokProfile,
+  UnifiedProfiles,
+  CommentsResponse,
+  CreateCommentPayload
 } from '../types';
 
 
@@ -335,8 +345,127 @@ export const api = {
   async deleteBackup(backupId: number): Promise<BackupActionResponse> {
     const response = await client.delete<BackupActionResponse>(`/backup/${backupId}`);
     return response.data;
+  },
+
+  async syncAnalytics(): Promise<{ success: boolean; message: string; data: any }> {
+    const response = await client.post<{ success: boolean; message: string; data: any }>('/analytics/sync');
+    return response.data;
+  },
+
+  async getAnalyticsSummary(): Promise<any> {
+    const response = await client.get('/analytics/summary');
+    return response.data;
+  },
+
+  async getPostMetricsHistory(postId: number): Promise<any[]> {
+    const response = await client.get(`/analytics/history/${postId}`);
+    return response.data;
+  },
+
+  async getWinningFormula(): Promise<WinningFormulaData> {
+    const response = await client.get<WinningFormulaData>('/analytics/winning-formula');
+    return response.data;
+  },
+
+  async getVideoDiagnosis(postId: number): Promise<any> {
+    const response = await client.get(`/analytics/posts/${postId}/diagnosis`);
+    return response.data;
+  },
+
+  async generateScriptVariations(postId: number): Promise<{ success: boolean; scripts: ScriptVariation[] }> {
+    const response = await client.post<{ success: boolean; scripts: ScriptVariation[] }>(`/analytics/posts/${postId}/generate-scripts`);
+    return response.data;
+  },
+
+  async getPublicationSettings(): Promise<PublicationSetting> {
+    const response = await client.get<PublicationSetting>('/settings/publication');
+    return response.data;
+  },
+
+  async updatePublicationSettings(data: Partial<PublicationSetting>): Promise<PublicationSetting> {
+    const response = await client.put<PublicationSetting>('/settings/publication', data);
+    return response.data;
+  },
+
+  async searchLocations(query: string): Promise<{ results: LocationSearchResult[] }> {
+    const response = await client.get<{ results: LocationSearchResult[] }>('/settings/locations/search', {
+      params: { q: query }
+    });
+    return response.data;
+  },
+
+  async getInstagramProfile(forceRefresh?: boolean): Promise<InstagramProfile> {
+    const response = await client.get('/instagram/profile', {
+      params: forceRefresh ? { force_refresh: true } : {}
+    });
+    return response.data;
+  },
+
+  async getYoutubeProfile(forceRefresh?: boolean): Promise<YouTubeProfile> {
+    const response = await client.get('/youtube/profile', {
+      params: forceRefresh ? { force_refresh: true } : {}
+    });
+    return response.data;
+  },
+
+  async getTiktokProfile(forceRefresh?: boolean): Promise<TikTokProfile> {
+    const response = await client.get('/tiktok/profile', {
+      params: forceRefresh ? { force_refresh: true } : {}
+    });
+    return response.data;
+  },
+
+  async getPlatformsProfiles(forceRefresh?: boolean): Promise<UnifiedProfiles> {
+    const response = await client.get('/platforms/profiles', {
+      params: forceRefresh ? { force_refresh: true } : {}
+    });
+    return response.data;
+  },
+
+  async searchInstagramAudio(params?: {
+    q?: string;
+    audio_type?: 'music' | 'original_sound' | 'favorites';
+    after?: string;
+  }): Promise<any> {
+    const response = await client.get('/instagram/audio', { params });
+    return response.data;
+  },
+
+  async getFavoriteInstagramAudio(): Promise<any> {
+    const response = await client.get('/instagram/audio/favorites');
+    return response.data;
+  },
+
+  async addFavoriteInstagramAudio(track: any): Promise<any> {
+    const response = await client.post('/instagram/audio/favorites', track);
+    return response.data;
+  },
+
+  async removeFavoriteInstagramAudio(audioId: string): Promise<any> {
+    const response = await client.delete(`/instagram/audio/favorites/${encodeURIComponent(audioId)}`);
+    return response.data;
+  },
+
+  async syncPostMetrics(postId: number): Promise<{ success: boolean; data?: any }> {
+    const response = await client.post(`/analytics/posts/${postId}/sync`);
+    return response.data;
+  },
+
+  async getPostComments(postId: number, platform: string): Promise<CommentsResponse> {
+    const response = await client.get<CommentsResponse>(`/posts/${postId}/comments`, {
+      params: { platform }
+    });
+    return response.data;
+  },
+
+  async replyPostComment(
+    postId: number,
+    payload: CreateCommentPayload
+  ): Promise<{ success: boolean; id?: string; message?: string; detail?: string }> {
+    const response = await client.post<{ success: boolean; id?: string; message?: string; detail?: string }>(
+      `/posts/${postId}/comments`,
+      payload
+    );
+    return response.data;
   }
 };
-
-
-

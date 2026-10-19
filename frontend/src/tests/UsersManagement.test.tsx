@@ -58,7 +58,7 @@ describe('UsersManagement Component', () => {
       expires_at: futureDate,
       is_used: false,
       created_at: '2026-10-10T10:00:00Z',
-      invite_url: 'http://localhost:3005/cadastro?token=token_ativo_pendente_123',
+      invite_url: 'http://localhost:7300/cadastro?token=token_ativo_pendente_123',
     },
     {
       id: 102,
@@ -68,7 +68,7 @@ describe('UsersManagement Component', () => {
       is_used: true,
       used_by_email: 'membro_usado@multipost.com',
       created_at: '2026-10-09T10:00:00Z',
-      invite_url: 'http://localhost:3005/cadastro?token=token_utilizado_456',
+      invite_url: 'http://localhost:7300/cadastro?token=token_utilizado_456',
     },
     {
       id: 103,
@@ -77,7 +77,7 @@ describe('UsersManagement Component', () => {
       expires_at: pastDate,
       is_used: false,
       created_at: '2026-10-01T10:00:00Z',
-      invite_url: 'http://localhost:3005/cadastro?token=token_expirado_789',
+      invite_url: 'http://localhost:7300/cadastro?token=token_expirado_789',
     },
   ];
 
@@ -283,7 +283,7 @@ describe('UsersManagement Component', () => {
     // Copia link
     fireEvent.click(screen.getByTestId('btn-copy-invite-101'));
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-      'http://localhost:3005/cadastro?token=token_ativo_pendente_123'
+      'http://localhost:7300/cadastro?token=token_ativo_pendente_123'
     );
 
     // Clica em revogar/excluir convite
@@ -305,7 +305,7 @@ describe('UsersManagement Component', () => {
     (api.getUsers as any).mockResolvedValueOnce(mockUsers);
     (api.sendUserPasswordReset as any).mockResolvedValueOnce({
       message: 'Link de redefinição enviado para junior@multipost.com',
-      reset_url: 'http://localhost:3005/redefinir-senha?token=tok-test-123',
+      reset_url: 'http://localhost:7300/redefinir-senha?token=tok-test-123',
     });
 
     render(<UsersManagement />);

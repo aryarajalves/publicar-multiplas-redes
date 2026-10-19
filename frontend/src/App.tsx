@@ -2,28 +2,26 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { api } from './services/api';
 import { Post, PlatformOverview, User } from './types';
 import { Navbar } from './components/Navbar';
-import { OverviewStats } from './components/OverviewStats';
-import { PostFilters } from './components/PostFilters';
-import { PostCard } from './components/PostCard';
+import { PostsTabContent } from './components/PostsTabContent';
+import { CalendarView } from './components/calendar';
 import { VideoUploadModal } from './components/VideoUploadModal';
 import { PostDetailsModal } from './components/PostDetailsModal';
 import { DeleteConfirmModal } from './components/DeleteConfirmModal';
 import { ConnectedAccountsModal } from './components/ConnectedAccountsModal';
 import { PrivacyPolicyModal } from './components/PrivacyPolicyModal';
 import { TermsOfServiceModal } from './components/TermsOfServiceModal';
-import { Pagination } from './components/Pagination';
 import { Sidebar, MainTab } from './components/Sidebar';
+import { AnalyticsDashboard } from './components/analytics';
+import { SettingsManagement } from './components/settings/SettingsManagement';
 import { UsersManagement } from './components/UsersManagement';
 import { LogsManagement } from './components/LogsManagement';
 import { BackupManagement } from './components/backup/BackupManagement';
-
 import { LogoutConfirmModal } from './components/LogoutConfirmModal';
 import { LoginPage } from './pages/LoginPage';
 import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage';
 import { TermsOfServicePage } from './pages/TermsOfServicePage';
 import { RegisterPage } from './pages/RegisterPage';
 import { ResetPasswordPage } from './pages/ResetPasswordPage';
-import { Film, PlusCircle, AlertCircle } from 'lucide-react';
 
 const ITEMS_PER_PAGE = 20;
 
@@ -52,7 +50,7 @@ export const App: React.FC = () => {
     try {
       if (typeof window !== 'undefined') {
         const hash = window.location.hash.replace('#', '').toLowerCase();
-        const validTabs: MainTab[] = ['posts', 'users', 'logs', 'backup'];
+        const validTabs: MainTab[] = ['posts', 'calendar', 'analytics', 'settings', 'users', 'logs', 'backup'];
         if (validTabs.includes(hash as MainTab)) return hash as MainTab;
         const saved = localStorage.getItem('multipost_active_tab') as MainTab | null;
         if (saved && validTabs.includes(saved)) return saved;
@@ -106,7 +104,7 @@ export const App: React.FC = () => {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '').toLowerCase();
-      const validTabs: MainTab[] = ['posts', 'users', 'logs', 'backup'];
+      const validTabs: MainTab[] = ['posts', 'analytics', 'users', 'logs', 'backup'];
       if (validTabs.includes(hash as MainTab)) {
         setActiveTab(hash as MainTab);
         try {
@@ -282,7 +280,7 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-row">
+    <div className="h-screen w-screen bg-slate-50 flex flex-row overflow-hidden">
       <Sidebar
         activeTab={activeTab}
         onSelectTab={handleSelectTab}
@@ -293,8 +291,8 @@ export const App: React.FC = () => {
         onOpenLogout={() => setIsLogoutOpen(true)}
       />
 
-      <div className="flex-1 flex flex-col min-w-0">
-        {activeTab === 'posts' && (
+      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto overscroll-contain">
+        {(activeTab === 'posts' || activeTab === 'calendar') && (
           <Navbar
             onOpenUpload={() => setIsUploadOpen(true)}
             onOpenAccounts={() => setIsAccountsOpen(true)}
@@ -305,90 +303,44 @@ export const App: React.FC = () => {
 
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {activeTab === 'posts' ? (
-            <>
-              {/* Banner de Erro de Conexão */}
-              {error && (
-                <div className="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-sm flex items-center justify-between shadow-xs">
-                  <div className="flex items-center gap-2">
-                    <AlertCircle className="w-5 h-5 flex-shrink-0 text-rose-600" />
-                    <span>{error}</span>
-                  </div>
-                  <button
-                    onClick={loadData}
-                    className="px-3 py-1 bg-white hover:bg-rose-50 border border-rose-200 rounded-lg text-xs font-semibold text-rose-700 transition-colors shadow-2xs"
-                  >
-                    Tentar Novamente
-                  </button>
-                </div>
-              )}
-
-              {/* Estatísticas Gerais */}
-              <OverviewStats overview={overview} />
-
-              {/* Barra de Filtros e Busca */}
-              <PostFilters
-                search={search}
-                onSearchChange={handleSearchChange}
-                status={status}
-                onStatusChange={handleStatusChange}
-                platform={platform}
-                onPlatformChange={handlePlatformChange}
-              />
-
-              {/* Listagem de Posts / Vídeos */}
-              {posts.length > 0 ? (
-                <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {posts.map((post) => (
-                      <PostCard
-                        key={post.id}
-                        post={post}
-                        onViewDetails={setSelectedPost}
-                        onPublishNow={handlePublishNow}
-                        onDelete={handleDelete}
-                      />
-                    ))}
-                  </div>
-
-                  {/* Componente de Paginação Otimizada (20 vídeos por página) */}
-                  <Pagination
-                    currentPage={page}
-                    totalItems={totalPosts}
-                    itemsPerPage={ITEMS_PER_PAGE}
-                    onPageChange={(newPage) => {
-                      setPage(newPage);
-                      if (typeof window !== 'undefined' && typeof window.scrollTo === 'function') {
-                        try {
-                          window.scrollTo({ top: 0, behavior: 'smooth' });
-                        } catch {}
-                      }
-                    }}
-                    isLoading={isLoading}
-                  />
-                </>
-              ) : (
-                <div className="bg-white border border-slate-200 rounded-2xl p-12 text-center flex flex-col items-center justify-center shadow-sm">
-                  <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-4">
-                    <Film className="w-8 h-8" />
-                  </div>
-                  <h3 className="text-base font-bold text-slate-900">
-                    Nenhuma publicação encontrada
-                  </h3>
-                  <p className="text-xs text-slate-500 mt-1 max-w-md">
-                    {search || status || platform
-                      ? 'Nenhum vídeo corresponde aos filtros selecionados. Tente ajustar a busca.'
-                      : 'Comece agendando seu primeiro vídeo para o Instagram com cross-posting para YouTube e TikTok!'}
-                  </p>
-                  <button
-                    onClick={() => setIsUploadOpen(true)}
-                    className="mt-5 inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#ea384c] hover:bg-[#d82a3e] text-white font-medium text-xs shadow-sm transition-all active:scale-95"
-                  >
-                    <PlusCircle className="w-4 h-4" />
-                    <span>Agendar Primeiro Vídeo</span>
-                  </button>
-                </div>
-              )}
-            </>
+            <PostsTabContent
+              error={error}
+              overview={overview}
+              posts={posts}
+              totalPosts={totalPosts}
+              page={page}
+              itemsPerPage={ITEMS_PER_PAGE}
+              search={search}
+              status={status}
+              platform={platform}
+              isLoading={isLoading}
+              onRefresh={loadData}
+              onSearchChange={handleSearchChange}
+              onStatusChange={handleStatusChange}
+              onPlatformChange={handlePlatformChange}
+              onPageChange={(newPage) => {
+                setPage(newPage);
+                if (typeof window !== 'undefined' && typeof window.scrollTo === 'function') {
+                  try {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  } catch {}
+                }
+              }}
+              onViewDetails={setSelectedPost}
+              onPublishNow={handlePublishNow}
+              onDelete={handleDelete}
+              onOpenUpload={() => setIsUploadOpen(true)}
+            />
+          ) : activeTab === 'calendar' ? (
+            <CalendarView
+              posts={posts}
+              onSelectPost={setSelectedPost}
+              onOpenUpload={() => setIsUploadOpen(true)}
+            />
+          ) : activeTab === 'analytics' ? (
+            <AnalyticsDashboard />
+          ) : activeTab === 'settings' ? (
+            <SettingsManagement />
           ) : activeTab === 'users' ? (
             <UsersManagement />
           ) : activeTab === 'logs' ? (
@@ -458,6 +410,7 @@ export const App: React.FC = () => {
         onClose={() => setSelectedPost(null)}
         onPublishNow={handlePublishNow}
         onDelete={handleDelete}
+        onMetricsUpdated={loadData}
       />
 
       {/* Delete Confirmation Modal */}

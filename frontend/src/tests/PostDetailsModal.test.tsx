@@ -67,15 +67,54 @@ describe('PostDetailsModal Component', () => {
     expect(screen.getByText(/Transcrição do Áudio/i)).toBeInTheDocument();
     expect(screen.getByText(/Transcrição do vídeo falado em detalhes/i)).toBeInTheDocument();
 
-    // Confirma conteúdo específico do Instagram
+    // Confirma abas de redes sociais presentes
+    expect(screen.getByTestId('tab-instagram')).toBeInTheDocument();
+    expect(screen.getByTestId('tab-youtube')).toBeInTheDocument();
+
+    // Confirma conteúdo específico do Instagram (primeira aba ativa)
     expect(screen.getByText('Legenda curta e envolvente do Instagram.')).toBeInTheDocument();
     expect(screen.getByText('#reels #dicas #ia #produtividade #viral')).toBeInTheDocument();
 
-    // Confirma conteúdo específico do YouTube
+    // Alterna para a aba do YouTube
+    fireEvent.click(screen.getByTestId('tab-youtube'));
+
+    // Confirma conteúdo específico do YouTube após trocar de aba
     expect(screen.getAllByText('Como Automatizar Seus Vídeos no YouTube (Passo a Passo)').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText('Descrição completa do vídeo no YouTube.')).toBeInTheDocument();
 
     unmount();
     expect(document.body.style.overflow).not.toBe('hidden');
+  });
+
+  it('switches tabs and copies content to clipboard when copy button is clicked', async () => {
+    const writeTextMock = vi.fn().mockResolvedValue(undefined);
+    Object.assign(navigator, {
+      clipboard: {
+        writeText: writeTextMock,
+      },
+    });
+
+    render(
+      <PostDetailsModal post={samplePost} onClose={vi.fn()} onPublishNow={vi.fn()} onDelete={vi.fn()} />
+    );
+
+    const instagramTab = screen.getByTestId('tab-instagram');
+    const youtubeTab = screen.getByTestId('tab-youtube');
+
+    expect(instagramTab).toHaveAttribute('aria-selected', 'true');
+    expect(youtubeTab).toHaveAttribute('aria-selected', 'false');
+
+    // Clica no botão de copiar na aba do Instagram
+    const copyBtn = screen.getByText('Copiar Texto');
+    fireEvent.click(copyBtn);
+
+    expect(writeTextMock).toHaveBeenCalledWith('Legenda curta e envolvente do Instagram.');
+    expect(screen.getByText('Copiado!')).toBeInTheDocument();
+
+    // Troca para a aba do YouTube
+    fireEvent.click(youtubeTab);
+    expect(youtubeTab).toHaveAttribute('aria-selected', 'true');
+    expect(instagramTab).toHaveAttribute('aria-selected', 'false');
   });
 
   it('calls onClose when close button is clicked', () => {
@@ -106,7 +145,7 @@ describe('PostDetailsModal Component', () => {
     expect(screen.getByTestId('link-view-horizontal-thumb')).toBeInTheDocument();
   });
 
-  it('renders youtube_related_video link when present on post', () => {
+  it('renders youtube_related_video link when present on post and youtube tab is active', () => {
     const postWithRelated: Post = {
       ...samplePost,
       youtube_related_video: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
@@ -114,8 +153,54 @@ describe('PostDetailsModal Component', () => {
 
     render(<PostDetailsModal post={postWithRelated} onClose={vi.fn()} onPublishNow={vi.fn()} onDelete={vi.fn()} />);
 
+    // Clica na aba do YouTube para visualizar o card do YouTube
+    fireEvent.click(screen.getByTestId('tab-youtube'));
+
     expect(screen.getByTestId('detail-youtube-related-video')).toBeInTheDocument();
     expect(screen.getByText('🎬 Vídeo no Final / Recomendado:')).toBeInTheDocument();
     expect(screen.getByText('https://www.youtube.com/watch?v=dQw4w9WgXcQ')).toBeInTheDocument();
   });
+
+  it('renders PostMetricsSummary card and platform metrics when post is published', () => {
+    const publishedPost: Post = {
+      ...samplePost,
+      status: 'published',
+      total_likes: 3500,
+      total_comments: 120,
+      total_shares: 45,
+      total_saves: 88,
+      total_views: 45000,
+      publications: [
+        {
+          id: 10,
+          post_id: 1,
+          platform: 'instagram',
+          status: 'published',
+          last_likes: 3500,
+          last_comments: 120,
+          last_shares: 45,
+          last_saves: 88,
+          last_views: 45000,
+          last_metrics_sync_at: '2026-10-19T14:00:00Z',
+          retry_count: 0,
+          created_at: '2026-10-09T12:00:00Z',
+          updated_at: '2026-10-09T12:00:00Z',
+        },
+      ],
+    };
+
+    render(<PostDetailsModal post={publishedPost} onClose={vi.fn()} onPublishNow={vi.fn()} onDelete={vi.fn()} />);
+
+    // Resumo de métricas
+    expect(screen.getByTestId('post-metrics-summary-card')).toBeInTheDocument();
+    expect(screen.getByText(/Desempenho & Engajamento em Tempo Real/i)).toBeInTheDocument();
+    expect(screen.getByTestId('btn-sync-post-metrics')).toBeInTheDocument();
+    expect(screen.getAllByText('3.500').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText('45.000').length).toBeGreaterThanOrEqual(1);
+
+    // Métricas por rede dentro da aba ativa (Instagram)
+    expect(screen.getByTestId('publication-metrics-instagram')).toBeInTheDocument();
+    expect(screen.getByText(/Desempenho nesta Rede/i)).toBeInTheDocument();
+  });
 });
+

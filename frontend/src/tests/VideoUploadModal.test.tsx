@@ -166,8 +166,10 @@ describe('VideoUploadModal Component', () => {
     fireEvent.change(screen.getByTestId('youtube-description-input'), { target: { value: 'Minha super legenda compartilhada em todas as redes!' } });
     fireEvent.change(screen.getByTestId('youtube-related-video-input'), { target: { value: 'https://www.youtube.com/watch?v=final123' } });
 
-    // Enviar
+    // Enviar (abre popup de confirmação e confirma)
     fireEvent.click(screen.getByTestId('submit-schedule-btn'));
+    expect(screen.getByTestId('publish-confirm-modal-dialog')).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('btn-confirm-publish'));
 
     await waitFor(() => {
       expect(api.createPost).toHaveBeenCalledTimes(1);
@@ -205,8 +207,10 @@ describe('VideoUploadModal Component', () => {
     fireEvent.click(screen.getByTestId('tab-tiktok'));
     fireEvent.change(screen.getByTestId('tiktok-caption-input'), { target: { value: 'Legenda Rápida TikTok #tiktok #viral' } });
 
-    // Enviar
+    // Enviar (abre popup de confirmação e confirma)
     fireEvent.click(screen.getByTestId('submit-schedule-btn'));
+    expect(screen.getByTestId('publish-confirm-modal-dialog')).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('btn-confirm-publish'));
 
     await waitFor(() => {
       expect(api.createPost).toHaveBeenCalledTimes(1);
@@ -328,8 +332,10 @@ describe('VideoUploadModal Component', () => {
     const horizFile = new File(['fake-horiz'], 'horizontal_capa.jpg', { type: 'image/jpeg' });
     fireEvent.change(screen.getByTestId('horizontal-thumb-input'), { target: { files: [horizFile] } });
 
-    // Enviar
+    // Enviar (abre popup de confirmação e confirma)
     fireEvent.click(screen.getByTestId('submit-schedule-btn'));
+    expect(screen.getByTestId('publish-confirm-modal-dialog')).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('btn-confirm-publish'));
 
     await waitFor(() => {
       expect(api.createPost).toHaveBeenCalledTimes(1);
@@ -390,5 +396,73 @@ describe('VideoUploadModal Component', () => {
 
     expect(screen.getByTestId('footer-error-message')).toBeInTheDocument();
     expect(screen.getByTestId('footer-error-message')).toHaveTextContent(/selecione um arquivo de vídeo/i);
+  });
+
+  it('allows selecting frame as cover source for YouTube while using thumbnail for Instagram', async () => {
+    const handleSuccess = vi.fn();
+    (api.createPost as any).mockResolvedValue({ id: 105, title: 'Video com Capas Mistas' });
+
+    render(<VideoUploadModal isOpen={true} onClose={vi.fn()} onSuccess={handleSuccess} />);
+
+    // Video
+    const videoFile = new File(['fake-vid'], 'video_mix.mp4', { type: 'video/mp4' });
+    fireEvent.change(screen.getByTestId('file-input'), { target: { files: [videoFile] } });
+
+    // Titulo
+    fireEvent.change(screen.getByTestId('youtube-title-input'), { target: { value: 'Video com Capas Mistas' } });
+
+    // Thumb Vertical
+    const vertFile = new File(['fake-vert'], 'vertical_capa.png', { type: 'image/png' });
+    fireEvent.change(screen.getByTestId('vertical-thumb-input'), { target: { files: [vertFile] } });
+
+    // Vai para a aba de redes sociais
+    fireEvent.click(screen.getByTestId('main-tab-social'));
+
+    // No YouTube, o seletor de capa está visível
+    const ytAutoOption = screen.getByTestId('opt-cover-auto-youtube');
+    expect(ytAutoOption).toBeInTheDocument();
+
+    // Seleciona a opção de Padrão da Rede (auto) para o YouTube
+    fireEvent.click(ytAutoOption);
+
+    // Enviar (abre popup de confirmação e confirma)
+    fireEvent.click(screen.getByTestId('submit-schedule-btn'));
+    expect(screen.getByTestId('publish-confirm-modal-dialog')).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('btn-confirm-publish'));
+
+    await waitFor(() => {
+      expect(api.createPost).toHaveBeenCalledTimes(1);
+    });
+
+    const formDataCalled = (api.createPost as any).mock.calls[0][0] as FormData;
+    // O Instagram usa a thumbnail vertical enviada
+    expect(formDataCalled.get('thumbnail')).toBe(vertFile);
+    // O YouTube foi marcado como 'auto' e não tinha horizontalThumbnail, então youtube_thumbnail é null/omitido
+    expect(formDataCalled.get('youtube_thumbnail')).toBeNull();
+  });
+
+  it('opens confirmation popup on Publicar Agora and cancels without submitting when clicking Voltar e Revisar', async () => {
+    render(<VideoUploadModal isOpen={true} onClose={vi.fn()} onSuccess={vi.fn()} />);
+
+    // Video
+    const videoFile = new File(['fake-vid'], 'video_test.mp4', { type: 'video/mp4' });
+    fireEvent.change(screen.getByTestId('file-input'), { target: { files: [videoFile] } });
+
+    // Titulo
+    fireEvent.change(screen.getByTestId('youtube-title-input'), { target: { value: 'Vídeo para Cancelar' } });
+
+    // Clica em Publicar Agora
+    fireEvent.click(screen.getByTestId('submit-schedule-btn'));
+
+    // Popup deve estar visível
+    expect(screen.getByTestId('publish-confirm-modal-dialog')).toBeInTheDocument();
+    expect(screen.getByText('Publicar Conteúdo Agora?')).toBeInTheDocument();
+
+    // Clica em Voltar e Revisar
+    fireEvent.click(screen.getByTestId('btn-cancel-publish'));
+
+    // Popup fecha e API NÃO é chamada
+    expect(screen.queryByTestId('publish-confirm-modal-dialog')).not.toBeInTheDocument();
+    expect(api.createPost).not.toHaveBeenCalled();
   });
 });

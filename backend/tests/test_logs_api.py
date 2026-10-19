@@ -78,3 +78,24 @@ def test_logs_filter_query(client):
     # Todas as entradas retornadas devem conter o filtro (se houver correspondência)
     for entry in data["entries"]:
         assert "multipost" in entry["message"].lower() or "multipost" in str(entry).lower()
+
+
+@pytest.mark.asyncio
+async def test_default_ports_and_frontend_fallback_log(monkeypatch):
+    from app.services import log_service
+    from app.config import Settings
+
+    # Simula ausência do socket Docker para validar o fallback do frontend na porta 7300
+    monkeypatch.setattr(log_service.os.path, "exists", lambda p: False)
+    result = await log_service.fetch_container_logs("frontend", tail=10)
+    assert result["source"] == "fallback"
+    messages = " ".join(e["message"] for e in result["entries"])
+    assert "7300" in messages
+
+    # Valida que os padrões de Settings apontam para 7800 (Backend) e 7300 (Frontend)
+    monkeypatch.delenv("TIKTOK_REDIRECT_URI", raising=False)
+    monkeypatch.delenv("FRONTEND_URL", raising=False)
+    s = Settings(_env_file=None)
+    assert "7800" in s.TIKTOK_REDIRECT_URI
+    assert "7300" in s.FRONTEND_URL
+

@@ -6,10 +6,12 @@ import {
   Youtube,
   Check,
 } from 'lucide-react';
+import { FrameCaptureControl } from './FrameCaptureControl';
 
 interface MediaUploadTabProps {
   file: File | null;
   previewUrl: string | null;
+  videoRef: React.RefObject<HTMLVideoElement>;
   fileInputRef: React.RefObject<HTMLInputElement>;
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   verticalThumbnail: File | null;
@@ -22,11 +24,19 @@ interface MediaUploadTabProps {
   horizontalThumbInputRef: React.RefObject<HTMLInputElement>;
   handleHorizontalThumbChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleRemoveHorizontalThumb: () => void;
+  capturedFrame: File | null;
+  capturedFramePreview: string | null;
+  capturedFrameTime: number | null;
+  handleCaptureFrame: (file: File, previewUrl: string, timeSec: number) => void;
+  handleRemoveCapturedFrame: () => void;
+  handleApplyFrameToVertical: () => void;
+  handleApplyFrameToHorizontal: () => void;
 }
 
 export const MediaUploadTab: React.FC<MediaUploadTabProps> = ({
   file: _file,
   previewUrl,
+  videoRef,
   fileInputRef,
   handleFileChange,
   verticalThumbnail,
@@ -39,6 +49,13 @@ export const MediaUploadTab: React.FC<MediaUploadTabProps> = ({
   horizontalThumbInputRef,
   handleHorizontalThumbChange,
   handleRemoveHorizontalThumb,
+  capturedFrame,
+  capturedFramePreview,
+  capturedFrameTime,
+  handleCaptureFrame,
+  handleRemoveCapturedFrame,
+  handleApplyFrameToVertical,
+  handleApplyFrameToHorizontal,
 }) => {
   return (
     <div className="space-y-5 animate-fade-in" data-testid="media-upload-tab-content">
@@ -57,19 +74,34 @@ export const MediaUploadTab: React.FC<MediaUploadTabProps> = ({
         />
 
         {previewUrl ? (
-          <div className="relative rounded-xl overflow-hidden bg-black border border-slate-200 aspect-video flex items-center justify-center">
-            <video
-              src={previewUrl}
-              controls
-              className="w-full h-full object-contain"
+          <div className="space-y-3">
+            <div className="relative rounded-xl overflow-hidden bg-black border border-slate-200 aspect-video flex items-center justify-center">
+              <video
+                ref={videoRef}
+                src={previewUrl}
+                controls
+                className="w-full h-full object-contain"
+              />
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="absolute bottom-3 right-3 px-3 py-1.5 rounded-lg bg-white/90 backdrop-blur border border-slate-200 text-xs font-medium text-slate-700 hover:bg-white shadow-xs transition-colors"
+              >
+                Trocar Vídeo
+              </button>
+            </div>
+
+            {/* Controle de Captura de Frame do Vídeo */}
+            <FrameCaptureControl
+              videoRef={videoRef}
+              capturedFrame={capturedFrame}
+              capturedFramePreview={capturedFramePreview}
+              capturedFrameTime={capturedFrameTime}
+              onCaptureFrame={handleCaptureFrame}
+              onRemoveFrame={handleRemoveCapturedFrame}
+              onApplyToVertical={handleApplyFrameToVertical}
+              onApplyToHorizontal={handleApplyFrameToHorizontal}
             />
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="absolute bottom-3 right-3 px-3 py-1.5 rounded-lg bg-white/90 backdrop-blur border border-slate-200 text-xs font-medium text-slate-700 hover:bg-white shadow-xs transition-colors"
-            >
-              Trocar Vídeo
-            </button>
           </div>
         ) : (
           <div

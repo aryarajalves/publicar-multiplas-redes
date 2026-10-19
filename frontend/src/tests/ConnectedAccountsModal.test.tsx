@@ -210,7 +210,7 @@ describe('ConnectedAccountsModal Component', () => {
     (api.getConnectedAccounts as any).mockResolvedValueOnce({
       tiktok: {
         connected: false,
-        redirect_uri: 'http://localhost:8005/api/auth/tiktok/callback',
+        redirect_uri: 'http://localhost:7800/api/auth/tiktok/callback',
       },
       youtube: { connected: false },
       instagram: { connected: false },
@@ -226,18 +226,34 @@ describe('ConnectedAccountsModal Component', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('text-redirect-uri')).toBeInTheDocument();
-      expect(screen.getByText('http://localhost:8005/api/auth/tiktok/callback')).toBeInTheDocument();
+      expect(screen.getByText('http://localhost:7800/api/auth/tiktok/callback')).toBeInTheDocument();
     });
 
     const copyBtn = screen.getByTestId('btn-copy-redirect-uri');
     fireEvent.click(copyBtn);
 
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-      'http://localhost:8005/api/auth/tiktok/callback'
+      'http://localhost:7800/api/auth/tiktok/callback'
     );
 
     await waitFor(() => {
       expect(screen.getByText('Copiada!')).toBeInTheDocument();
+    });
+  });
+
+  it('uses fallback redirect URI on port 7800 when backend omits redirect_uri', async () => {
+    (api.getConnectedAccounts as any).mockResolvedValueOnce({
+      tiktok: { connected: false },
+      youtube: { connected: false },
+      instagram: { connected: false },
+    });
+
+    render(<ConnectedAccountsModal isOpen={true} onClose={vi.fn()} />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('text-redirect-uri')).toHaveTextContent(
+        'http://localhost:7800/api/auth/tiktok/callback'
+      );
     });
   });
 });

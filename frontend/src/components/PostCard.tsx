@@ -3,7 +3,7 @@ import { Post } from '../types';
 import { StatusBadge } from './StatusBadge';
 import { PlatformBadge } from './PlatformBadge';
 import { api } from '../services/api';
-import { Calendar, Play, Send, Eye, Trash2 } from 'lucide-react';
+import { Calendar, Play, Send, Eye, Trash2, Heart, MessageCircle, Share2, Bookmark } from 'lucide-react';
 
 interface Props {
   post: Post;
@@ -11,6 +11,13 @@ interface Props {
   onPublishNow: (post: Post) => void;
   onDelete: (post: Post) => void;
 }
+
+const formatCompact = (num: number) => {
+  if (!num || num <= 0) return '0';
+  if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+  if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
+  return num.toString();
+};
 
 export const PostCard: React.FC<Props> = ({
   post,
@@ -39,6 +46,13 @@ export const PostCard: React.FC<Props> = ({
   };
 
   const isPublishable = post.status === 'scheduled' || post.status === 'failed';
+
+  const totalLikes = post.total_likes ?? post.publications.reduce((acc, p) => acc + (p.last_likes || 0), 0);
+  const totalComments = post.total_comments ?? post.publications.reduce((acc, p) => acc + (p.last_comments || 0), 0);
+  const totalShares = post.total_shares ?? post.publications.reduce((acc, p) => acc + (p.last_shares || 0), 0);
+  const totalSaves = post.total_saves ?? post.publications.reduce((acc, p) => acc + (p.last_saves || 0), 0);
+  const totalViews = post.total_views ?? post.publications.reduce((acc, p) => acc + (p.last_views || 0), 0);
+  const isPublished = post.status === 'published' || post.publications.some((p) => p.status === 'published');
 
   return (
     <div
@@ -113,6 +127,57 @@ export const PostCard: React.FC<Props> = ({
               />
             ))}
           </div>
+
+          {/* Barra de Métricas de Desempenho (Curtidas, Comentários, Compartilhamentos, Salvamentos, Visualizações) */}
+          {isPublished && (
+            <div
+              data-testid={`post-metrics-bar-${post.id}`}
+              className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] font-semibold text-slate-600"
+            >
+              <div className="flex items-center gap-3">
+                <span
+                  title="Curtidas"
+                  data-testid={`post-metric-likes-${post.id}`}
+                  className="flex items-center gap-1 text-rose-600"
+                >
+                  <Heart className="w-3.5 h-3.5 fill-rose-500 text-rose-500" />
+                  <span>{formatCompact(totalLikes)}</span>
+                </span>
+                <span
+                  title="Comentários"
+                  data-testid={`post-metric-comments-${post.id}`}
+                  className="flex items-center gap-1 text-indigo-600"
+                >
+                  <MessageCircle className="w-3.5 h-3.5 text-indigo-500" />
+                  <span>{formatCompact(totalComments)}</span>
+                </span>
+                <span
+                  title="Compartilhamentos"
+                  data-testid={`post-metric-shares-${post.id}`}
+                  className="flex items-center gap-1 text-sky-600"
+                >
+                  <Share2 className="w-3.5 h-3.5 text-sky-500" />
+                  <span>{formatCompact(totalShares)}</span>
+                </span>
+                <span
+                  title="Salvamentos"
+                  data-testid={`post-metric-saves-${post.id}`}
+                  className="flex items-center gap-1 text-amber-600"
+                >
+                  <Bookmark className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
+                  <span>{formatCompact(totalSaves)}</span>
+                </span>
+              </div>
+              <span
+                title="Visualizações / Alcance"
+                data-testid={`post-metric-views-${post.id}`}
+                className="flex items-center gap-1 text-slate-500 font-medium"
+              >
+                <Eye className="w-3.5 h-3.5 text-slate-400" />
+                <span>{formatCompact(totalViews)}</span>
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Actions Footer */}

@@ -178,7 +178,7 @@ async def fetch_container_logs(
             entries = list(_IN_MEMORY_LOG_BUFFER)
         elif container_key == "frontend":
             entries = [
-                {"timestamp": "2026-10-14T12:00:00Z", "level": "INFO", "stream": "stdout", "message": "Nginx iniciado na porta 80 (mapeada para 3005)."},
+                {"timestamp": "2026-10-14T12:00:00Z", "level": "INFO", "stream": "stdout", "message": "Nginx iniciado na porta 80 (mapeada para 7300)."},
                 {"timestamp": "2026-10-14T12:00:01Z", "level": "INFO", "stream": "stdout", "message": "Carregando bundle estático do frontend React em /usr/share/nginx/html."},
                 {"timestamp": "2026-10-14T12:00:02Z", "level": "INFO", "stream": "stdout", "message": "Frontend online e respondendo requisições HTTP 200."}
             ]

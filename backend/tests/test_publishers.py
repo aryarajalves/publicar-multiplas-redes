@@ -346,3 +346,344 @@ async def test_youtube_publisher_list_channel_long_videos(monkeypatch):
     assert videos[1]["title"] == "Como Ter um Player Próprio Igual ao VTurb"
     assert videos[1]["duration_formatted"] == "9:21"
 
+
+@pytest.mark.asyncio
+async def test_instagram_publisher_with_cover_url(monkeypatch, tmp_path):
+    """
+    Valida que quando o post possui thumbnail vinculada, a cover_url é gerada
+    e enviada nos parâmetros da chamada POST /media da Meta Graph API.
+    """
+    from app.publishers import get_publisher
+    from app.config import settings
+
+    publisher = get_publisher("instagram")
+    monkeypatch.setattr(settings, "SIMULATE_PUBLICATIONS", False)
+    monkeypatch.setattr(settings, "INSTAGRAM_ACCESS_TOKEN", "mock_ig_token_abc")
+    monkeypatch.setattr(settings, "INSTAGRAM_ACCOUNT_ID", "17841400000000000")
+
+    post = create_sample_post()
+    post.thumbnail_path = "uploads/thumbnails/thumb_test.png"
+    pub = PlatformPublication(post_id=post.id, platform=PlatformType.INSTAGRAM.value)
+
+    # Mock das URLs públicas
+    monkeypatch.setattr(publisher, "_resolve_public_video_url", lambda p: "https://b2.test.com/video.mp4")
+    monkeypatch.setattr(publisher, "_resolve_public_cover_url", lambda p: "https://b2.test.com/cover.png")
+
+    captured_params = {}
+
+    class MockMediaResponse:
+        status_code = 200
+        def json(self):
+            return {"id": "container_123"}
+
+    class MockStatusResponse:
+        status_code = 200
+        def json(self):
+            return {"status_code": "FINISHED"}
+
+    class MockPublishResponse:
+        status_code = 200
+        def json(self):
+            return {"id": "ig_published_456"}
+
+    class MockPermalinkResponse:
+        status_code = 200
+        def json(self):
+            return {"permalink": "https://www.instagram.com/reel/Cxyz987/"}
+
+    class MockClient:
+        def __init__(self, *args, **kwargs):
+            pass
+        async def __aenter__(self):
+            return self
+        async def __aexit__(self, *args):
+            pass
+        async def post(self, url, **kwargs):
+            nonlocal captured_params
+            if "/media_publish" in url:
+                return MockPublishResponse()
+            elif "/media" in url:
+                captured_params = kwargs.get("params", {})
+                return MockMediaResponse()
+            return MockMediaResponse()
+        async def get(self, url, **kwargs):
+            if "container_123" in url:
+                return MockStatusResponse()
+            elif "ig_published_456" in url:
+                return MockPermalinkResponse()
+            return MockStatusResponse()
+
+    monkeypatch.setattr("httpx.AsyncClient", MockClient)
+    # Evita sleep durante o teste
+    async def mock_sleep(s):
+        pass
+    monkeypatch.setattr("asyncio.sleep", mock_sleep)
+
+    result = await publisher.publish(post, pub)
+
+    assert result.success is True
+    assert result.external_post_id == "ig_published_456"
+    assert result.post_url == "https://www.instagram.com/reel/Cxyz987/"
+    assert "cover_url" in captured_params
+    assert captured_params["cover_url"] == "https://b2.test.com/cover.png"
+    assert captured_params["media_type"] == "REELS"
+    assert captured_params["video_url"] == "https://b2.test.com/video.mp4"
+
+
+@pytest.mark.asyncio
+async def test_instagram_publisher_without_cover_url(monkeypatch):
+    """
+    Valida que quando o post NÃO possui thumbnail vinculada, a cover_url não é enviada
+    nos parâmetros e a chamada ocorre normalmente.
+    """
+    from app.publishers import get_publisher
+    from app.config import settings
+
+    publisher = get_publisher("instagram")
+    monkeypatch.setattr(settings, "SIMULATE_PUBLICATIONS", False)
+    monkeypatch.setattr(settings, "INSTAGRAM_ACCESS_TOKEN", "mock_ig_token_abc")
+    monkeypatch.setattr(settings, "INSTAGRAM_ACCOUNT_ID", "17841400000000000")
+
+    post = create_sample_post()
+    post.thumbnail_path = None
+    pub = PlatformPublication(post_id=post.id, platform=PlatformType.INSTAGRAM.value)
+
+    monkeypatch.setattr(publisher, "_resolve_public_video_url", lambda p: "https://b2.test.com/video.mp4")
+
+    captured_params = {}
+
+    class MockMediaResponse:
+        status_code = 200
+        def json(self):
+            return {"id": "container_no_cover"}
+
+    class MockStatusResponse:
+        status_code = 200
+        def json(self):
+            return {"status_code": "FINISHED"}
+
+    class MockPublishResponse:
+        status_code = 200
+        def json(self):
+            return {"id": "ig_published_no_cover"}
+
+    class MockClient:
+        def __init__(self, *args, **kwargs):
+            pass
+        async def __aenter__(self):
+            return self
+        async def __aexit__(self, *args):
+            pass
+        async def post(self, url, **kwargs):
+            nonlocal captured_params
+            if "/media_publish" in url:
+                return MockPublishResponse()
+            elif "/media" in url:
+                captured_params = kwargs.get("params", {})
+                return MockMediaResponse()
+            return MockMediaResponse()
+        async def get(self, url, **kwargs):
+            return MockStatusResponse()
+
+    monkeypatch.setattr("httpx.AsyncClient", MockClient)
+    async def mock_sleep(s):
+        pass
+    monkeypatch.setattr("asyncio.sleep", mock_sleep)
+
+    result = await publisher.publish(post, pub)
+
+    assert result.success is True
+    assert "cover_url" not in captured_params
+    assert captured_params["media_type"] == "REELS"
+
+
+def test_instagram_resolve_public_cover_url_not_found(monkeypatch):
+    """
+    Valida que se o arquivo de thumbnail não existir no disco, retorna None suavemente.
+    """
+    from app.publishers import get_publisher
+    publisher = get_publisher("instagram")
+
+    post = create_sample_post()
+    post.thumbnail_path = "non_existent_folder/fake_thumb_9999.png"
+
+    cover_url = publisher._resolve_public_cover_url(post)
+    assert cover_url is None
+
+
+@pytest.mark.asyncio
+async def test_instagram_publisher_with_music_and_trial_reels(monkeypatch):
+    """
+    Valida que quando o post possui música (instagram_audio_id) e Reels de Teste (instagram_is_trial_reel),
+    os parâmetros audio_configuration e trial_params são enviados como JSON na chamada POST /media (v22.0).
+    """
+    import json
+    from app.publishers import get_publisher
+    from app.config import settings
+
+    publisher = get_publisher("instagram")
+    monkeypatch.setattr(settings, "SIMULATE_PUBLICATIONS", False)
+    monkeypatch.setattr(settings, "INSTAGRAM_ACCESS_TOKEN", "mock_ig_token_abc")
+    monkeypatch.setattr(settings, "INSTAGRAM_ACCOUNT_ID", "17841400000000000")
+
+    post = create_sample_post()
+    post.instagram_audio_id = "987654321000"
+    post.instagram_audio_title = "Corporate Tech Upbeat"
+    post.instagram_audio_artist = "Meta Sound Collection"
+    post.instagram_audio_volume = 85
+    post.instagram_video_volume = 40
+    post.instagram_is_trial_reel = True
+    post.instagram_trial_graduation_strategy = "SS_PERFORMANCE"
+
+    pub = PlatformPublication(post_id=post.id, platform=PlatformType.INSTAGRAM.value)
+    monkeypatch.setattr(publisher, "_resolve_public_video_url", lambda p: "https://b2.test.com/video.mp4")
+
+    captured_params = {}
+    captured_url = ""
+
+    class MockMediaResponse:
+        status_code = 200
+        def json(self):
+            return {"id": "container_trial_music_123"}
+
+    class MockStatusResponse:
+        status_code = 200
+        def json(self):
+            return {"status_code": "FINISHED"}
+
+    class MockPublishResponse:
+        status_code = 200
+        def json(self):
+            return {"id": "ig_published_trial_456"}
+
+    class MockClient:
+        def __init__(self, *args, **kwargs):
+            pass
+        async def __aenter__(self):
+            return self
+        async def __aexit__(self, *args):
+            pass
+        async def post(self, url, **kwargs):
+            nonlocal captured_params, captured_url
+            if "/media_publish" in url:
+                return MockPublishResponse()
+            elif "/media" in url:
+                captured_url = url
+                captured_params = kwargs.get("params", {})
+                return MockMediaResponse()
+            return MockMediaResponse()
+        async def get(self, url, **kwargs):
+            return MockStatusResponse()
+
+    monkeypatch.setattr("httpx.AsyncClient", MockClient)
+    async def mock_sleep(s):
+        pass
+    monkeypatch.setattr("asyncio.sleep", mock_sleep)
+
+    result = await publisher.publish(post, pub)
+
+    assert result.success is True
+    assert "v22.0" in captured_url
+    assert "audio_configuration" in captured_params
+    audio_cfg = json.loads(captured_params["audio_configuration"])
+    assert audio_cfg["audio_id"] == "987654321000"
+    assert audio_cfg["audio_volume"] == 85
+    assert audio_cfg["video_volume"] == 40
+
+    assert "trial_params" in captured_params
+    trial_cfg = json.loads(captured_params["trial_params"])
+    assert trial_cfg["graduation_strategy"] == "SS_PERFORMANCE"
+
+@pytest.mark.asyncio
+async def test_instagram_fallback_when_audio_configuration_fails_in_polling(monkeypatch, tmp_path):
+    """
+    Testa se o publisher do Instagram executa fallback resiliente quando um container
+    com audio_configuration retorna status ERROR da Meta Graph API (código 2207082),
+    retentando automaticamente sem o áudio para garantir que o post seja publicado.
+    """
+    from app.config import settings
+    from app.models import PostStatus, PublicationStatus
+
+    publisher = InstagramPublisher()
+    monkeypatch.setattr(settings, "INSTAGRAM_ACCESS_TOKEN", "valid_ig_token")
+    monkeypatch.setattr(settings, "INSTAGRAM_ACCOUNT_ID", "17841400000000000")
+    monkeypatch.setattr(settings, "SIMULATE_PUBLICATIONS", False)
+    monkeypatch.setattr(publisher, "_resolve_public_video_url", lambda p: "https://b2.test/video.mp4")
+    monkeypatch.setattr(publisher, "_resolve_public_cover_url", lambda p: None)
+
+    post = Post(
+        id=77,
+        title="Post com Áudio que Falha na Meta",
+        video_filename="video.mp4",
+        video_path="video.mp4",
+        status=PostStatus.SCHEDULED.value,
+        scheduled_at=datetime.now(timezone.utc),
+        instagram_audio_id="999888777",
+        instagram_audio_volume=80,
+        instagram_video_volume=50
+    )
+    pub = PlatformPublication(
+        id=77,
+        post_id=77,
+        platform=PlatformType.INSTAGRAM.value,
+        status=PublicationStatus.PENDING.value
+    )
+
+    created_containers = []
+    class MockMediaResponse:
+        status_code = 200
+        def __init__(self, cid):
+            self.cid = cid
+        def json(self):
+            return {"id": self.cid}
+
+    class MockPublishResponse:
+        status_code = 200
+        def json(self):
+            return {"id": "ig_final_published_123"}
+
+    class MockClient:
+        def __init__(self, *args, **kwargs):
+            pass
+        async def __aenter__(self):
+            return self
+        async def __aexit__(self, *args):
+            pass
+        async def post(self, url, **kwargs):
+            if "/media_publish" in url:
+                return MockPublishResponse()
+            elif "/media" in url:
+                cid = f"cid_{len(created_containers) + 1}"
+                created_containers.append((cid, dict(kwargs.get("params", {}))))
+                return MockMediaResponse(cid)
+            return MockMediaResponse("cid_0")
+        async def get(self, url, **kwargs):
+            # O primeiro container (com áudio) falha com ERROR 2207082
+            if "cid_1" in url:
+                class MockErr:
+                    status_code = 200
+                    def json(self):
+                        return {"status_code": "ERROR", "status": "Error: Media upload has failed with error code 2207082"}
+                return MockErr()
+            # O segundo container (fallback sem áudio) atinge FINISHED
+            class MockOk:
+                status_code = 200
+                def json(self):
+                    return {"status_code": "FINISHED"}
+            return MockOk()
+
+    monkeypatch.setattr("httpx.AsyncClient", MockClient)
+    async def mock_sleep(s):
+        pass
+    monkeypatch.setattr("asyncio.sleep", mock_sleep)
+
+    result = await publisher.publish(post, pub)
+
+    assert result.success is True
+    assert len(created_containers) == 2
+    # Container 1 tinha áudio
+    assert "audio_configuration" in created_containers[0][1]
+    # Container 2 (fallback) não tem áudio
+    assert "audio_configuration" not in created_containers[1][1]
+    assert result.external_post_id == "ig_final_published_123"
+

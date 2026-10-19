@@ -34,8 +34,8 @@ class Settings(BaseSettings):
     TIKTOK_CLIENT_KEY: str = os.getenv("TIKTOK_CLIENT_KEY", "")
     TIKTOK_CLIENT_SECRET: str = os.getenv("TIKTOK_CLIENT_SECRET", "")
     TIKTOK_ACCESS_TOKEN: str = os.getenv("TIKTOK_ACCESS_TOKEN", "")
-    TIKTOK_REDIRECT_URI: str = os.getenv("TIKTOK_REDIRECT_URI", "http://localhost:8005/api/auth/tiktok/callback")
-    FRONTEND_URL: str = os.getenv("FRONTEND_URL", "http://localhost:3005")
+    TIKTOK_REDIRECT_URI: str = os.getenv("TIKTOK_REDIRECT_URI", "http://localhost:7800/api/auth/tiktok/callback")
+    FRONTEND_URL: str = os.getenv("FRONTEND_URL", "http://localhost:7300")
 
     # OpenAI (LLM & Whisper Transcription)
     OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")

@@ -16,7 +16,7 @@ describe('ResetPasswordPage Component', () => {
     delete (window as any).location;
     (window as any).location = {
       search: '',
-      origin: 'http://localhost:3005',
+      origin: 'http://localhost:7300',
     };
   });
 

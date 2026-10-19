@@ -121,3 +121,98 @@ Este arquivo documenta todas as alterações de esquema, novas tabelas e migraç
     - `updated_at` (TIMESTAMPTZ NOT NULL DEFAULT NOW())
 - **Script de Migração:** `backend/scripts/create_backup_tables.py`
 - **Ambiente de Aplicação:** PostgreSQL local (`social-vault-postgres:5432`)
+
+---
+
+### [2026-10-17] Criação da Tabela de Métricas e Colunas Consolidadas (`post_metric_snapshots` e `platform_publications`)
+- **Tabelas afetadas:** `post_metric_snapshots` (Nova) e `platform_publications` (Alterada)
+- **Objetivo:** Armazenar snapshots históricos de desempenho coletados das APIs oficiais (YouTube Analytics, Instagram Insights e TikTok Display API), viabilizando gráficos de evolução e diagnóstico de inteligência no painel de Analytics.
+- **Colunas adicionadas:**
+  - Na tabela `post_metric_snapshots` (Nova):
+    - `id` (INTEGER PRIMARY KEY)
+    - `post_id` (INTEGER FOREIGN KEY -> posts.id CASCADE)
+    - `publication_id` (INTEGER FOREIGN KEY -> platform_publications.id CASCADE)
+    - `platform` (VARCHAR(50) NOT NULL INDEX) — 'youtube', 'instagram', 'tiktok'
+    - `views` (INTEGER NOT NULL DEFAULT 0) — Visualizações reais
+    - `likes` (INTEGER NOT NULL DEFAULT 0) — Curtidas
+    - `comments` (INTEGER NOT NULL DEFAULT 0) — Comentários
+    - `shares` (INTEGER NOT NULL DEFAULT 0) — Compartilhamentos
+    - `saves` (INTEGER NOT NULL DEFAULT 0) — Salvamentos (Instagram)
+    - `reach` (INTEGER NOT NULL DEFAULT 0) — Alcance de contas únicas
+    - `impressions` (INTEGER NOT NULL DEFAULT 0) — Impressões
+    - `watch_time_seconds` (FLOAT NOT NULL DEFAULT 0.0) — Tempo total assistido
+    - `retention_rate_pct` (FLOAT NOT NULL DEFAULT 0.0) — Taxa de retenção média %
+    - `ctr_pct` (FLOAT NOT NULL DEFAULT 0.0) — Taxa de cliques da miniatura (YouTube)
+    - `collected_at` (TIMESTAMPTZ NOT NULL DEFAULT NOW() INDEX)
+  - Na tabela `platform_publications` (Novas colunas para leitura rápida consolidada):
+    - `last_views` (INTEGER NOT NULL DEFAULT 0)
+    - `last_likes` (INTEGER NOT NULL DEFAULT 0)
+    - `last_comments` (INTEGER NOT NULL DEFAULT 0)
+    - `last_shares` (INTEGER NOT NULL DEFAULT 0)
+    - `last_metrics_sync_at` (TIMESTAMPTZ NULLABLE)
+- **Script de Migração:** `backend/scripts/create_metrics_tables.py`
+- **Ambiente de Aplicação:** PostgreSQL local (`social-vault-postgres:7543`)
+
+---
+
+### [2026-10-17] Criação da Tabela `publication_settings`
+- **Tabela afetada:** `publication_settings` (Nova)
+- **Objetivo:** Persistir as preferências globais de publicação do usuário, incluindo localização padrão para Instagram (Place ID da Meta), hashtags de localização para TikTok, nome da localidade no YouTube e toggle de aplicação automática.
+- **Colunas adicionadas:**
+  - `id` (INTEGER PRIMARY KEY)
+  - `default_location_name` (VARCHAR(255) NULLABLE) — Nome legível da localidade/cidade
+  - `default_location_id` (VARCHAR(100) NULLABLE) — Place ID oficial da Meta para o Instagram
+  - `tiktok_location_hashtags` (VARCHAR(500) NULLABLE) — Hashtags automáticas de região para o TikTok
+  - `youtube_location_name` (VARCHAR(255) NULLABLE) — Nome de localização para YouTube
+  - `apply_location_to_all` (BOOLEAN NOT NULL DEFAULT TRUE) — Se aplica automaticamente em postagens
+  - `updated_at` (TIMESTAMPTZ NOT NULL DEFAULT NOW())
+- **Script de Migração:** `backend/scripts/create_settings_table.py`
+- **Ambiente de Aplicação:** PostgreSQL local (`social-vault-postgres:7543`)
+
+
+---
+
+### [2026-10-19] Adição de Colunas de Música do Instagram e Reels de Teste (`Trial Reels`) na Tabela `posts`
+- **Tabela afetada:** `posts`
+- **Objetivo:** Permitir armazenar a música selecionada no catálogo da Instagram Audio API (`audio_id`, título, artista, volume da música e volume do vídeo) e a configuração de Reels de Teste (`trial_params` com `graduation_strategy` `MANUAL` ou `SS_PERFORMANCE`).
+- **Colunas adicionadas:**
+  - `instagram_audio_id` (VARCHAR(100) NULLABLE) — ID oficial da faixa de áudio na Meta Graph API (`/ig_audio`)
+  - `instagram_audio_title` (VARCHAR(255) NULLABLE) — Título da música ou áudio selecionado
+  - `instagram_audio_artist` (VARCHAR(255) NULLABLE) — Artista ou criador do áudio
+  - `instagram_audio_volume` (INTEGER NULLABLE DEFAULT 100) — Volume da música do Instagram (1 a 100)
+  - `instagram_video_volume` (INTEGER NULLABLE DEFAULT 100) — Volume do áudio original do vídeo (1 a 100)
+  - `instagram_is_trial_reel` (BOOLEAN NOT NULL DEFAULT FALSE) — Define se o Reel será publicado como Reels de Teste (apenas não-seguidores)
+  - `instagram_trial_graduation_strategy` (VARCHAR(50) NULLABLE DEFAULT 'MANUAL') — Estratégia de graduação do Reel de Teste (`MANUAL` ou `SS_PERFORMANCE`)
+- **Script de Migração:** `backend/scripts/add_instagram_music_and_trial_columns.py`
+- **Ambiente de Aplicação:** PostgreSQL local (`social-vault-postgres:7543`)
+
+---
+
+### [2026-10-19] Criação da Tabela `instagram_favorite_audios` (Músicas Favoritas do Instagram)
+- **Tabela afetada:** `instagram_favorite_audios` (Nova)
+- **Objetivo:** Permitir que o usuário salve nos Favoritos (`⭐`) suas melhores músicas e áudios originais do Instagram para reutilização rápida em novas publicações de Reels.
+- **Colunas adicionadas:**
+  - `id` (SERIAL PRIMARY KEY)
+  - `audio_id` (VARCHAR(100) UNIQUE NOT NULL) — ID oficial do áudio no Instagram
+  - `title` (VARCHAR(255) NOT NULL) — Nome da música/áudio
+  - `display_artist` (VARCHAR(255) NULLABLE) — Artista ou criador
+  - `duration_in_ms` (INTEGER NOT NULL DEFAULT 0) — Duração em milissegundos
+  - `audio_type` (VARCHAR(50) NOT NULL DEFAULT 'music') — `'music'` ou `'original_sound'`
+  - `cover_artwork_thumbnail_uri` (VARCHAR(1000) NULLABLE) — URL da capa do álbum
+  - `download_url` (VARCHAR(1000) NULLABLE) — URL de prévia de áudio
+  - `on_platform_audio_preview_link` (VARCHAR(1000) NULLABLE) — Link oficial no Instagram Reels
+  - `ig_username` (VARCHAR(255) NULLABLE) — `@username` do criador quando disponível
+  - `created_at` (TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP)
+- **Script de Migração:** `backend/scripts/add_instagram_favorite_audios_table.py`
+- **Ambiente de Aplicação:** PostgreSQL local (`social-vault-postgres:7543`)
+
+---
+
+### [2026-10-19] Adição da Coluna `last_saves` na Tabela `platform_publications`
+- **Tabela afetada:** `platform_publications`
+- **Objetivo:** Armazenar a contagem consolidada de salvamentos (`saves`) de cada postagem nas redes sociais (especialmente Instagram Reels), permitindo visualização ágil das métricas de curtidas, comentários, compartilhamentos e salvamentos.
+- **Colunas adicionadas:**
+  - `last_saves` (INTEGER NOT NULL DEFAULT 0) — Contagem consolidada de salvamentos do post
+- **Script de Migração:** `backend/scripts/add_last_saves_to_platform_publications.py`
+- **Ambiente de Aplicação:** PostgreSQL local (`social-vault-postgres:7543`)
+

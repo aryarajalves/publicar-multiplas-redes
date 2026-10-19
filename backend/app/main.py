@@ -9,7 +9,11 @@ import logging
 from app.config import settings
 from app.database import engine, Base
 from app.api.posts import router as posts_router
-from app.api.platforms import router as platforms_router
+from app.api.platforms import (
+    router as platforms_router,
+    youtube_router,
+    tiktok_router,
+)
 from app.api.health import router as health_router
 from app.api.ai import router as ai_router
 from app.api.auth import router as auth_router, init_super_admin
@@ -17,6 +21,10 @@ from app.api.users import router as users_router
 from app.api.invitations import router as invitations_router
 from app.api.logs import router as logs_router
 from app.api.backup import router as backup_router
+from app.api.analytics import router as analytics_router
+from app.api.settings import router as settings_router
+from app.api.instagram import router as instagram_router
+from app.api.comments import router as comments_router
 
 logger = logging.getLogger("main")
 
@@ -64,6 +72,12 @@ app.include_router(users_router, prefix=settings.API_V1_STR)
 app.include_router(invitations_router, prefix=settings.API_V1_STR)
 app.include_router(logs_router, prefix=settings.API_V1_STR)
 app.include_router(backup_router, prefix=settings.API_V1_STR)
+app.include_router(analytics_router, prefix=settings.API_V1_STR)
+app.include_router(settings_router, prefix=settings.API_V1_STR)
+app.include_router(instagram_router, prefix=settings.API_V1_STR)
+app.include_router(youtube_router, prefix=settings.API_V1_STR)
+app.include_router(tiktok_router, prefix=settings.API_V1_STR)
+app.include_router(comments_router, prefix=settings.API_V1_STR)
 
 
 

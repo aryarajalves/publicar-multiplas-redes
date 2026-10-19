@@ -42,6 +42,13 @@ async def create_and_schedule_post(
     transcription: Optional[str] = Form(None),
     instagram_caption: Optional[str] = Form(None),
     instagram_hashtags: Optional[str] = Form(None),
+    instagram_audio_id: Optional[str] = Form(None),
+    instagram_audio_title: Optional[str] = Form(None),
+    instagram_audio_artist: Optional[str] = Form(None),
+    instagram_audio_volume: int = Form(100),
+    instagram_video_volume: int = Form(100),
+    instagram_is_trial_reel: bool = Form(False),
+    instagram_trial_graduation_strategy: Optional[str] = Form("MANUAL"),
     youtube_title: Optional[str] = Form(None),
     youtube_description: Optional[str] = Form(None),
     youtube_tags: Optional[str] = Form(None),
@@ -54,7 +61,8 @@ async def create_and_schedule_post(
     """
     Cadastra um novo vídeo e agenda (ou publica imediatamente) para o Instagram,
     além de habilitar cross-posting para YouTube e TikTok.
-    Suporta upload de capa vertical (Reels/Shorts/TikTok) e horizontal (YouTube 16:9).
+    Suporta upload de capa vertical (Reels/Shorts/TikTok) e horizontal (YouTube 16:9),
+    música do catálogo do Instagram e Reels de Teste (Trial Reels).
     """
     platform_list = parse_platforms(platforms)
     valid_platforms = {p.value for p in PlatformType}
@@ -76,6 +84,16 @@ async def create_and_schedule_post(
             status_code=400,
             detail="O link do vídeo final/relacionado do YouTube não pode ultrapassar 500 caracteres."
         )
+
+    normalized_strategy = (instagram_trial_graduation_strategy or "MANUAL").strip().upper()
+    if normalized_strategy not in ("MANUAL", "SS_PERFORMANCE"):
+        raise HTTPException(
+            status_code=400,
+            detail="Estratégia de Reels de Teste inválida. Valores aceitos: 'MANUAL' ou 'SS_PERFORMANCE'."
+        )
+
+    clamped_audio_vol = max(1, min(100, int(instagram_audio_volume if instagram_audio_volume is not None else 100)))
+    clamped_video_vol = max(1, min(100, int(instagram_video_volume if instagram_video_volume is not None else 100)))
 
     # Garante que pelo menos o Instagram esteja presente ou uma plataforma válida
     if not platform_list:
@@ -117,6 +135,13 @@ async def create_and_schedule_post(
         transcription=transcription,
         instagram_caption=instagram_caption,
         instagram_hashtags=instagram_hashtags,
+        instagram_audio_id=instagram_audio_id.strip() if instagram_audio_id else None,
+        instagram_audio_title=instagram_audio_title.strip() if instagram_audio_title else None,
+        instagram_audio_artist=instagram_audio_artist.strip() if instagram_audio_artist else None,
+        instagram_audio_volume=clamped_audio_vol,
+        instagram_video_volume=clamped_video_vol,
+        instagram_is_trial_reel=bool(instagram_is_trial_reel),
+        instagram_trial_graduation_strategy=normalized_strategy,
         youtube_title=youtube_title,
         youtube_description=youtube_description,
         youtube_tags=youtube_tags,

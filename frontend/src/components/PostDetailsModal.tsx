@@ -1,6 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Post } from '../types';
 import { StatusBadge } from './StatusBadge';
+import { PlatformPublicationTab } from './PlatformPublicationTab';
+import { PostMetricsSummary } from './PostMetricsSummary';
 import { api } from '../services/api';
 import {
   X,
@@ -11,7 +13,6 @@ import {
   Instagram,
   Youtube,
   Video,
-  AlertCircle,
   Sparkles,
   Image as ImageIcon,
 } from 'lucide-react';
@@ -21,14 +22,45 @@ interface Props {
   onClose: () => void;
   onPublishNow: (post: Post) => void;
   onDelete: (post: Post) => void;
+  onMetricsUpdated?: () => void;
 }
 
 export const PostDetailsModal: React.FC<Props> = ({
-  post,
+  post: initialPost,
   onClose,
   onPublishNow,
   onDelete,
+  onMetricsUpdated,
 }) => {
+  const [post, setPost] = useState<Post | null>(initialPost);
+  const [activeTab, setActiveTab] = useState<string>('instagram');
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+
+  useEffect(() => {
+    setPost(initialPost);
+  }, [initialPost]);
+
+  const handleMetricsUpdated = async () => {
+    if (post?.id) {
+      try {
+        const refreshed = await api.getPost(post.id);
+        setPost(refreshed);
+      } catch {
+        // silent fallback
+      }
+    }
+    if (onMetricsUpdated) {
+      onMetricsUpdated();
+    }
+  };
+
+  // Sincronizar aba ativa quando abrir um post
+  useEffect(() => {
+    if (post && post.publications && post.publications.length > 0) {
+      setActiveTab(post.publications[0].platform);
+    }
+  }, [post?.id]);
+
   // Travar o scroll do mouse da página de fundo enquanto o modal estiver aberto
   useEffect(() => {
     if (post) {
@@ -63,14 +95,14 @@ export const PostDetailsModal: React.FC<Props> = ({
     }
   };
 
-  const getPlatformIcon = (plat: string) => {
+  const getPlatformIcon = (plat: string, className = "w-4 h-4") => {
     switch (plat.toLowerCase()) {
       case 'instagram':
-        return <Instagram className="w-4 h-4 text-pink-400" />;
+        return <Instagram className={`${className} text-pink-600`} />;
       case 'youtube':
-        return <Youtube className="w-4 h-4 text-red-400" />;
+        return <Youtube className={`${className} text-red-600`} />;
       case 'tiktok':
-        return <Video className="w-4 h-4 text-cyan-400" />;
+        return <Video className={`${className} text-cyan-600`} />;
       default:
         return null;
     }
@@ -79,16 +111,25 @@ export const PostDetailsModal: React.FC<Props> = ({
   const getPlatformLabel = (plat: string) => {
     switch (plat.toLowerCase()) {
       case 'instagram':
-        return 'Instagram Reels (Primário)';
+        return 'Instagram Reels';
       case 'youtube': {
         const isShorts = (post.youtube_video_type || 'shorts').toLowerCase() === 'shorts';
         return `YouTube ${isShorts ? 'Shorts' : 'Vídeo Longo'}`;
       }
       case 'tiktok':
-        return 'TikTok (Cross-post)';
+        return 'TikTok';
       default:
         return plat;
     }
+  };
+
+  const handleCopy = (text: string, key: string) => {
+    if (!text) return;
+    navigator.clipboard.writeText(text);
+    setCopiedKey(key);
+    setTimeout(() => {
+      setCopiedKey(null);
+    }, 2000);
   };
 
   return (
@@ -220,6 +261,9 @@ export const PostDetailsModal: React.FC<Props> = ({
             </div>
           )}
 
+          {/* Métricas de Performance e Engajamento */}
+          <PostMetricsSummary post={post} onMetricsUpdated={handleMetricsUpdated} />
+
           {/* Schedule Info */}
           <div className="flex items-center gap-2 text-xs text-slate-500">
             <Calendar className="w-4 h-4 text-sky-600" />
@@ -229,139 +273,89 @@ export const PostDetailsModal: React.FC<Props> = ({
             </span>
           </div>
 
-          {/* Multi-platform Breakdown com cópias específicas */}
-          <div>
-            <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">
-              Conteúdo & Status por Rede Social
-            </h4>
-            <div className="space-y-4">
+          {/* Seletor de Abas por Rede Social */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+              <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                Conteúdo & Status por Rede Social
+              </h4>
+              <span className="text-[11px] text-slate-400">
+                {post.publications.length} {post.publications.length === 1 ? 'rede selecionada' : 'redes selecionadas'}
+              </span>
+            </div>
+
+            {/* Abas Horizontais */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-1" role="tablist">
               {post.publications.map((pub) => {
-                const isInstagram = pub.platform === 'instagram';
-                const isYouTube = pub.platform === 'youtube';
-                const isTikTok = pub.platform === 'tiktok';
-
+                const isSelected = activeTab.toLowerCase() === pub.platform.toLowerCase();
+                const isShorts = (post.youtube_video_type || 'shorts').toLowerCase() === 'shorts';
                 return (
-                  <div
+                  <button
                     key={pub.id}
-                    className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col gap-3"
+                    type="button"
+                    role="tab"
+                    aria-selected={isSelected}
+                    data-testid={`tab-${pub.platform}`}
+                    onClick={() => setActiveTab(pub.platform)}
+                    className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all border ${
+                      isSelected
+                        ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
+                        : 'bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200'
+                    }`}
                   >
-                    {/* Header da publicação */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-lg bg-white border border-slate-200 shadow-2xs">
-                          {getPlatformIcon(pub.platform)}
-                        </div>
-                        <div>
-                          <p className="text-sm font-semibold text-slate-900 flex items-center gap-2">
-                            <span>{getPlatformLabel(pub.platform)}</span>
-                            {isYouTube && post.youtube_video_type && (
-                              <span className="px-2 py-0.5 rounded text-[10px] bg-red-50 border border-red-200 text-red-700 font-semibold">
-                                {post.youtube_video_type}
-                              </span>
-                            )}
-                          </p>
-                          <p className="text-xs text-slate-500 mt-0.5">
-                            {pub.published_at
-                              ? `Publicado em ${formatDate(pub.published_at)}`
-                              : pub.status === 'in_progress'
-                              ? 'Enviando conteúdo...'
-                              : pub.status === 'skipped'
-                              ? 'Não enviado (Aguardando Instagram)'
-                              : pub.status === 'failed'
-                              ? 'Falha no envio'
-                              : 'Aguardando agendamento'}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-3 self-end sm:self-center">
-                        <StatusBadge status={pub.status} />
-
-                        {pub.post_url && (
-                          <a
-                            href={pub.post_url}
-                            target="_blank"
-                            rel="noreferrer noopener"
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 text-xs text-slate-700 font-semibold transition-colors border border-slate-200 shadow-2xs"
-                          >
-                            <span>Abrir Link</span>
-                            <ExternalLink className="w-3.5 h-3.5" />
-                          </a>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Conteúdo específico da rede */}
-                    <div className="mt-2 pt-3 border-t border-slate-200 text-xs space-y-2">
-                      {isInstagram && (
-                        <>
-                          <div className="text-slate-800 whitespace-pre-wrap leading-relaxed">
-                            {post.instagram_caption || post.caption || <span className="italic text-slate-400">Sem legenda</span>}
-                          </div>
-                          {post.instagram_hashtags && (
-                            <div className="text-pink-600 font-mono text-[11px]">
-                              {post.instagram_hashtags}
-                            </div>
-                          )}
-                        </>
-                      )}
-
-                      {isYouTube && (
-                        <>
-                          {post.youtube_title && (
-                            <p className="font-semibold text-slate-900">
-                              🎯 Título SEO: <span className="text-red-600">{post.youtube_title}</span>
-                            </p>
-                          )}
-                          <div className="text-slate-700 whitespace-pre-wrap leading-relaxed">
-                            {post.youtube_description || post.caption || <span className="italic text-slate-400">Sem descrição</span>}
-                          </div>
-                          {post.youtube_related_video && (
-                            <div className="bg-red-50 border border-red-200 rounded-lg p-2.5 text-xs text-red-800 flex items-center gap-2" data-testid="detail-youtube-related-video">
-                              <span className="font-semibold text-red-700">🎬 Vídeo no Final / Recomendado:</span>
-                              <a
-                                href={post.youtube_related_video.startsWith('http') ? post.youtube_related_video : `https://www.youtube.com/watch?v=${post.youtube_related_video}`}
-                                target="_blank"
-                                rel="noreferrer noopener"
-                                className="text-red-600 hover:text-red-700 underline font-mono text-[11px] truncate inline-flex items-center gap-1 font-semibold"
-                              >
-                                <span>{post.youtube_related_video}</span>
-                                <ExternalLink className="w-3 h-3 flex-shrink-0" />
-                              </a>
-                            </div>
-                          )}
-                          {post.youtube_tags && (
-                            <div className="text-slate-600 font-mono text-[11px]">
-                              🏷️ Tags: {post.youtube_tags}
-                            </div>
-                          )}
-                        </>
-                      )}
-
-                      {isTikTok && (
-                        <>
-                          <div className="text-slate-800 whitespace-pre-wrap leading-relaxed">
-                            {post.tiktok_caption || post.caption || <span className="italic text-slate-400">Sem legenda</span>}
-                          </div>
-                          {post.tiktok_hashtags && (
-                            <div className="text-slate-900 font-mono text-[11px]">
-                              {post.tiktok_hashtags}
-                            </div>
-                          )}
-                        </>
-                      )}
-                    </div>
-
-                    {pub.error_message && (
-                      <div className="w-full mt-2 pt-2 border-t border-slate-200 flex items-start gap-2 text-xs text-rose-600">
-                        <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                        <span>{pub.error_message}</span>
-                      </div>
-                    )}
-                  </div>
+                    <span className={isSelected ? 'text-white [&>svg]:text-white' : ''}>
+                      {getPlatformIcon(pub.platform, 'w-4 h-4')}
+                    </span>
+                    <span>
+                      {pub.platform === 'youtube'
+                        ? `YouTube ${isShorts ? 'Shorts' : 'Longo'}`
+                        : pub.platform === 'instagram'
+                        ? 'Instagram Reels'
+                        : 'TikTok'}
+                    </span>
+                    <span
+                      className={`w-2 h-2 rounded-full ${
+                        pub.status === 'published'
+                          ? 'bg-emerald-500'
+                          : pub.status === 'failed'
+                          ? 'bg-rose-500'
+                          : pub.status === 'in_progress'
+                          ? 'bg-amber-500 animate-pulse'
+                          : 'bg-slate-400'
+                      }`}
+                      title={`Status: ${pub.status}`}
+                    />
+                  </button>
                 );
               })}
             </div>
+
+            {/* Conteúdo da Rede Selecionada */}
+            {(() => {
+              const currentPub =
+                post.publications.find((p) => p.platform.toLowerCase() === activeTab.toLowerCase()) ||
+                post.publications[0];
+
+              if (!currentPub) {
+                return (
+                  <div className="p-6 text-center text-xs text-slate-400 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                    Nenhuma rede social configurada para este post.
+                  </div>
+                );
+              }
+
+              return (
+                <PlatformPublicationTab
+                  publication={currentPub}
+                  post={post}
+                  formatDate={formatDate}
+                  getPlatformIcon={getPlatformIcon}
+                  getPlatformLabel={getPlatformLabel}
+                  handleCopy={handleCopy}
+                  copiedKey={copiedKey}
+                />
+              );
+            })()}
           </div>
         </div>
 

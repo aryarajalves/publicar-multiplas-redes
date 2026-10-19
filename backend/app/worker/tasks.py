@@ -44,6 +44,11 @@ async def execute_publication_pipeline(post_id: int, db: Session) -> bool:
         publisher = get_publisher(PlatformType.INSTAGRAM.value)
         result = await publisher.publish(post, ig_pub)
 
+        # Re-vincula ig_pub à sessão atual para evitar desconexão de atributos ORM
+        ig_pub = db.query(PlatformPublication).filter(PlatformPublication.id == ig_pub.id).first()
+        if not ig_pub:
+            return False
+
         if result.success:
             ig_pub.status = PublicationStatus.PUBLISHED.value
             ig_pub.published_at = utcnow()
@@ -55,7 +60,7 @@ async def execute_publication_pipeline(post_id: int, db: Session) -> bool:
             ig_success = False
             ig_pub.status = PublicationStatus.FAILED.value
             ig_pub.error_message = result.error_message
-            ig_pub.retry_count += 1
+            ig_pub.retry_count = (ig_pub.retry_count or 0) + 1
             logger.error(f"Post #{post_id} falhou ao publicar no Instagram: {result.error_message}")
 
         db.commit()
@@ -80,6 +85,10 @@ async def execute_publication_pipeline(post_id: int, db: Session) -> bool:
 
         publisher = get_publisher(plat_name)
         result = await publisher.publish(post, pub)
+
+        pub = db.query(PlatformPublication).filter(PlatformPublication.id == pub.id).first()
+        if not pub:
+            continue
 
         if result.success:
             pub.status = PublicationStatus.PUBLISHED.value
@@ -144,3 +153,24 @@ def process_due_posts_sync(db: Session = None) -> int:
     finally:
         if close_db:
             db.close()
+
+def sync_metrics_task_sync(db: Session = None, max_posts: int = 50) -> dict:
+    """
+    Task síncrona invocada pelo scheduler para sincronizar métricas de todas
+    as publicações recentes com as APIs oficiais.
+    """
+    close_db = False
+    if db is None:
+        db = SessionLocal()
+        close_db = True
+
+    try:
+        from app.services.metrics_collector import metrics_collector
+        return asyncio.run(metrics_collector.sync_all_recent_published_posts(db, max_posts=max_posts))
+    except Exception as e:
+        logger.error(f"Erro na execução da sincronização de métricas: {e}", exc_info=True)
+        return {"total_checked": 0, "synced": 0, "failed": 0, "error": str(e)}
+    finally:
+        if close_db:
+            db.close()
+

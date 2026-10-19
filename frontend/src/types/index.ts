@@ -27,6 +27,12 @@ export interface PlatformPublication {
   retry_count: number;
   created_at: string;
   updated_at: string;
+  last_views?: number;
+  last_likes?: number;
+  last_comments?: number;
+  last_shares?: number;
+  last_saves?: number;
+  last_metrics_sync_at?: string | null;
 }
 
 export interface Post {
@@ -45,10 +51,24 @@ export interface Post {
   updated_at: string;
   publications: PlatformPublication[];
 
+  // Métricas Consolidadas
+  total_views?: number;
+  total_likes?: number;
+  total_comments?: number;
+  total_shares?: number;
+  total_saves?: number;
+
   // Conteúdos gerados por IA / plataformas específicas
   transcription?: string | null;
   instagram_caption?: string | null;
   instagram_hashtags?: string | null;
+  instagram_audio_id?: string | null;
+  instagram_audio_title?: string | null;
+  instagram_audio_artist?: string | null;
+  instagram_audio_volume?: number | null;
+  instagram_video_volume?: number | null;
+  instagram_is_trial_reel?: boolean;
+  instagram_trial_graduation_strategy?: 'MANUAL' | 'SS_PERFORMANCE' | string | null;
   youtube_title?: string | null;
   youtube_description?: string | null;
   youtube_tags?: string | null;
@@ -266,3 +286,187 @@ export interface BackupActionResponse {
   message: string;
   backup?: BackupRecord;
 }
+
+export interface VideoPlatformMetric {
+  platform: PlatformType;
+  views: number;
+  likes: number;
+  comments: number;
+  shares: number;
+  post_url?: string | null;
+  status: string;
+}
+
+export interface VideoAiDiagnosis {
+  hook_text: string;
+  hook_score: number; // 1-10
+  hook_verdict: string;
+  why_it_performed: string;
+  weaknesses: string[];
+  what_to_do_next: string[];
+  recommended_next_topics: string[];
+}
+
+export interface VideoPerformanceItem {
+  id: number;
+  title: string;
+  video_filename: string;
+  video_path: string;
+  thumbnail_path?: string | null;
+  youtube_thumbnail_path?: string | null;
+  scheduled_at: string;
+  published_at?: string | null;
+  total_views: number;
+  total_likes: number;
+  total_comments: number;
+  total_shares: number;
+  engagement_rate: number; // Porcentagem formatada (ex: 4.8)
+  performance_badge: 'high' | 'average' | 'low';
+  metrics: VideoPlatformMetric[];
+  ai_diagnosis?: VideoAiDiagnosis;
+}
+
+export interface AnalyticsOverview {
+  total_analyzed_videos: number;
+  total_views: number;
+  total_likes: number;
+  total_comments: number;
+  total_shares: number;
+  average_engagement_rate: number;
+  best_video_id?: number | null;
+  top_insight: string;
+  videos: VideoPerformanceItem[];
+}
+
+export interface ScriptVariation {
+  id: number;
+  title: string;
+  hook: string;
+  body: string[];
+  cta: string;
+  estimated_duration: string;
+  why_it_works: string;
+}
+
+export interface WinningFormulaData {
+  total_analyzed: number;
+  top_performing_pattern: string;
+  best_hook_example: string;
+  avg_retention_lift: number;
+  key_rules: string[];
+}
+
+export interface PublicationSetting {
+  id?: number;
+  default_location_name?: string | null;
+  default_location_id?: string | null;
+  tiktok_location_hashtags?: string | null;
+  youtube_location_name?: string | null;
+  apply_location_to_all: boolean;
+  updated_at?: string;
+}
+
+export interface LocationSearchResult {
+  name: string;
+  city: string;
+  state: string;
+  place_id: string;
+  hashtags: string;
+}
+
+export interface InstagramAudioItem {
+  audio_id: string;
+  title: string;
+  display_artist?: string | null;
+  duration_in_ms: number;
+  audio_type: 'music' | 'original_sound' | string;
+  cover_artwork_thumbnail_uri?: string | null;
+  download_url?: string | null;
+  on_platform_audio_preview_link?: string | null;
+  is_ads_eligible?: boolean | null;
+  ig_username?: string | null;
+  is_favorite?: boolean;
+}
+
+export interface InstagramAudioSearchResponse {
+  items: InstagramAudioItem[];
+  total: number;
+  source: string;
+  next_cursor?: string | null;
+}
+
+export interface InstagramProfile {
+  connected: boolean;
+  account_id?: string | null;
+  username?: string | null;
+  account_name?: string | null;
+  name?: string | null;
+  followers_count: number;
+  media_count: number;
+  profile_picture_url?: string | null;
+  trial_reels_eligible: boolean;
+  min_followers_for_trial: number;
+}
+
+export interface YouTubeProfile {
+  connected: boolean;
+  channel_id?: string | null;
+  title?: string | null;
+  custom_url?: string | null;
+  subscriber_count: number;
+  video_count: number;
+  view_count: number;
+  thumbnail_url?: string | null;
+}
+
+export interface TikTokProfile {
+  connected: boolean;
+  open_id?: string | null;
+  username?: string | null;
+  display_name?: string | null;
+  avatar_url?: string | null;
+  follower_count: number;
+  following_count: number;
+  likes_count: number;
+  video_count: number;
+}
+
+export interface UnifiedProfiles {
+  instagram: InstagramProfile;
+  youtube: YouTubeProfile;
+  tiktok: TikTokProfile;
+}
+
+export interface CommentReply {
+  id: string;
+  username: string;
+  text: string;
+  timestamp?: string | null;
+  like_count?: number;
+}
+
+export interface CommentItem {
+  id: string;
+  platform: 'instagram' | 'youtube' | string;
+  username: string;
+  avatar?: string | null;
+  text: string;
+  timestamp?: string | null;
+  like_count?: number;
+  replies?: CommentReply[];
+}
+
+export interface CommentsResponse {
+  success: boolean;
+  detail?: string | null;
+  platform: string;
+  total_count: number;
+  comments: CommentItem[];
+}
+
+export interface CreateCommentPayload {
+  platform: string;
+  message: string;
+  comment_id?: string;
+}
+

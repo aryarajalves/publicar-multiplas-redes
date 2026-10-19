@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guia: Token Permanente do YouTube (Google OAuth)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: #111827;
+      --card-border: #1f2937;
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+      --red: #ef4444;
+      --red-soft: rgba(239, 68, 68, 0.12);
+      --red-border: rgba(239, 68, 68, 0.3);
+      --green: #10b981;
+      --green-soft: rgba(16, 185, 129, 0.12);
+      --green-border: rgba(16, 185, 129, 0.3);
+      --amber: #f59e0b;
+      --amber-soft: rgba(245, 158, 11, 0.12);
+      --amber-border: rgba(245, 158, 11, 0.3);
+      --blue: #3b82f6;
+      --blue-soft: rgba(59, 130, 246, 0.12);
+      --blue-border: rgba(59, 130, 246, 0.3);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding-bottom: 30px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .badge-header {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      background: var(--red-soft);
+      border: 1px solid var(--red-border);
+      color: #f87171;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+      background: linear-gradient(to right, #ffffff, #d1d5db);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      color: var(--text-muted);
+      max-width: 650px;
+      margin: 0 auto;
+    }
+
+    .alert {
+      border-radius: 12px;
+      padding: 18px 22px;
+      margin-bottom: 28px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .alert-amber {
+      background: var(--amber-soft);
+      border: 1px solid var(--amber-border);
+      color: #fbbf24;
+    }
+
+    .alert-green {
+      background: var(--green-soft);
+      border: 1px solid var(--green-border);
+      color: #34d399;
+    }
+
+    .alert-icon {
+      font-size: 22px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .alert-content h4 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .alert-content p {
+      font-size: 14px;
+      line-height: 1.5;
+      color: #e5e7eb;
+    }
+
+    .step-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 24px;
+      transition: border-color 0.2s;
+    }
+
+    .step-card:hover {
+      border-color: #374151;
+    }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .step-number {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--red);
+      color: white;
+      font-weight: 800;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .step-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .step-content ol, .step-content ul {
+      padding-left: 20px;
+      margin-bottom: 16px;
+    }
+
+    .step-content li {
+      font-size: 15px;
+      color: #d1d5db;
+      margin-bottom: 10px;
+    }
+
+    .step-content li strong {
+      color: #ffffff;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      background: #1f2937;
+      color: #fca5a5;
+      padding: 3px 6px;
+      border-radius: 6px;
+    }
+
+    .code-block {
+      background: #0d1117;
+      border: 1px solid #21262d;
+      border-radius: 10px;
+      padding: 16px 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: #e6edf3;
+      overflow-x: auto;
+      margin: 14px 0;
+      line-height: 1.6;
+    }
+
+    .btn-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #dc2626;
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 18px;
+      border-radius: 8px;
+      margin-top: 8px;
+      transition: background 0.2s;
+    }
+
+    .btn-link:hover {
+      background: #b91c1c;
+    }
+
+    .faq-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .faq-item {
+      background: #161f30;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 18px;
+    }
+
+    .faq-question {
+      font-size: 15px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 6px;
+    }
+
+    .faq-answer {
+      font-size: 14px;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      padding-top: 24px;
+      border-top: 1px solid var(--card-border);
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <div class="badge-header">
+        <span>🔴 YouTube Data API v3</span>
+        <span>•</span>
+        <span>Google Cloud OAuth 2.0</span>
+      </div>
+      <h1>Como Deixar o Token do Canal Permanente</h1>
+      <p class="subtitle">Guia passo a passo definitivo para impedir que o Refresh Token expire a cada 7 dias e garantir automações ininterruptas no MultiPost.</p>
+    </header>
+
+    <!-- Alerta Explicativo -->
+    <div class="alert alert-amber">
+      <div class="alert-icon">⚠️</div>
+      <div class="alert-content">
+        <h4>Por que o token anterior expirou em 7 dias?</h4>
+        <p>No Google Cloud Console, todo aplicativo recém-criado fica por padrão com o status de publicação definido como <strong>"Em teste" (Testing)</strong>. Por regra de segurança da Google, qualquer token emitido em modo de teste é <strong>automaticamente revogado após 7 dias</strong> (erro <code>invalid_grant: Token has been expired or revoked</code>).</p>
+      </div>
+    </div>
+
+    <div class="alert alert-green">
+      <div class="alert-icon">✅</div>
+      <div class="alert-content">
+        <h4>A Solução Definitiva: Publicar o Aplicativo</h4>
+        <p>Ao mudar o status do app de <strong>"Em teste"</strong> para <strong>"Em produção" (In Production)</strong>, a Google remove a expiração de 7 dias e o novo Refresh Token gerado passa a ser <strong>permanente e vitalício</strong>!</p>
+      </div>
+    </div>
+
+    <!-- Passo 1 -->
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-number">1</div>
+        <h2 class="step-title">Alterar o Aplicativo para Modo "Produção"</h2>
+      </div>
+      <div class="step-content">
+        <ol>
+          <li>Acesse a tela de consentimento no Google Cloud Console:
+            <br>
+            <a href="https://console.cloud.google.com/apis/credentials/consent" target="_blank" class="btn-link">
+              Abrir Tela de Consentimento OAuth ↗
+            </a>
+          </li>
+          <li style="margin-top: 14px;">Certifique-se de que o seu projeto do YouTube (ex: <em>Aryaraj - Canal Youtube</em>) está selecionado no seletor do topo da página.</li>
+          <li>Localize a seção <strong>Status de publicação</strong> (<em>Publishing status</em>). Você verá o status atual como <code>Em teste</code>.</li>
+          <li>Clique no botão <strong>"Publicar aplicativo"</strong> (<em>Publish app</em>).</li>
+          <li>Uma janela de confirmação chamada <em>"Publicar no ambiente de produção?"</em> será aberta. Clique em <strong>"Confirmar"</strong>.</li>
+        </ol>
+
+        <div class="code-block">
+ℹ️ IMPORTANTE: Você NÃO precisa verificar o aplicativo nem gravar vídeos para a Google.<br>
+Como o aplicativo é de uso pessoal para o seu próprio canal, ele pode permanecer indefinidamente com o status de "Em produção (Não verificado)".
+        </div>
+      </div>
+    </div>
+
+    <!-- Passo 2 -->
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-number">2</div>
+        <h2 class="step-title">Gerar o Refresh Token Definitivo no OAuth Playground</h2>
+      </div>
+      <div class="step-content">
+        <ol>
+          <li>Acesse o <a href="https://developers.google.com/oauthplayground" target="_blank" style="color: #60a5fa; text-decoration: underline;">Google OAuth 2.0 Playground</a>.</li>
+          <li>No canto superior direito, clique no ícone da <strong>Engrenagem (⚙️)</strong>:
+            <ul>
+              <li>Marque a caixinha: ☑️ <strong>Use your own OAuth credentials</strong>.</li>
+              <li>No campo <strong>OAuth Client ID</strong>, cole o seu <code>YOUTUBE_CLIENT_ID</code> do <code>.env</code>.</li>
+              <li>No campo <strong>OAuth Client secret</strong>, cole o seu <code>YOUTUBE_CLIENT_SECRET</code> do <code>.env</code>.</li>
+              <li>Clique em <strong>Close</strong> para fechar a janelinha da engrenagem.</li>
+            </ul>
+          </li>
+          <li>Na coluna lateral esquerda (<strong>Step 1: Select & authorize APIs</strong>):
+            <ul>
+              <li>Role a lista até encontrar <strong>YouTube Data API v3</strong>.</li>
+              <li>Marque o escopo: <code>https://www.googleapis.com/auth/youtube.upload</code></li>
+              <li>Clique no botão azul <strong>"Authorize APIs"</strong>.</li>
+            </ul>
+          </li>
+          <li>Selecione a sua conta Google dona do canal.</li>
+          <li>Se aparecer a tela amarela <em>"O Google não verificou este app"</em>:
+            <ul>
+              <li>Clique em <strong>"Avançado"</strong> (Advanced) no canto inferior esquerdo.</li>
+              <li>Clique em <strong>"Acessar [Nome do seu App] (não seguro)"</strong>.</li>
+              <li>Clique em <strong>"Continuar"</strong> para conceder permissão.</li>
+            </ul>
+          </li>
+          <li>Você retornará automaticamente ao OAuth Playground no <strong>Step 2</strong>:
+            <ul>
+              <li>Clique no botão azul <strong>"Exchange authorization code for tokens"</strong>.</li>
+            </ul>
+          </li>
+          <li>Pronto! Copie o valor gerado no campo <strong>Refresh token</strong> (começa com <code>1//04...</code>).</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- Passo 3 -->
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-number">3</div>
+        <h2 class="step-title">Salvar o Novo Token no Arquivo .env</h2>
+      </div>
+      <div class="step-content">
+        <p style="margin-bottom: 12px; color: #d1d5db;">Abra o arquivo <code>backend/.env</code> no servidor ou computador local e substitua a linha:</p>
+
+        <div class="code-block">
+# YOUTUBE (DATA API v3 - VÍDEOS E SHORTS)<br>
+YOUTUBE_CLIENT_ID=SEU_CLIENT_ID_DO_GOOGLE.apps.googleusercontent.com<br>
+YOUTUBE_CLIENT_SECRET=SEU_CLIENT_SECRET_DO_GOOGLE<br>
+YOUTUBE_REFRESH_TOKEN=1//04_COLE_SEU_NOVO_REFRESH_TOKEN_AQUI
+        </div>
+
+        <p style="margin-top: 12px; color: #d1d5db;">Depois de salvar o arquivo, reinicie os contêineres Docker para carregar o novo token:</p>
+        <div class="code-block">
+docker restart social-publisher-api social-scheduler-worker
+        </div>
+      </div>
+    </div>
+
+    <!-- Perguntas Frequentes -->
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-number">💡</div>
+        <h2 class="step-title">Dúvidas Frequentes</h2>
+      </div>
+
+      <div class="faq-grid">
+        <div class="faq-item">
+          <div class="faq-question">O token em produção pode expirar algum dia?</div>
+          <div class="faq-answer">Apenas em duas situações: se você alterar a senha da sua conta Google ou se o sistema passar mais de 6 meses sem fazer nenhuma requisição. No uso diário do MultiPost, ele permanecerá ativo indefinidamente.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">Preciso pagar alguma taxa para a Google?</div>
+          <div class="faq-answer">Não. A YouTube Data API v3 é 100% gratuita com cota diária de 10.000 unidades por dia (suficiente para dezenas de publicações diárias).</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">A tela de aviso "Google não verificou este app" é um erro?</div>
+          <div class="faq-answer">Não. É apenas um aviso padrão da Google para aplicativos criados por desenvolvedores para uso próprio. Basta clicar em "Avançado" e prosseguir normalmente.</div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      MultiPost • Sistema de Agendamento & Cross-Posting Automatizado
+    </footer>
+  </div>
+
+</body>
+</html>

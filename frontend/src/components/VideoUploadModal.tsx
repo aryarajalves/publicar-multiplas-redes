@@ -1,22 +1,16 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { api } from '../services/api';
-import { Post } from '../types';
+import { Post, InstagramAudioItem, InstagramProfile } from '../types';
 import { MediaUploadTab } from './upload/MediaUploadTab';
 import { SocialNetworksTab } from './upload/SocialNetworksTab';
 import { ScheduleTab } from './upload/ScheduleTab';
 import { ExpandedFieldModal } from './upload/ExpandedFieldModal';
-import {
-  X,
-  Film,
-  Calendar,
-  Clock,
-  AlertCircle,
-  Loader2,
-  Video,
-  Share2,
-  ArrowRight,
-  ArrowLeft,
-} from 'lucide-react';
+import { UploadModalHeader } from './upload/UploadModalHeader';
+import { UploadModalFooter } from './upload/UploadModalFooter';
+import { UploadModalTabsNav } from './upload/UploadModalTabsNav';
+import { PublishConfirmModal } from './upload/PublishConfirmModal';
+import { useUploadMediaState } from './upload/useUploadMediaState';
+import { AlertCircle } from 'lucide-react';
 
 interface Props {
   isOpen: boolean;
@@ -31,8 +25,6 @@ export const VideoUploadModal: React.FC<Props> = ({
   onClose,
   onSuccess,
 }) => {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
   // Travar o scroll da página de fundo quando o popup estiver aberto
   useEffect(() => {
     if (isOpen) {
@@ -44,12 +36,7 @@ export const VideoUploadModal: React.FC<Props> = ({
     }
   }, [isOpen]);
 
-  // Aba principal ativa (3 Abas Agrupadas)
   const [activeMainTab, setActiveMainTab] = useState<MainTabType>('media');
-
-  // Mídia
-  const [file, setFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [title, setTitle] = useState('');
   const [caption, setCaption] = useState('');
 
@@ -64,18 +51,63 @@ export const VideoUploadModal: React.FC<Props> = ({
   const [tiktokCaption, setTiktokCaption] = useState('');
   const [tiktokHashtags, setTiktokHashtags] = useState('');
 
-  // Thumbnails upload
-  const [verticalThumbnail, setVerticalThumbnail] = useState<File | null>(null);
-  const [verticalThumbnailPreview, setVerticalThumbnailPreview] = useState<string | null>(null);
-  const verticalThumbInputRef = useRef<HTMLInputElement>(null);
-  const [horizontalThumbnail, setHorizontalThumbnail] = useState<File | null>(null);
-  const [horizontalThumbnailPreview, setHorizontalThumbnailPreview] = useState<string | null>(null);
-  const horizontalThumbInputRef = useRef<HTMLInputElement>(null);
+  // Instagram Perfil, Música e Reels de Teste (Trial Reels)
+  const [igProfile, setIgProfile] = useState<InstagramProfile | null>(null);
+  const [selectedAudio, setSelectedAudio] = useState<InstagramAudioItem | null>(null);
+  const [audioVolume, setAudioVolume] = useState<number>(80);
+  const [videoVolume, setVideoVolume] = useState<number>(50);
+  const [isTrialReel, setIsTrialReel] = useState<boolean>(false);
+  const [graduationStrategy, setGraduationStrategy] = useState<'MANUAL' | 'SS_PERFORMANCE'>('MANUAL');
 
-  // Sub-aba ativa das redes sociais
+  useEffect(() => {
+    if (isOpen && typeof api.getInstagramProfile === 'function') {
+      api
+        .getInstagramProfile()
+        .then((profile) => {
+          if (profile) {
+            setIgProfile(profile);
+            if (!profile.trial_reels_eligible) {
+              setIsTrialReel(false);
+            }
+          }
+        })
+        .catch(() => {});
+    }
+  }, [isOpen]);
+
+  // Estado modularizado de Mídia, Thumbnails e Frame
+  const {
+    fileInputRef,
+    file,
+    previewUrl,
+    verticalThumbnail,
+    verticalThumbnailPreview,
+    verticalThumbInputRef,
+    horizontalThumbnail,
+    horizontalThumbnailPreview,
+    horizontalThumbInputRef,
+    videoRef,
+    capturedFrame,
+    capturedFramePreview,
+    capturedFrameTime,
+    youtubeCoverSource,
+    setYoutubeCoverSource,
+    instagramCoverSource,
+    setInstagramCoverSource,
+    tiktokCoverSource,
+    setTiktokCoverSource,
+    handleCaptureFrame,
+    handleRemoveCapturedFrame,
+    handleApplyFrameToVertical,
+    handleApplyFrameToHorizontal,
+    handleFileChange,
+    handleVerticalThumbChange,
+    handleRemoveVerticalThumb,
+    handleHorizontalThumbChange,
+    handleRemoveHorizontalThumb,
+  } = useUploadMediaState(title, setTitle, youtubeTitle, setYoutubeTitle);
+
   const [activePlatformTab, setActivePlatformTab] = useState<'youtube' | 'instagram' | 'tiktok'>('youtube');
-
-  // Campo de texto maximizado para edição expandida
   const [expandedField, setExpandedField] = useState<{
     title: string;
     subtitle?: string;
@@ -85,7 +117,6 @@ export const VideoUploadModal: React.FC<Props> = ({
     testId?: string;
   } | null>(null);
 
-  // Scheduling
   const getDefaultDate = () => {
     const d = new Date();
     d.setHours(d.getHours() + 1);
@@ -96,72 +127,10 @@ export const VideoUploadModal: React.FC<Props> = ({
   const [publishNow, setPublishNow] = useState(true);
   const [platforms, setPlatforms] = useState<string[]>(['youtube', 'instagram', 'tiktok']);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPublishConfirmOpen, setIsPublishConfirmOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const safeRevoke = (url: string | null) => {
-    if (url && typeof URL !== 'undefined' && typeof URL.revokeObjectURL === 'function') {
-      try {
-        URL.revokeObjectURL(url);
-      } catch {}
-    }
-  };
-
-  useEffect(() => {
-    return () => {
-      safeRevoke(verticalThumbnailPreview);
-      safeRevoke(horizontalThumbnailPreview);
-    };
-  }, [verticalThumbnailPreview, horizontalThumbnailPreview]);
-
   if (!isOpen) return null;
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selected = e.target.files?.[0];
-    if (selected) {
-      setFile(selected);
-      const url = URL.createObjectURL(selected);
-      setPreviewUrl(url);
-      const nameWithoutExt = selected.name.replace(/\.[^/.]+$/, '');
-      if (!title) {
-        setTitle(nameWithoutExt);
-      }
-      if (!youtubeTitle) {
-        setYoutubeTitle(nameWithoutExt);
-      }
-    }
-  };
-
-  const handleVerticalThumbChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selected = e.target.files?.[0];
-    if (selected) {
-      safeRevoke(verticalThumbnailPreview);
-      setVerticalThumbnail(selected);
-      setVerticalThumbnailPreview(URL.createObjectURL(selected));
-    }
-  };
-
-  const handleRemoveVerticalThumb = () => {
-    safeRevoke(verticalThumbnailPreview);
-    setVerticalThumbnail(null);
-    setVerticalThumbnailPreview(null);
-    if (verticalThumbInputRef.current) verticalThumbInputRef.current.value = '';
-  };
-
-  const handleHorizontalThumbChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selected = e.target.files?.[0];
-    if (selected) {
-      safeRevoke(horizontalThumbnailPreview);
-      setHorizontalThumbnail(selected);
-      setHorizontalThumbnailPreview(URL.createObjectURL(selected));
-    }
-  };
-
-  const handleRemoveHorizontalThumb = () => {
-    safeRevoke(horizontalThumbnailPreview);
-    setHorizontalThumbnail(null);
-    setHorizontalThumbnailPreview(null);
-    if (horizontalThumbInputRef.current) horizontalThumbInputRef.current.value = '';
-  };
 
   const togglePlatform = (p: string) => {
     if (platforms.includes(p)) {
@@ -176,7 +145,7 @@ export const VideoUploadModal: React.FC<Props> = ({
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!file) {
       setErrorMessage('Por favor, selecione um arquivo de vídeo (.mp4 ou .mov).');
@@ -195,24 +164,73 @@ export const VideoUploadModal: React.FC<Props> = ({
       return;
     }
 
+    setErrorMessage(null);
+    if (publishNow) {
+      setIsPublishConfirmOpen(true);
+      return;
+    }
+    executeSubmit();
+  };
+
+  const executeSubmit = async () => {
+    const effectiveTitle = (youtubeTitle || title).trim();
     setIsSubmitting(true);
     setErrorMessage(null);
 
     try {
       const formData = new FormData();
-      formData.append('video', file);
+      formData.append('video', file!);
       formData.append('title', effectiveTitle);
       const effectiveCaption = (youtubeDescription || caption || instagramCaption || tiktokCaption).trim();
       formData.append('caption', effectiveCaption);
       formData.append('scheduled_at', publishNow ? new Date().toISOString() : new Date(scheduledAt).toISOString());
       formData.append('platforms', JSON.stringify(platforms));
-      formData.append('publish_now', publishNow.toString());
 
-      if (verticalThumbnail) formData.append('thumbnail', verticalThumbnail);
-      if (horizontalThumbnail) formData.append('youtube_thumbnail', horizontalThumbnail);
+      let finalVerticalCover: File | null = null;
+      let finalYoutubeCover: File | null = null;
+
+      if (youtubeCoverSource === 'frame' && capturedFrame) {
+        finalYoutubeCover = capturedFrame;
+      } else if (youtubeCoverSource === 'thumbnail' || (!capturedFrame && horizontalThumbnail)) {
+        finalYoutubeCover = horizontalThumbnail || verticalThumbnail;
+      } else if (horizontalThumbnail && youtubeCoverSource !== 'frame') {
+        finalYoutubeCover = horizontalThumbnail;
+      }
+
+      const wantsFrameVertical =
+        (instagramCoverSource === 'frame' && platforms.includes('instagram')) ||
+        (tiktokCoverSource === 'frame' && platforms.includes('tiktok'));
+      const wantsThumbVertical =
+        (instagramCoverSource === 'thumbnail' && platforms.includes('instagram')) ||
+        (tiktokCoverSource === 'thumbnail' && platforms.includes('tiktok'));
+
+      if (wantsFrameVertical && capturedFrame) {
+        finalVerticalCover = capturedFrame;
+      } else if (wantsThumbVertical) {
+        finalVerticalCover = verticalThumbnail || horizontalThumbnail;
+      } else if (verticalThumbnail && !wantsFrameVertical) {
+        finalVerticalCover = verticalThumbnail;
+      }
+
+      if (finalVerticalCover) formData.append('thumbnail', finalVerticalCover);
+      if (finalYoutubeCover) formData.append('youtube_thumbnail', finalYoutubeCover);
 
       if (instagramCaption) formData.append('instagram_caption', instagramCaption.trim());
       if (instagramHashtags) formData.append('instagram_hashtags', instagramHashtags.trim());
+
+      // Música do Instagram e Reels de Teste (Trial Reels)
+      if (selectedAudio) {
+        formData.append('instagram_audio_id', selectedAudio.audio_id);
+        formData.append('instagram_audio_title', selectedAudio.title);
+        formData.append('instagram_audio_artist', selectedAudio.display_artist || '');
+        formData.append('instagram_audio_volume', String(audioVolume));
+        formData.append('instagram_video_volume', String(videoVolume));
+      }
+      if (isTrialReel && igProfile?.trial_reels_eligible) {
+        formData.append('instagram_is_trial_reel', 'true');
+        formData.append('instagram_trial_graduation_strategy', graduationStrategy);
+      }
+
       if (youtubeTitle) formData.append('youtube_title', youtubeTitle.trim());
       if (youtubeDescription) formData.append('youtube_description', youtubeDescription.trim());
       if (youtubeTags) formData.append('youtube_tags', youtubeTags.trim());
@@ -222,11 +240,13 @@ export const VideoUploadModal: React.FC<Props> = ({
       if (tiktokHashtags) formData.append('tiktok_hashtags', tiktokHashtags.trim());
 
       const createdPost = await api.createPost(formData);
+      setIsPublishConfirmOpen(false);
       onSuccess(createdPost);
       onClose();
     } catch (err: any) {
       const detail = err.response?.data?.detail || err.message || 'Erro ao agendar publicação.';
       setErrorMessage(detail);
+      setIsPublishConfirmOpen(false);
     } finally {
       setIsSubmitting(false);
     }
@@ -240,80 +260,15 @@ export const VideoUploadModal: React.FC<Props> = ({
       className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in"
     >
       <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-3xl max-h-[92vh] overflow-hidden shadow-2xl flex flex-col">
-        {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-slate-200 flex items-center justify-between bg-white shrink-0">
-          <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-lg bg-red-50 text-red-600 border border-red-200 shadow-2xs">
-              <Film className="w-5 h-5" />
-            </div>
-            <div>
-              <h2 className="text-base font-bold text-slate-900">Publicar Conteúdo Multi-Redes</h2>
-              <p className="text-xs text-slate-500">Poste simultaneamente no Instagram Reels, YouTube e TikTok</p>
-            </div>
-          </div>
-          <button
-            onClick={onClose}
-            data-testid="btn-close-upload-modal"
-            disabled={isSubmitting}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+        <UploadModalHeader onClose={onClose} isSubmitting={isSubmitting} igProfile={igProfile} />
 
-        {/* Barra Superior de Abas Principais (3 Abas Agrupadas) */}
-        <div className="bg-slate-50 border-b border-slate-200 px-4 pt-2.5 shrink-0 flex items-center gap-2 overflow-x-auto">
-          {/* Aba 1: Mídia */}
-          <button
-            type="button"
-            onClick={() => setActiveMainTab('media')}
-            data-testid="main-tab-media"
-            className={`flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-t-xl border-t border-x transition-all shrink-0 ${
-              activeMainTab === 'media'
-                ? 'bg-white border-slate-200 text-[#ea384c] shadow-xs'
-                : 'border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-100/60'
-            }`}
-          >
-            <Video className="w-4 h-4" />
-            <span>1. Mídia (Vídeo e Capas)</span>
-            {file && <span className="w-2 h-2 rounded-full bg-emerald-500"></span>}
-          </button>
+        <UploadModalTabsNav
+          activeMainTab={activeMainTab}
+          setActiveMainTab={setActiveMainTab}
+          hasFile={Boolean(file)}
+          platformsCount={platforms.length}
+        />
 
-          {/* Aba 2: Redes */}
-          <button
-            type="button"
-            onClick={() => setActiveMainTab('social')}
-            data-testid="main-tab-social"
-            className={`flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-t-xl border-t border-x transition-all shrink-0 ${
-              activeMainTab === 'social'
-                ? 'bg-white border-slate-200 text-[#ea384c] shadow-xs'
-                : 'border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-100/60'
-            }`}
-          >
-            <Share2 className="w-4 h-4" />
-            <span>2. Personalização das Redes</span>
-            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-200 text-slate-700">
-              {platforms.length}
-            </span>
-          </button>
-
-          {/* Aba 3: Agendamento */}
-          <button
-            type="button"
-            onClick={() => setActiveMainTab('schedule')}
-            data-testid="main-tab-schedule"
-            className={`flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-t-xl border-t border-x transition-all shrink-0 ${
-              activeMainTab === 'schedule'
-                ? 'bg-white border-slate-200 text-[#ea384c] shadow-xs'
-                : 'border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-100/60'
-            }`}
-          >
-            <Calendar className="w-4 h-4" />
-            <span>3. Agendamento & Publicar</span>
-          </button>
-        </div>
-
-        {/* Form Body com scroll */}
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-5 sm:p-6 flex flex-col justify-between">
           <div>
             {errorMessage && (
@@ -323,7 +278,6 @@ export const VideoUploadModal: React.FC<Props> = ({
               </div>
             )}
 
-            {/* Conteúdo da Aba 1: Mídia */}
             <div className={activeMainTab === 'media' ? 'block' : 'hidden'}>
               <MediaUploadTab
                 file={file}
@@ -340,10 +294,17 @@ export const VideoUploadModal: React.FC<Props> = ({
                 horizontalThumbInputRef={horizontalThumbInputRef}
                 handleHorizontalThumbChange={handleHorizontalThumbChange}
                 handleRemoveHorizontalThumb={handleRemoveHorizontalThumb}
+                videoRef={videoRef}
+                capturedFrame={capturedFrame}
+                capturedFramePreview={capturedFramePreview}
+                capturedFrameTime={capturedFrameTime}
+                handleCaptureFrame={handleCaptureFrame}
+                handleRemoveCapturedFrame={handleRemoveCapturedFrame}
+                handleApplyFrameToVertical={handleApplyFrameToVertical}
+                handleApplyFrameToHorizontal={handleApplyFrameToHorizontal}
               />
             </div>
 
-            {/* Conteúdo da Aba 2: Redes */}
             <div className={activeMainTab === 'social' ? 'block' : 'hidden'}>
               <SocialNetworksTab
                 platforms={platforms}
@@ -369,15 +330,36 @@ export const VideoUploadModal: React.FC<Props> = ({
                 setInstagramCaption={setInstagramCaption}
                 instagramHashtags={instagramHashtags}
                 setInstagramHashtags={setInstagramHashtags}
+                igProfile={igProfile}
+                selectedAudio={selectedAudio}
+                onSelectAudio={setSelectedAudio}
+                audioVolume={audioVolume}
+                setAudioVolume={setAudioVolume}
+                videoVolume={videoVolume}
+                setVideoVolume={setVideoVolume}
+                isTrialReel={isTrialReel}
+                setIsTrialReel={setIsTrialReel}
+                graduationStrategy={graduationStrategy}
+                setGraduationStrategy={setGraduationStrategy}
                 tiktokCaption={tiktokCaption}
                 setTiktokCaption={setTiktokCaption}
                 tiktokHashtags={tiktokHashtags}
                 setTiktokHashtags={setTiktokHashtags}
                 setExpandedField={setExpandedField}
+                youtubeCoverSource={youtubeCoverSource}
+                setYoutubeCoverSource={setYoutubeCoverSource}
+                instagramCoverSource={instagramCoverSource}
+                setInstagramCoverSource={setInstagramCoverSource}
+                tiktokCoverSource={tiktokCoverSource}
+                setTiktokCoverSource={setTiktokCoverSource}
+                verticalThumbnailPreview={verticalThumbnailPreview}
+                horizontalThumbnailPreview={horizontalThumbnailPreview}
+                capturedFramePreview={capturedFramePreview}
+                capturedFrameTime={capturedFrameTime}
+                onGoToMediaTab={() => setActiveMainTab('media')}
               />
             </div>
 
-            {/* Conteúdo da Aba 3: Agendamento */}
             <div className={activeMainTab === 'schedule' ? 'block' : 'hidden'}>
               <ScheduleTab
                 publishNow={publishNow}
@@ -394,104 +376,33 @@ export const VideoUploadModal: React.FC<Props> = ({
             </div>
           </div>
 
-          {/* Footer com Navegação e Submissão */}
-          <div className="pt-4 border-t border-slate-200 mt-4 flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-50/80 p-4 rounded-b-2xl">
-            {/* Mensagem de Erro do Rodapé */}
-            <div className="w-full sm:w-auto">
-              {errorMessage && (
-                <div
-                  data-testid="footer-error-message"
-                  className="p-2.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2"
-                >
-                  <AlertCircle className="w-3.5 h-3.5 shrink-0 text-rose-600" />
-                  <span>{errorMessage}</span>
-                </div>
-              )}
-            </div>
-
-            {/* Botões de Ação */}
-            <div className="flex items-center justify-end gap-2.5 w-full sm:w-auto">
-              {/* Botão Voltar */}
-              {activeMainTab !== 'media' && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (activeMainTab === 'schedule') setActiveMainTab('social');
-                    else if (activeMainTab === 'social') setActiveMainTab('media');
-                  }}
-                  disabled={isSubmitting}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold border border-slate-200 shadow-2xs transition-colors"
-                >
-                  <ArrowLeft className="w-3.5 h-3.5" />
-                  <span>Voltar</span>
-                </button>
-              )}
-
-              {/* Botão Próximo */}
-              {activeMainTab !== 'schedule' ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (activeMainTab === 'media') setActiveMainTab('social');
-                    else if (activeMainTab === 'social') setActiveMainTab('schedule');
-                  }}
-                  disabled={isSubmitting}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white hover:bg-slate-50 text-slate-800 text-xs font-semibold border border-slate-200 shadow-2xs transition-colors"
-                >
-                  <span>Avançar</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              ) : null}
-
-              {/* Botão Cancelar */}
-              <button
-                type="button"
-                onClick={onClose}
-                disabled={isSubmitting}
-                className="px-3.5 py-2 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 text-xs font-medium transition-colors"
-              >
-                Cancelar
-              </button>
-
-              {/* Botão Enviar / Agendar */}
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                data-testid="submit-schedule-btn"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#ea384c] hover:bg-[#d82a3e] text-white text-xs font-semibold shadow-sm transition-all active:scale-95 disabled:opacity-50"
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>Enviando...</span>
-                  </>
-                ) : (
-                  <>
-                    <Clock className="w-4 h-4" />
-                    <span>{publishNow ? 'Publicar Agora' : 'Confirmar Agendamento'}</span>
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
+          <UploadModalFooter
+            errorMessage={errorMessage}
+            activeMainTab={activeMainTab}
+            setActiveMainTab={setActiveMainTab}
+            onClose={onClose}
+            isSubmitting={isSubmitting}
+            publishNow={publishNow}
+          />
         </form>
       </div>
 
-      {/* Modal / Overlay de Campo Maximizado */}
       <ExpandedFieldModal
         expandedField={expandedField}
         onClose={() => setExpandedField(null)}
         onUpdateValue={(val) => {
-          if (expandedField?.onChange) {
-            expandedField.onChange(val);
-          }
-          if (expandedField) {
-            setExpandedField({
-              ...expandedField,
-              value: val,
-            });
-          }
+          if (expandedField?.onChange) expandedField.onChange(val);
+          if (expandedField) setExpandedField({ ...expandedField, value: val });
         }}
+      />
+
+      <PublishConfirmModal
+        isOpen={isPublishConfirmOpen}
+        onClose={() => setIsPublishConfirmOpen(false)}
+        onConfirm={executeSubmit}
+        isLoading={isSubmitting}
+        videoTitle={effectiveTitle}
+        platforms={platforms}
       />
     </div>
   );

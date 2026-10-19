@@ -196,7 +196,7 @@ describe('UserModal Component', () => {
     };
     (api.sendUserPasswordReset as any).mockResolvedValueOnce({
       message: 'Link de redefinição de senha enviado com sucesso por e-mail.',
-      reset_url: 'http://localhost:3005/redefinir-senha?token=tok-abc-123',
+      reset_url: 'http://localhost:7300/redefinir-senha?token=tok-abc-123',
     });
 
     render(
@@ -219,7 +219,7 @@ describe('UserModal Component', () => {
         screen.getByText('Link de redefinição de senha enviado com sucesso por e-mail.')
       ).toBeInTheDocument();
       expect(
-        screen.getByText('http://localhost:3005/redefinir-senha?token=tok-abc-123')
+        screen.getByText('http://localhost:7300/redefinir-senha?token=tok-abc-123')
       ).toBeInTheDocument();
     });
   });

@@ -133,10 +133,10 @@ O fluxo oficial da Meta é:
 
 ### Como testar localmente na sua máquina?
 Se você estiver rodando o sistema no seu computador (`localhost`):
-- O Instagram não consegue acessar `http://localhost:8005/uploads/...`.
+- O Instagram não consegue acessar `http://localhost:7800/uploads/...`.
 - **Solução simples para testes locais:** Utilize uma ferramenta de túnel reverso gratuita como o **[Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/)** ou o **[ngrok](https://ngrok.com/)**:
   ```bash
-  ngrok http 8005
+  ngrok http 7800
   ```
   Isso fornecerá uma URL pública (ex: `https://abc-123.ngrok-free.app`) que você pode apontar para a rota de download dos vídeos.
 - **Em produção (VPS ou Nuvem):** Se o sistema estiver hospedado numa VPS com domínio/SSL ou os vídeos forem enviados para um bucket S3/Cloudflare R2/Supabase, a URL gerada já será 100% pública e direta.
@@ -172,4 +172,4 @@ flowchart TD
    ```bash
    docker restart social-publisher-api social-scheduler-worker
    ```
-4. Pelo frontend ([http://localhost:3005](http://localhost:3005)), envie um vídeo marcando a rede **Instagram** e clique em **"Publicar Agora"** ou agende o horário!
+4. Pelo frontend ([http://localhost:7300](http://localhost:7300)), envie um vídeo marcando a rede **Instagram** e clique em **"Publicar Agora"** ou agende o horário!

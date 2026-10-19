@@ -7,6 +7,8 @@ import {
 } from 'lucide-react';
 import { YouTubeSettings } from './YouTubeSettings';
 import { InstagramSettings, TikTokSettings } from './InstagramTikTokSettings';
+import { NetworkCoverSelector, CoverSourceType } from './NetworkCoverSelector';
+import { InstagramAudioItem, InstagramProfile } from '../../types';
 
 interface SocialNetworksTabProps {
   platforms: string[];
@@ -32,10 +34,32 @@ interface SocialNetworksTabProps {
   setInstagramCaption: (val: string) => void;
   instagramHashtags: string;
   setInstagramHashtags: (val: string) => void;
+  igProfile?: InstagramProfile | null;
+  selectedAudio?: InstagramAudioItem | null;
+  onSelectAudio?: (audio: InstagramAudioItem | null) => void;
+  audioVolume?: number;
+  setAudioVolume?: (val: number) => void;
+  videoVolume?: number;
+  setVideoVolume?: (val: number) => void;
+  isTrialReel?: boolean;
+  setIsTrialReel?: (val: boolean) => void;
+  graduationStrategy?: 'MANUAL' | 'SS_PERFORMANCE';
+  setGraduationStrategy?: (val: 'MANUAL' | 'SS_PERFORMANCE') => void;
   tiktokCaption: string;
   setTiktokCaption: (val: string) => void;
   tiktokHashtags: string;
   setTiktokHashtags: (val: string) => void;
+  youtubeCoverSource: CoverSourceType;
+  setYoutubeCoverSource: (val: CoverSourceType) => void;
+  instagramCoverSource: CoverSourceType;
+  setInstagramCoverSource: (val: CoverSourceType) => void;
+  tiktokCoverSource: CoverSourceType;
+  setTiktokCoverSource: (val: CoverSourceType) => void;
+  verticalThumbnailPreview: string | null;
+  horizontalThumbnailPreview: string | null;
+  capturedFramePreview: string | null;
+  capturedFrameTime: number | null;
+  onGoToMediaTab?: () => void;
   setExpandedField: (field: {
     title: string;
     subtitle?: string;
@@ -70,10 +94,32 @@ export const SocialNetworksTab: React.FC<SocialNetworksTabProps> = ({
   setInstagramCaption,
   instagramHashtags,
   setInstagramHashtags,
+  igProfile = null,
+  selectedAudio = null,
+  onSelectAudio = () => {},
+  audioVolume = 80,
+  setAudioVolume = () => {},
+  videoVolume = 50,
+  setVideoVolume = () => {},
+  isTrialReel = false,
+  setIsTrialReel = () => {},
+  graduationStrategy = 'MANUAL',
+  setGraduationStrategy = () => {},
   tiktokCaption,
   setTiktokCaption,
   tiktokHashtags,
   setTiktokHashtags,
+  youtubeCoverSource,
+  setYoutubeCoverSource,
+  instagramCoverSource,
+  setInstagramCoverSource,
+  tiktokCoverSource,
+  setTiktokCoverSource,
+  verticalThumbnailPreview,
+  horizontalThumbnailPreview,
+  capturedFramePreview,
+  capturedFrameTime,
+  onGoToMediaTab,
   setExpandedField,
 }) => {
   return (
@@ -213,48 +259,98 @@ export const SocialNetworksTab: React.FC<SocialNetworksTabProps> = ({
 
         {/* TAB: INSTAGRAM */}
         {activePlatformTab === 'instagram' && platforms.includes('instagram') && (
-          <InstagramSettings
-            instagramCaption={instagramCaption}
-            setInstagramCaption={setInstagramCaption}
-            caption={caption}
-            instagramHashtags={instagramHashtags}
-            setInstagramHashtags={setInstagramHashtags}
-            setExpandedField={setExpandedField}
-          />
+          <div className="space-y-4">
+            <NetworkCoverSelector
+              platformName="Instagram Reels"
+              platform="instagram"
+              selectedSource={instagramCoverSource}
+              onChangeSource={setInstagramCoverSource}
+              verticalThumbnailPreview={verticalThumbnailPreview}
+              horizontalThumbnailPreview={horizontalThumbnailPreview}
+              capturedFramePreview={capturedFramePreview}
+              capturedFrameTime={capturedFrameTime}
+              onGoToMediaTab={onGoToMediaTab}
+            />
+            <InstagramSettings
+              instagramCaption={instagramCaption}
+              setInstagramCaption={setInstagramCaption}
+              caption={caption}
+              instagramHashtags={instagramHashtags}
+              setInstagramHashtags={setInstagramHashtags}
+              igProfile={igProfile}
+              selectedAudio={selectedAudio}
+              onSelectAudio={onSelectAudio}
+              audioVolume={audioVolume}
+              setAudioVolume={setAudioVolume}
+              videoVolume={videoVolume}
+              setVideoVolume={setVideoVolume}
+              isTrialReel={isTrialReel}
+              setIsTrialReel={setIsTrialReel}
+              graduationStrategy={graduationStrategy}
+              setGraduationStrategy={setGraduationStrategy}
+              setExpandedField={setExpandedField}
+            />
+          </div>
         )}
 
         {/* TAB: YOUTUBE */}
         {activePlatformTab === 'youtube' && platforms.includes('youtube') && (
-          <YouTubeSettings
-            youtubeVideoType={youtubeVideoType}
-            setYoutubeVideoType={setYoutubeVideoType}
-            youtubeTitle={youtubeTitle}
-            setYoutubeTitle={setYoutubeTitle}
-            title={title}
-            setTitle={setTitle}
-            youtubeDescription={youtubeDescription}
-            setYoutubeDescription={setYoutubeDescription}
-            caption={caption}
-            setCaption={setCaption}
-            youtubeRelatedVideo={youtubeRelatedVideo}
-            setYoutubeRelatedVideo={setYoutubeRelatedVideo}
-            youtubeTags={youtubeTags}
-            setYoutubeTags={setYoutubeTags}
-            isSubmitting={isSubmitting}
-            setExpandedField={setExpandedField}
-          />
+          <div className="space-y-4">
+            <NetworkCoverSelector
+              platformName="YouTube"
+              platform="youtube"
+              selectedSource={youtubeCoverSource}
+              onChangeSource={setYoutubeCoverSource}
+              verticalThumbnailPreview={verticalThumbnailPreview}
+              horizontalThumbnailPreview={horizontalThumbnailPreview}
+              capturedFramePreview={capturedFramePreview}
+              capturedFrameTime={capturedFrameTime}
+              onGoToMediaTab={onGoToMediaTab}
+            />
+            <YouTubeSettings
+              youtubeVideoType={youtubeVideoType}
+              setYoutubeVideoType={setYoutubeVideoType}
+              youtubeTitle={youtubeTitle}
+              setYoutubeTitle={setYoutubeTitle}
+              title={title}
+              setTitle={setTitle}
+              youtubeDescription={youtubeDescription}
+              setYoutubeDescription={setYoutubeDescription}
+              caption={caption}
+              setCaption={setCaption}
+              youtubeRelatedVideo={youtubeRelatedVideo}
+              setYoutubeRelatedVideo={setYoutubeRelatedVideo}
+              youtubeTags={youtubeTags}
+              setYoutubeTags={setYoutubeTags}
+              isSubmitting={isSubmitting}
+              setExpandedField={setExpandedField}
+            />
+          </div>
         )}
 
         {/* TAB: TIKTOK */}
         {activePlatformTab === 'tiktok' && platforms.includes('tiktok') && (
-          <TikTokSettings
-            tiktokCaption={tiktokCaption}
-            setTiktokCaption={setTiktokCaption}
-            caption={caption}
-            tiktokHashtags={tiktokHashtags}
-            setTiktokHashtags={setTiktokHashtags}
-            setExpandedField={setExpandedField}
-          />
+          <div className="space-y-4">
+            <NetworkCoverSelector
+              platformName="TikTok"
+              platform="tiktok"
+              selectedSource={tiktokCoverSource}
+              onChangeSource={setTiktokCoverSource}
+              verticalThumbnailPreview={verticalThumbnailPreview}
+              horizontalThumbnailPreview={horizontalThumbnailPreview}
+              capturedFramePreview={capturedFramePreview}
+              capturedFrameTime={capturedFrameTime}
+              onGoToMediaTab={onGoToMediaTab}
+            />
+            <TikTokSettings
+              tiktokCaption={tiktokCaption}
+              setTiktokCaption={setTiktokCaption}
+              caption={caption}
+              tiktokHashtags={tiktokHashtags}
+              setTiktokHashtags={setTiktokHashtags}
+              setExpandedField={setExpandedField}
+            />
+          </div>
         )}
       </div>
     </div>

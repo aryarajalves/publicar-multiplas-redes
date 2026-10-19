@@ -15,7 +15,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       POSTGRES_DB: ${POSTGRES_DB:-social_publisher_db}
     ports:
-      - "${POSTGRES_PORT:-5438}:5432"
+      - "${POSTGRES_PORT:-7543}:5432"
     volumes:
       - social_postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -37,7 +37,7 @@ services:
     container_name: social-publisher-api
     restart: unless-stopped
     ports:
-      - "${BACKEND_PORT:-8005}:8000"
+      - "${BACKEND_PORT:-7800}:8000"
     env_file:
       - ../backend/.env
     environment:
@@ -95,7 +95,7 @@ services:
     container_name: social-stream-web
     restart: unless-stopped
     ports:
-      - "${FRONTEND_PORT:-3005}:80"
+      - "${FRONTEND_PORT:-7300}:80"
     volumes:
       - ../frontend/dist:/usr/share/nginx/html:ro
     depends_on:

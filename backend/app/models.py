@@ -46,6 +46,13 @@ class Post(Base):
     transcription = Column(Text, nullable=True)
     instagram_caption = Column(Text, nullable=True)
     instagram_hashtags = Column(String(500), nullable=True)
+    instagram_audio_id = Column(String(100), nullable=True)
+    instagram_audio_title = Column(String(255), nullable=True)
+    instagram_audio_artist = Column(String(255), nullable=True)
+    instagram_audio_volume = Column(Integer, nullable=True, default=100)
+    instagram_video_volume = Column(Integer, nullable=True, default=100)
+    instagram_is_trial_reel = Column(Boolean, nullable=False, default=False)
+    instagram_trial_graduation_strategy = Column(String(50), nullable=True, default="MANUAL")
     youtube_title = Column(String(255), nullable=True)
     youtube_description = Column(Text, nullable=True)
     youtube_tags = Column(String(500), nullable=True)
@@ -64,6 +71,26 @@ class Post(Base):
         order_by="PlatformPublication.id"
     )
 
+    @property
+    def total_views(self) -> int:
+        return sum(p.last_views or 0 for p in self.publications)
+
+    @property
+    def total_likes(self) -> int:
+        return sum(p.last_likes or 0 for p in self.publications)
+
+    @property
+    def total_comments(self) -> int:
+        return sum(p.last_comments or 0 for p in self.publications)
+
+    @property
+    def total_shares(self) -> int:
+        return sum(p.last_shares or 0 for p in self.publications)
+
+    @property
+    def total_saves(self) -> int:
+        return sum(getattr(p, 'last_saves', 0) or 0 for p in self.publications)
+
 class PlatformPublication(Base):
     __tablename__ = "platform_publications"
 
@@ -78,8 +105,42 @@ class PlatformPublication(Base):
     retry_count = Column(Integer, default=0, nullable=False)
     created_at = Column(DateTime(timezone=True), default=utcnow, nullable=False)
     updated_at = Column(DateTime(timezone=True), default=utcnow, onupdate=utcnow, nullable=False)
+    last_views = Column(Integer, default=0, nullable=False)
+    last_likes = Column(Integer, default=0, nullable=False)
+    last_comments = Column(Integer, default=0, nullable=False)
+    last_shares = Column(Integer, default=0, nullable=False)
+    last_saves = Column(Integer, default=0, nullable=False)
+    last_metrics_sync_at = Column(DateTime(timezone=True), nullable=True)
 
     post = relationship("Post", back_populates="publications")
+    metric_snapshots = relationship(
+        "PostMetricSnapshot",
+        back_populates="publication",
+        cascade="all, delete-orphan",
+        order_by="PostMetricSnapshot.id.desc()"
+    )
+
+
+class PostMetricSnapshot(Base):
+    __tablename__ = "post_metric_snapshots"
+
+    id = Column(Integer, primary_key=True, index=True)
+    post_id = Column(Integer, ForeignKey("posts.id", ondelete="CASCADE"), nullable=False, index=True)
+    publication_id = Column(Integer, ForeignKey("platform_publications.id", ondelete="CASCADE"), nullable=False, index=True)
+    platform = Column(String(50), nullable=False, index=True)
+    views = Column(Integer, default=0, nullable=False)
+    likes = Column(Integer, default=0, nullable=False)
+    comments = Column(Integer, default=0, nullable=False)
+    shares = Column(Integer, default=0, nullable=False)
+    saves = Column(Integer, default=0, nullable=False)
+    reach = Column(Integer, default=0, nullable=False)
+    impressions = Column(Integer, default=0, nullable=False)
+    watch_time_seconds = Column(Float, default=0.0, nullable=False)
+    retention_rate_pct = Column(Float, default=0.0, nullable=False)
+    ctr_pct = Column(Float, default=0.0, nullable=False)
+    collected_at = Column(DateTime(timezone=True), default=utcnow, nullable=False, index=True)
+
+    publication = relationship("PlatformPublication", back_populates="metric_snapshots")
 
 
 class SocialAccount(Base):
@@ -187,4 +248,31 @@ class BackupScheduleSetting(Base):
     next_backup_at = Column(DateTime(timezone=True), nullable=True)
     updated_at = Column(DateTime(timezone=True), default=utcnow, onupdate=utcnow, nullable=False)
 
+
+class PublicationSetting(Base):
+    __tablename__ = "publication_settings"
+
+    id = Column(Integer, primary_key=True, index=True)
+    default_location_name = Column(String(255), nullable=True)
+    default_location_id = Column(String(100), nullable=True)
+    tiktok_location_hashtags = Column(String(500), nullable=True)
+    youtube_location_name = Column(String(255), nullable=True)
+    apply_location_to_all = Column(Boolean, default=True, nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=utcnow, onupdate=utcnow, nullable=False)
+
+
+class InstagramFavoriteAudio(Base):
+    __tablename__ = "instagram_favorite_audios"
+
+    id = Column(Integer, primary_key=True, index=True)
+    audio_id = Column(String(100), unique=True, nullable=False, index=True)
+    title = Column(String(255), nullable=False)
+    display_artist = Column(String(255), nullable=True)
+    duration_in_ms = Column(Integer, default=0, nullable=False)
+    audio_type = Column(String(50), default="music", nullable=False)
+    cover_artwork_thumbnail_uri = Column(String(1000), nullable=True)
+    download_url = Column(String(1000), nullable=True)
+    on_platform_audio_preview_link = Column(String(1000), nullable=True)
+    ig_username = Column(String(255), nullable=True)
+    created_at = Column(DateTime(timezone=True), default=utcnow, nullable=False, index=True)
 

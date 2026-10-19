@@ -4,7 +4,8 @@ from typing import Optional, List
 from pathlib import Path
 import httpx
 from app.config import settings
-from app.models import Post, PlatformPublication
+from app.database import SessionLocal
+from app.models import Post, PlatformPublication, PublicationSetting
 from app.publishers.base import BasePublisher, PublicationResult
 
 logger = logging.getLogger("publishers.youtube")
@@ -270,6 +271,7 @@ class YouTubePublisher(BasePublisher):
                 else:
                     yt_tags = ["shorts", "reels", "video"] if is_shorts else ["video", "youtube", "conteudo"]
 
+                parts = ["snippet", "status"]
                 payload = {
                     "snippet": {
                         "title": yt_title,
@@ -283,6 +285,21 @@ class YouTubePublisher(BasePublisher):
                     }
                 }
 
+                # Anexa localização padrão se configurada
+                try:
+                    with SessionLocal() as db:
+                        pub_setting = db.query(PublicationSetting).first()
+                        if pub_setting and pub_setting.apply_location_to_all and (pub_setting.youtube_location_name or pub_setting.default_location_name):
+                            loc_name = (pub_setting.youtube_location_name or pub_setting.default_location_name).strip()
+                            if loc_name:
+                                payload["recordingDetails"] = {
+                                    "locationDescription": loc_name
+                                }
+                                parts.append("recordingDetails")
+                                logger.info(f"[YouTube] Localização padrão configurada: '{loc_name}'")
+                except Exception as e:
+                    logger.warning(f"[YouTube] Não foi possível carregar publication_settings para localização: {e}")
+
                 # 1. Inicia sessão de Upload Resumable do YouTube
                 init_headers = {
                     "Authorization": f"Bearer {access_token}",
@@ -291,7 +308,8 @@ class YouTubePublisher(BasePublisher):
                     "X-Upload-Content-Length": str(file_size)
                 }
 
-                init_url = "https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status"
+                part_param = ",".join(parts)
+                init_url = f"https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part={part_param}"
                 init_res = await client.post(init_url, headers=init_headers, json=payload)
 
                 if init_res.status_code != 200:

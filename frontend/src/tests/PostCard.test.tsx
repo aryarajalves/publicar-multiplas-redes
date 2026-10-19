@@ -152,4 +152,62 @@ describe('PostCard Component', () => {
 
     expect(screen.getByTestId('post-card-thumb-42')).toBeInTheDocument();
   });
+
+  it('renders engagement metrics bar when post is published with likes, comments, shares, saves and views', () => {
+    const publishedWithMetrics: Post = {
+      ...mockPost,
+      status: 'published',
+      total_likes: 1250,
+      total_comments: 85,
+      total_shares: 30,
+      total_saves: 45,
+      total_views: 10500,
+      publications: [
+        {
+          id: 1,
+          post_id: 42,
+          platform: 'instagram',
+          status: 'published',
+          last_likes: 1250,
+          last_comments: 85,
+          last_shares: 30,
+          last_saves: 45,
+          last_views: 10500,
+          retry_count: 0,
+          created_at: '2026-10-09T12:00:00Z',
+          updated_at: '2026-10-09T12:00:00Z',
+        },
+      ],
+    };
+
+    render(
+      <PostCard
+        post={publishedWithMetrics}
+        onViewDetails={vi.fn()}
+        onPublishNow={vi.fn()}
+        onDelete={vi.fn()}
+      />
+    );
+
+    expect(screen.getByTestId('post-metrics-bar-42')).toBeInTheDocument();
+    expect(screen.getByTestId('post-metric-likes-42')).toHaveTextContent('1.3k');
+    expect(screen.getByTestId('post-metric-comments-42')).toHaveTextContent('85');
+    expect(screen.getByTestId('post-metric-shares-42')).toHaveTextContent('30');
+    expect(screen.getByTestId('post-metric-saves-42')).toHaveTextContent('45');
+    expect(screen.getByTestId('post-metric-views-42')).toHaveTextContent('10.5k');
+  });
+
+  it('does not render metrics bar when post is scheduled and has no published publications', () => {
+    render(
+      <PostCard
+        post={mockPost}
+        onViewDetails={vi.fn()}
+        onPublishNow={vi.fn()}
+        onDelete={vi.fn()}
+      />
+    );
+
+    expect(screen.queryByTestId('post-metrics-bar-42')).not.toBeInTheDocument();
+  });
 });
+

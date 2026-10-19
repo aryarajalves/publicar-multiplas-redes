@@ -17,6 +17,12 @@ class PlatformPublicationRead(PlatformPublicationBase):
     post_id: int
     created_at: datetime
     updated_at: datetime
+    last_views: int = 0
+    last_likes: int = 0
+    last_comments: int = 0
+    last_shares: int = 0
+    last_saves: int = 0
+    last_metrics_sync_at: Optional[datetime] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -30,6 +36,13 @@ class PostCreate(PostBase):
     transcription: Optional[str] = None
     instagram_caption: Optional[str] = None
     instagram_hashtags: Optional[str] = None
+    instagram_audio_id: Optional[str] = None
+    instagram_audio_title: Optional[str] = None
+    instagram_audio_artist: Optional[str] = None
+    instagram_audio_volume: Optional[int] = 100
+    instagram_video_volume: Optional[int] = 100
+    instagram_is_trial_reel: bool = False
+    instagram_trial_graduation_strategy: Optional[str] = "MANUAL"
     youtube_title: Optional[str] = None
     youtube_description: Optional[str] = None
     youtube_tags: Optional[str] = Field(None, max_length=500)
@@ -50,6 +63,13 @@ class PostUpdate(BaseModel):
     transcription: Optional[str] = None
     instagram_caption: Optional[str] = None
     instagram_hashtags: Optional[str] = None
+    instagram_audio_id: Optional[str] = None
+    instagram_audio_title: Optional[str] = None
+    instagram_audio_artist: Optional[str] = None
+    instagram_audio_volume: Optional[int] = None
+    instagram_video_volume: Optional[int] = None
+    instagram_is_trial_reel: Optional[bool] = None
+    instagram_trial_graduation_strategy: Optional[str] = None
     youtube_title: Optional[str] = None
     youtube_description: Optional[str] = None
     youtube_tags: Optional[str] = Field(None, max_length=500)
@@ -78,6 +98,13 @@ class PostRead(BaseModel):
     transcription: Optional[str] = None
     instagram_caption: Optional[str] = None
     instagram_hashtags: Optional[str] = None
+    instagram_audio_id: Optional[str] = None
+    instagram_audio_title: Optional[str] = None
+    instagram_audio_artist: Optional[str] = None
+    instagram_audio_volume: Optional[int] = 100
+    instagram_video_volume: Optional[int] = 100
+    instagram_is_trial_reel: bool = False
+    instagram_trial_graduation_strategy: Optional[str] = "MANUAL"
     youtube_title: Optional[str] = None
     youtube_description: Optional[str] = None
     youtube_tags: Optional[str] = None
@@ -85,6 +112,13 @@ class PostRead(BaseModel):
     youtube_related_video: Optional[str] = None
     tiktok_caption: Optional[str] = None
     tiktok_hashtags: Optional[str] = None
+
+    # Métricas consolidadas
+    total_views: int = 0
+    total_likes: int = 0
+    total_comments: int = 0
+    total_shares: int = 0
+    total_saves: int = 0
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -304,4 +338,116 @@ class BackupActionResponse(BaseModel):
     backup: Optional[BackupRecordRead] = None
 
 
+class PublicationSettingBase(BaseModel):
+    default_location_name: Optional[str] = None
+    default_location_id: Optional[str] = None
+    tiktok_location_hashtags: Optional[str] = None
+    youtube_location_name: Optional[str] = None
+    apply_location_to_all: bool = True
 
+
+class PublicationSettingUpdate(PublicationSettingBase):
+    pass
+
+
+class PublicationSettingResponse(PublicationSettingBase):
+    id: int
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class InstagramAudioItem(BaseModel):
+    audio_id: str
+    title: str
+    display_artist: Optional[str] = None
+    duration_in_ms: int = 0
+    audio_type: str = "music"
+    cover_artwork_thumbnail_uri: Optional[str] = None
+    download_url: Optional[str] = None
+    on_platform_audio_preview_link: Optional[str] = None
+    is_ads_eligible: Optional[bool] = None
+    ig_username: Optional[str] = None
+    is_favorite: bool = False
+
+
+class InstagramAudioSearchResponse(BaseModel):
+    items: List[InstagramAudioItem] = Field(default_factory=list)
+    total: int = 0
+    source: str = "meta_graph_api"
+    next_cursor: Optional[str] = None
+
+
+class InstagramProfileResponse(BaseModel):
+    connected: bool
+    account_id: Optional[str] = None
+    username: Optional[str] = None
+    account_name: Optional[str] = None
+    name: Optional[str] = None
+    followers_count: int = 0
+    media_count: int = 0
+    profile_picture_url: Optional[str] = None
+    trial_reels_eligible: bool = False
+    min_followers_for_trial: int = 1000
+
+
+class YouTubeProfileResponse(BaseModel):
+    connected: bool
+    channel_id: Optional[str] = None
+    title: Optional[str] = None
+    custom_url: Optional[str] = None
+    subscriber_count: int = 0
+    video_count: int = 0
+    view_count: int = 0
+    thumbnail_url: Optional[str] = None
+
+
+class TikTokProfileResponse(BaseModel):
+    connected: bool
+    open_id: Optional[str] = None
+    username: Optional[str] = None
+    display_name: Optional[str] = None
+    avatar_url: Optional[str] = None
+    follower_count: int = 0
+    following_count: int = 0
+    likes_count: int = 0
+    video_count: int = 0
+
+
+class UnifiedProfilesResponse(BaseModel):
+    instagram: InstagramProfileResponse
+    youtube: YouTubeProfileResponse
+    tiktok: TikTokProfileResponse
+
+
+class CommentReply(BaseModel):
+    id: str
+    username: str
+    text: str
+    timestamp: Optional[str] = None
+    like_count: int = 0
+
+
+class CommentItem(BaseModel):
+    id: str
+    platform: str
+    username: str
+    avatar: Optional[str] = None
+    text: str
+    timestamp: Optional[str] = None
+    like_count: int = 0
+    replies: List[CommentReply] = []
+
+
+class CommentsResponse(BaseModel):
+    success: bool
+    detail: Optional[str] = None
+    platform: str
+    total_count: int = 0
+    comments: List[CommentItem] = []
+
+
+class CreateCommentRequest(BaseModel):
+    platform: str
+    message: str = Field(..., min_length=1, max_length=1000)
+    comment_id: Optional[str] = None

@@ -1,5 +1,8 @@
 import React from 'react';
 import { Maximize2 } from 'lucide-react';
+import { InstagramAudioItem, InstagramProfile } from '../../types';
+import { InstagramTrialReelsSelector } from './InstagramTrialReelsSelector';
+import { InstagramMusicSelector } from './InstagramMusicSelector';
 
 interface InstagramSettingsProps {
   instagramCaption: string;
@@ -7,6 +10,17 @@ interface InstagramSettingsProps {
   caption: string;
   instagramHashtags?: string;
   setInstagramHashtags?: (val: string) => void;
+  igProfile?: InstagramProfile | null;
+  selectedAudio?: InstagramAudioItem | null;
+  onSelectAudio?: (audio: InstagramAudioItem | null) => void;
+  audioVolume?: number;
+  setAudioVolume?: (val: number) => void;
+  videoVolume?: number;
+  setVideoVolume?: (val: number) => void;
+  isTrialReel?: boolean;
+  setIsTrialReel?: (val: boolean) => void;
+  graduationStrategy?: 'MANUAL' | 'SS_PERFORMANCE';
+  setGraduationStrategy?: (val: 'MANUAL' | 'SS_PERFORMANCE') => void;
   setExpandedField: (field: {
     title: string;
     subtitle?: string;
@@ -21,10 +35,41 @@ export const InstagramSettings: React.FC<InstagramSettingsProps> = ({
   instagramCaption,
   setInstagramCaption,
   caption,
+  igProfile = null,
+  selectedAudio = null,
+  onSelectAudio = () => {},
+  audioVolume = 80,
+  setAudioVolume = () => {},
+  videoVolume = 50,
+  setVideoVolume = () => {},
+  isTrialReel = false,
+  setIsTrialReel = () => {},
+  graduationStrategy = 'MANUAL',
+  setGraduationStrategy = () => {},
   setExpandedField,
 }) => {
   return (
     <div className="space-y-4 animate-fade-in" data-testid="content-tab-instagram">
+      {/* 1. Reels de Teste (Trial Reels) com restrição de 1.000 seguidores */}
+      <InstagramTrialReelsSelector
+        igProfile={igProfile}
+        isTrialReel={isTrialReel}
+        setIsTrialReel={setIsTrialReel}
+        graduationStrategy={graduationStrategy}
+        setGraduationStrategy={setGraduationStrategy}
+      />
+
+      {/* 2. Seletor de Música do Instagram */}
+      <InstagramMusicSelector
+        selectedAudio={selectedAudio}
+        onSelectAudio={onSelectAudio}
+        audioVolume={audioVolume}
+        setAudioVolume={setAudioVolume}
+        videoVolume={videoVolume}
+        setVideoVolume={setVideoVolume}
+      />
+
+      {/* 3. Legenda do Instagram Reels */}
       <div>
         <div className="flex items-center justify-between mb-1.5">
           <label className="text-xs font-bold text-pink-700 uppercase tracking-wider">

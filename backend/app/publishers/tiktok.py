@@ -6,7 +6,7 @@ from typing import Optional
 import httpx
 from app.config import settings
 from app.database import SessionLocal
-from app.models import Post, PlatformPublication, SocialAccount
+from app.models import Post, PlatformPublication, SocialAccount, PublicationSetting
 from app.publishers.base import BasePublisher, PublicationResult
 
 logger = logging.getLogger("publishers.tiktok")
@@ -129,6 +129,18 @@ class TikTokPublisher(BasePublisher):
                         tk_text = f"{tk_text} {post.tiktok_hashtags}"
                 else:
                     tk_text = f"{post.title} {post.caption or ''}".strip()
+
+                # Anexa hashtags de localização se configurado nas preferências
+                try:
+                    with SessionLocal() as db:
+                        pub_setting = db.query(PublicationSetting).first()
+                        if pub_setting and pub_setting.apply_location_to_all and pub_setting.tiktok_location_hashtags:
+                            extra_tags = pub_setting.tiktok_location_hashtags.strip()
+                            if extra_tags and extra_tags.lower() not in tk_text.lower():
+                                tk_text = f"{tk_text} {extra_tags}".strip()
+                                logger.info(f"[TikTok] Hashtags de localização padrão anexadas: {extra_tags}")
+                except Exception as e:
+                    logger.warning(f"[TikTok] Não foi possível carregar publication_settings para TikTok: {e}")
 
                 # Passo 1: Inicializa o upload informando o tamanho do arquivo local
                 payload = {
